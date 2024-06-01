@@ -1,6 +1,5 @@
-package calebxzhou.rdi.mixin.client.gameplay;
+package calebxzhou.rdi.mixin.gameplay;
 
-import kotlin.random.URandomKt;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.AbstractSkeleton;

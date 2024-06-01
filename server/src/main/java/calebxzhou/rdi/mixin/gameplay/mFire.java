@@ -1,4 +1,4 @@
-package calebxzhou.rdi.mixin.client.gameplay;
+package calebxzhou.rdi.mixin.gameplay;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.FireBlock;

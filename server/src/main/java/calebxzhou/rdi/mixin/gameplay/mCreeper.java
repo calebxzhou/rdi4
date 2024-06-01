@@ -1,4 +1,4 @@
-package calebxzhou.rdi.mixin.client.gameplay;
+package calebxzhou.rdi.mixin.gameplay;
 
 import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
