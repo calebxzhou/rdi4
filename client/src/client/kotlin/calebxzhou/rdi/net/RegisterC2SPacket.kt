@@ -2,13 +2,13 @@ package calebxzhou.rdi.net
 
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.handshake.ServerHandshakePacketListener
+import net.minecraft.network.protocol.login.ServerLoginPacketListener
 
 data class RegisterC2SPacket(
     val name: String,
     val qq: String,
     val pwd:String,
-) : Packet<ServerHandshakePacketListener> {
+) : Packet<ServerLoginPacketListener> {
 
  /*   constructor(buffer:FriendlyByteBuf) : this(buffer.readUtf(32),buffer.readUtf(10),buffer.readUtf(16))*/
 
@@ -18,6 +18,6 @@ data class RegisterC2SPacket(
         buffer.writeUtf(pwd,16)
     }
 
-    override fun handle(handler: ServerHandshakePacketListener) {
+    override fun handle(handler: ServerLoginPacketListener) {
     }
 }

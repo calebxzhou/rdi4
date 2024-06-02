@@ -1,6 +1,7 @@
 package calebxzhou.rdi.mixin;
 
-import calebxzhou.rdi.net.RdiLoginC2SPacket;
+import calebxzhou.rdi.net.LoginSPacket;
+import calebxzhou.rdi.net.RegisterSPacket;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
@@ -18,20 +19,22 @@ public class mProtocol {
 @Mixin(ConnectionProtocol.PacketSet.class)
 abstract class mLoginProtocol0 {
     @Inject(method = "getId",at=@At(value = "HEAD"), cancellable = true)
-    private void getId(Class<?> packetClass, CallbackInfoReturnable<Integer> cir){
-
+    private void getIdC2S(Class<?> packetClass, CallbackInfoReturnable<Integer> cir){
+/*
         if(packetClass == RdiLoginC2SPacket.class){
             cir.setReturnValue(0xFE);
-        }
+        }*/
 
     }
     @Inject(method = "createPacket",at=@At("HEAD"),cancellable = true)
-    private void createPacket(int packetId, FriendlyByteBuf buffer, CallbackInfoReturnable<Packet<?>> cir){
+    private void createPacketS2C(int packetId, FriendlyByteBuf buffer, CallbackInfoReturnable<Packet<?>> cir){
 
         if(packetId == 0xFE){
-            cir.setReturnValue(new RdiLoginC2SPacket(buffer));
+            cir.setReturnValue(new LoginSPacket(buffer));
         }
-
+        if(packetId == 0xFD){
+            cir.setReturnValue(new RegisterSPacket(buffer));
+        }
     }
 
 }
@@ -41,9 +44,11 @@ abstract class mLoginProtocol1 {
     @Inject(method = "getProtocolForPacket",at=@At("HEAD"),cancellable = true)
     private static void getProtocolForPacket(Packet<?> packet, CallbackInfoReturnable<ConnectionProtocol> cir) {
 
-        if(packet.getClass() == RdiLoginC2SPacket.class){
+        if(packet.getClass() == LoginSPacket.class){
             cir.setReturnValue(ConnectionProtocol.LOGIN);
         }
-
+        if(packet.getClass() == RegisterSPacket.class){
+            cir.setReturnValue(ConnectionProtocol.LOGIN);
+        }
     }
 }
