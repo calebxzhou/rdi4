@@ -2,7 +2,7 @@ package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.log
-import calebxzhou.rdi.net.RdiLoginC2SPacket
+import calebxzhou.rdi.net.LoginC2SPacket
 import calebxzhou.rdi.ui.component.REditBox
 import calebxzhou.rdi.ui.component.ROkCancelScreen
 import calebxzhou.rdi.util.dialogErr
@@ -11,7 +11,6 @@ import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
 import io.netty.channel.ChannelFuture
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl
 import net.minecraft.client.quickplay.QuickPlayLog
 import net.minecraft.network.Connection
@@ -47,7 +46,7 @@ class LoginScreen() : ROkCancelScreen(RTitleScreen(), "登录") {
                 this.status = it
             })
             connection?.send(ClientIntentionPacket(Const.SERVER_ADDR,Const.SERVER_PORT,ConnectionProtocol.LOGIN))
-            connection?.send(RdiLoginC2SPacket(qqBox.value,pwdBox.value))
+            connection?.send(LoginC2SPacket(qqBox.value,pwdBox.value))
         }
         connectThread?.setUncaughtExceptionHandler { t, e ->
             e.printStackTrace()

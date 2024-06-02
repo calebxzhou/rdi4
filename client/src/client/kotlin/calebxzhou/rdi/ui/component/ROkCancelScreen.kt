@@ -1,7 +1,9 @@
 package calebxzhou.rdi.ui.component
 
+import calebxzhou.rdi.exception.RAccountException
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
+import java.net.ConnectException
 
 abstract class ROkCancelScreen(val prevScreen: RScreen, name: String) : RScreen(name) {
     lateinit var okBtn : RButton
@@ -35,7 +37,13 @@ abstract class ROkCancelScreen(val prevScreen: RScreen, name: String) : RScreen(
 
     private fun trySubmit() = try {
         onSubmit()
-    } catch (e: Exception) {
+    }catch (e: RAccountException) {
+        dialogErr("账户错误：${e.localizedMessage}")
+    }catch (e: ConnectException){
+        dialogErr("请检查网络连接")
+        e.printStackTrace()
+    }
+    catch (e: Exception) {
         dialogErr("错误：$e")
         e.printStackTrace()
     }
