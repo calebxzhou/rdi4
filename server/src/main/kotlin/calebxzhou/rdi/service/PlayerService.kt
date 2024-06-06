@@ -27,6 +27,8 @@ object PlayerService {
         getByQQ(pack.qq)?.let {
             throw RAccountException("账号已被注册")
         } ?: let{
+            if(!pack.name.matches(Regex("^[A-Za-z0-9_]+$")))
+                throw RAccountException("昵称只能由字母和数字组成")
             dbcl.insertOne(RPlayer(ObjectId(), pack.name, pack.pwd, pack.qq))
             throw RAccountException("注册成功，请重新登录")
         }

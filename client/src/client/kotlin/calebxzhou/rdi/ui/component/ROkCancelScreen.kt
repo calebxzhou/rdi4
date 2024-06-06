@@ -31,8 +31,8 @@ abstract class ROkCancelScreen(val prevScreen: RScreen, name: String) : RScreen(
 
     }
     open fun onPressEnterKey() {
-        if (okBtn.visible)
-            trySubmit()
+        /*if (okBtn.visible)
+            trySubmit()*/
     }
 
     private fun trySubmit() = try {

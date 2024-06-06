@@ -3,7 +3,6 @@ package calebxzhou.rdi.ui
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.exception.RAccountException
 import calebxzhou.rdi.log
-import calebxzhou.rdi.net.LoginC2SPacket
 import calebxzhou.rdi.net.RegisterC2SPacket
 import calebxzhou.rdi.ui.component.REditBox
 import calebxzhou.rdi.ui.component.ROkCancelScreen
@@ -13,7 +12,6 @@ import calebxzhou.rdi.util.isNumber
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
 import io.netty.channel.ChannelFuture
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl
 import net.minecraft.client.quickplay.QuickPlayLog
 import net.minecraft.network.Connection
@@ -60,14 +58,14 @@ class RegScreen: ROkCancelScreen(RTitleScreen(), "注册"){
         log.info("开始连接")
         connectThread = thread(name = "RDI Server Connector") {
             connection = Connection(PacketFlow.CLIENTBOUND)
-            channelFuture = Connection.connect(Const.SERVER_INET_ADDR,true,connection)
+            channelFuture = Connection.connect(Const.LAND_SERVER_INET_ADDR,true,connection)
             channelFuture?.syncUninterruptibly()
             connection?.setListener(
                 ClientHandshakePacketListenerImpl(connection,
                     mc,Const.SERVER_DATA,RTitleScreen(),false,null) {
 
             })
-            connection?.send(ClientIntentionPacket(Const.SERVER_ADDR,Const.SERVER_PORT, ConnectionProtocol.LOGIN))
+            connection?.send(ClientIntentionPacket(Const.LAND_SERVER_ADDR,Const.LAND_SERVER_PORT, ConnectionProtocol.LOGIN))
             connection?.send(RegisterC2SPacket(nameBox.value,qqBox.value,pwdBox.value))
         }
         connectThread?.setUncaughtExceptionHandler { t, e ->

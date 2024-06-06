@@ -3,14 +3,12 @@ package calebxzhou.rdi.ui
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.log
 import calebxzhou.rdi.net.LoginC2SPacket
-import calebxzhou.rdi.ui.component.RCheckbox
 import calebxzhou.rdi.ui.component.REditBox
 import calebxzhou.rdi.ui.component.ROkCancelScreen
 import calebxzhou.rdi.ui.component.RPasswordEditBox
 import calebxzhou.rdi.util.*
 import io.netty.channel.ChannelFuture
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.Checkbox
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl
 import net.minecraft.client.quickplay.QuickPlayLog
 import net.minecraft.network.Connection
@@ -18,7 +16,6 @@ import net.minecraft.network.ConnectionProtocol
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.PacketFlow
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket
-import java.io.File
 
 import kotlin.concurrent.Volatile
 import kotlin.concurrent.thread
@@ -36,14 +33,14 @@ class LoginScreen : ROkCancelScreen(RTitleScreen(), "登录") {
     var aborted: Boolean = false
     var status: Component = mcText("准备连接...")
     override fun onSubmit() {
-        //mc.clearLevel()
+        mc.clearLevel(this)
         mc.prepareForMultiplayer()
         mc.quickPlayLog().setWorldData(QuickPlayLog.Type.MULTIPLAYER, "RDI", Const.VERSION_STR)
         log.info("开始连接")
+
         connectThread = thread(name = "RDI Server Connector") {
             connection = Connection(PacketFlow.CLIENTBOUND)
-            mc.connection
-            channelFuture = Connection.connect(Const.SERVER_INET_ADDR, true, connection)
+            channelFuture = Connection.connect(Const.LAND_SERVER_INET_ADDR, true, connection)
             channelFuture?.syncUninterruptibly()
             connection?.setListener(
                 ClientHandshakePacketListenerImpl(
@@ -56,7 +53,7 @@ class LoginScreen : ROkCancelScreen(RTitleScreen(), "登录") {
                 ) {
                     this.status = it
                 })
-            connection?.send(ClientIntentionPacket(Const.SERVER_ADDR, Const.SERVER_PORT, ConnectionProtocol.LOGIN))
+            connection?.send(ClientIntentionPacket(Const.LAND_SERVER_ADDR, Const.LAND_SERVER_PORT, ConnectionProtocol.LOGIN))
             LocalStorage += "qq" to qqBox.value
             LocalStorage += "pwd" to pwdBox.value
 
@@ -72,7 +69,7 @@ class LoginScreen : ROkCancelScreen(RTitleScreen(), "登录") {
     }
 
     override fun init() {
-        qqBox = REditBox("RDI账号/QQ号", width / 2 - 50, 80, 100).also { registerWidget(it) }
+        qqBox = REditBox("QQ号", width / 2 - 50, 80, 100).also { registerWidget(it) }
         pwdBox = RPasswordEditBox("RDI密码", width / 2 - 50, 120, 100).also { registerWidget(it) }
         qqBox.value = LocalStorage["qq"]
         pwdBox.value = LocalStorage["pwd"]

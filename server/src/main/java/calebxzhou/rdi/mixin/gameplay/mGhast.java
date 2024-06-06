@@ -55,7 +55,7 @@ class mGhastFly{
             method = "start"
             ,constant = @Constant(doubleValue = 1.0D)
     )
-    private static double change(double d){
+    private double change(double d){
         return 1.5D;
     }
 }
