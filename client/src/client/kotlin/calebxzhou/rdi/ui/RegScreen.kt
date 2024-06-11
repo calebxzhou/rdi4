@@ -1,30 +1,15 @@
 package calebxzhou.rdi.ui
 
-import calebxzhou.rdi.Const
 import calebxzhou.rdi.exception.RAccountException
-import calebxzhou.rdi.log
-import calebxzhou.rdi.net.RegisterC2SPacket
+import calebxzhou.rdi.ihq.net.IhqClient
+import calebxzhou.rdi.ihq.net.protocol.account.RegisterSPacket
+import calebxzhou.rdi.ihq.net.protocol.general.OkCPacket
 import calebxzhou.rdi.ui.component.REditBox
 import calebxzhou.rdi.ui.component.ROkCancelScreen
 import calebxzhou.rdi.ui.component.RPasswordEditBox
-import calebxzhou.rdi.util.dialogErr
-import calebxzhou.rdi.util.isNumber
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcText
-import io.netty.channel.ChannelFuture
-import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl
-import net.minecraft.client.quickplay.QuickPlayLog
-import net.minecraft.network.Connection
-import net.minecraft.network.ConnectionProtocol
-import net.minecraft.network.protocol.PacketFlow
-import net.minecraft.network.protocol.handshake.ClientIntentionPacket
-import kotlin.concurrent.thread
+import calebxzhou.rdi.util.*
 
 class RegScreen: ROkCancelScreen(RTitleScreen(), "注册"){
-    @Volatile
-    var connection: Connection? = null
-    var channelFuture: ChannelFuture? = null
-    var connectThread : Thread? = null
 
     lateinit var nameBox : REditBox
     lateinit var qqBox : REditBox
@@ -53,52 +38,13 @@ class RegScreen: ROkCancelScreen(RTitleScreen(), "注册"){
         if(pwd.length !in 6..16)
             throw RAccountException("密码长度必须是6到16位")
         //开始注册
-        mc.prepareForMultiplayer()
-        mc.quickPlayLog().setWorldData(QuickPlayLog.Type.MULTIPLAYER, "RDI", Const.VERSION_STR)
-        log.info("开始连接")
-        connectThread = thread(name = "RDI Server Connector") {
-            connection = Connection(PacketFlow.CLIENTBOUND)
-            channelFuture = Connection.connect(Const.LAND_SERVER_INET_ADDR,true,connection)
-            channelFuture?.syncUninterruptibly()
-            connection?.setListener(
-                ClientHandshakePacketListenerImpl(connection,
-                    mc,Const.SERVER_DATA,RTitleScreen(),false,null) {
-
-            })
-            connection?.send(ClientIntentionPacket(Const.LAND_SERVER_ADDR,Const.LAND_SERVER_PORT, ConnectionProtocol.LOGIN))
-            connection?.send(RegisterC2SPacket(nameBox.value,qqBox.value,pwdBox.value))
-        }
-        connectThread?.setUncaughtExceptionHandler { t, e ->
-            e.printStackTrace()
-            dialogErr("连接服务器失败，请检查网络连接")
-
-        }
-
+        IhqClient.sendPacket(RegisterSPacket(name,pwd,qq))
 
 
     }
-    override fun onClose() {
-        connectThread?.stop()
-        connectThread=null
-
-        if (this.channelFuture != null) {
-            channelFuture!!.cancel(true)
-            this.channelFuture = null
-        }
-
-        if (this.connection != null) {
-            connection!!.disconnect(mcText("停止连接"))
-        }
-        super.onClose()
+    fun onResponse(packet: OkCPacket) {
+        showToast(packet.msg)
+        onClose()
     }
-    override fun tick() {
-        this.connection?.let { connection ->
-            if (connection.isConnected) {
-                connection.tick()
-            } else {
-                connection.handleDisconnection()
-            }
-        }
-        super.tick()
-    }
+
 }

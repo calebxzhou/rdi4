@@ -1,5 +1,6 @@
 package calebxzhou.rdi.mixin;
 
+import calebxzhou.rdi.Const;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
@@ -16,7 +17,7 @@ import java.util.Properties;
 public abstract class mServerProps  {
     @Overwrite
     public int getPort() {
-        return 38400;
+        return Const.SERVER_PORT;
     }
     @Overwrite
     public boolean isFlightAllowed() {
