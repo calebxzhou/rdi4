@@ -36,7 +36,7 @@ import java.util.Set;
  */
 public final class Fantasy {
     public static final Logger LOGGER = LogManager.getLogger(Fantasy.class);
-    public static final String ID = "fantasy";
+    public static final String ID = "rdi";
     public static final ResourceKey<DimensionType> DEFAULT_DIM_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, new ResourceLocation(Fantasy.ID, "default"));
 
     private static Fantasy instance;

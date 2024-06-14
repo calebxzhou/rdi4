@@ -1,28 +1,16 @@
 package calebxzhou.rdi.command
 
-import calebxzhou.rdi.RDI
-import calebxzhou.rdi.db
-import calebxzhou.rdi.model.Island
-import calebxzhou.rdi.model.IslandMember
-import calebxzhou.rdi.model.IslandRole
 import calebxzhou.rdi.service.IslandService
-import calebxzhou.rdi.service.PlayerService
 import calebxzhou.rdi.util.*
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mongodb.client.model.Filters.*
-import com.mongodb.client.model.Updates
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.commands.arguments.EntityArgument
-import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
-import org.bson.types.ObjectId
-import java.util.UUID
 
 object IslandCommand {
     private val islandHelp = """

@@ -4,16 +4,12 @@ import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import java.util.UUID
 
-data class RPlayer(
+data class RAccount(
     @BsonId val id: ObjectId,
-    val uuid:UUID,
+    val uuid: UUID,
     val name: String,
-    val pwd: String,
+    var pwd: String,
     val qq: String,
     val regTime: Long = System.currentTimeMillis(),
-    val globalChat: Boolean = true,
-){
-    override fun toString(): String {
-        return "$name($id)"
-    }
-}
+    val score:Int = 0
+)

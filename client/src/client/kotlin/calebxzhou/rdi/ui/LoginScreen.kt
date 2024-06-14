@@ -100,7 +100,7 @@ class LoginScreen : ROkCancelScreen(RTitleScreen(), "登录"){
 
     fun onResponse(packet: OkCPacket) {
         showToast(packet.msg)
-        ConnectScreen.startConnecting(this, mc, ServerAddress(Const.SERVER_ADDR,Const.SERVER_PORT), Const.SERVER_DATA,false)
+
         //mc goScreen  IslandScreen()
     }
 

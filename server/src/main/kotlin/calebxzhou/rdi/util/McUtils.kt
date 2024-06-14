@@ -4,8 +4,10 @@ import calebxzhou.rdi.Const
 import calebxzhou.rdi.log
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.core.BlockPos
+import net.minecraft.network.Connection
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
@@ -78,12 +80,15 @@ fun ServerPlayer.reset() {
     setSpawn(mc.overworld(), Const.BASE_POS)
     kill()
 }
+fun Connection.preventLogin(reason: String){
+    send(ClientboundLoginDisconnectPacket(mcText(reason)))
+}
 val Level.dimensionName
     get() = dimension().location().toString()
 val ServerPlayer.dimensionName
     get() = level().dimensionName
 val ServerPlayer.nickname
-    get() = displayName.toString()
+    get() = displayName.string
 
 object McUtils {
 

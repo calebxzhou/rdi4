@@ -26,7 +26,7 @@ object IslandService {
 
         val iid = dbcl.insertOne(
             Island(player)
-        ).insertedId?.toString() ?: let {
+        ).insertedId?.asObjectId()?.value?.toString() ?: let {
             player.err("创建岛屿失败：iid=null")
             return
         }
@@ -38,7 +38,7 @@ object IslandService {
             world.placeBlock(basePos.offset(0, 0, 1), Blocks.DIRT)
             world.placeBlock(basePos.offset(0, 1, 0), Blocks.OAK_SAPLING)
             //player.setSpawn(world,basePos)
-            player.teleportTo(world, basePos)
+            player.teleportTo(world, basePos.offset(0,4,0))
             player.ok("成功")
         }
     }
@@ -166,7 +166,7 @@ object IslandService {
     suspend fun ServerPlayer.ownIsland(): Island? = dbcl.find(
         elemMatch(
             "members", and(
-                eq("playerId", uuid),
+                eq("pid", uuid),
                 eq("role", IslandRole.OWNER)
             )
         )
@@ -176,7 +176,7 @@ object IslandService {
     suspend fun ServerPlayer.joinedIsland(): Island? = dbcl.find(
         `in`(
             "members",
-            eq("playerId", uuid)
+            eq("pid", uuid)
         )
     ).firstOrNull()
 

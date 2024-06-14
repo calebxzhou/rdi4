@@ -1,5 +1,6 @@
 package xyz.nucleoid.fantasy;
 
+import calebxzhou.rdi.mixin.AChunkMap;
 import com.google.common.base.Preconditions;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.core.Holder;
@@ -11,8 +12,11 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.fantasy.util.GameRuleStore;
+
+import static calebxzhou.rdi.util.McUtilsKt.mc;
 
 /**
  * A configuration describing how a runtime world should be constructed. This includes properties such as the dimension
@@ -24,7 +28,7 @@ public final class RuntimeWorldConfig {
     private long seed = 0;
     private ResourceKey<DimensionType> dimensionTypeKey = Fantasy.DEFAULT_DIM_TYPE;
     private Holder<DimensionType> dimensionType;
-    private ChunkGenerator generator = null;
+    private ChunkGenerator generator = ((AChunkMap) mc.overworld().getChunkSource().chunkMap).getGenerator();
     private boolean shouldTickTime = true;
     private long timeOfDay = 6000;
     private Difficulty difficulty = Difficulty.HARD;

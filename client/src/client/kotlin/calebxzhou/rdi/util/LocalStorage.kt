@@ -21,8 +21,8 @@ object LocalStorage {
         kv += pair
         write()
     }
-    operator fun get(key: String): String{
-        return kv[key]?:""
+    operator fun get(key: String): String?{
+        return kv[key]
     }
     private fun write() {
         val oos = ObjectOutputStream(FileOutputStream("rdi_kv.ser"))
