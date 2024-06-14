@@ -23,7 +23,7 @@ object IslandService {
             player.err("有岛")
             return
         }
-
+        player.chat("开始创建岛屿，禁止触碰鼠标键盘")
         val iid = dbcl.insertOne(
             Island(player)
         ).insertedId?.asObjectId()?.value?.toString() ?: let {
@@ -39,7 +39,8 @@ object IslandService {
             world.placeBlock(basePos.offset(0, 1, 0), Blocks.OAK_SAPLING)
             //player.setSpawn(world,basePos)
             player.teleportTo(world, basePos.offset(0,4,0))
-            player.ok("成功")
+            player.slowfall()
+            player.ok("岛屿创建完成，欢迎来到RDI空岛")
         }
     }
 
@@ -66,6 +67,7 @@ object IslandService {
         mc.execute {
             val lvl = Fantasy.get(mc).openIsland(island.id).asWorld()
             player.teleportTo(lvl, island.homePos)
+            player.slowfall()
             player.ok()
         }
 
@@ -75,11 +77,12 @@ object IslandService {
             player.err("必须岛主来做")
             return
         }
+        player.feetBlockState.isSolid
         dbcl.updateOne(
             eq("_id", island.id),
             Updates.set("homePos",player.blockPosition().asLong())
         )
-        player.ok()
+        player.ok("${player.blockPosition()}")
 
 
     }
@@ -90,7 +93,7 @@ object IslandService {
             return
         }
         if (island.owner.pid == player.uuid) {
-            player.err("你是岛主，只能删除")
+            player.err("s")
             return
         }
         dbcl.updateOne(
@@ -119,6 +122,10 @@ object IslandService {
     }
     //踢出
     suspend fun kick(p1: ServerPlayer, p2: ServerPlayer) {
+        if(p1 == p2){
+            p1.err("不能踢自己")
+            return
+        }
         val island = p1.ownIsland() ?: let {
             p1.err("你没岛")
             return
@@ -174,9 +181,10 @@ object IslandService {
 
     //玩家已加入的岛屿
     suspend fun ServerPlayer.joinedIsland(): Island? = dbcl.find(
-        `in`(
-            "members",
-            eq("pid", uuid)
+        elemMatch(
+            "members",and(
+                eq("pid", uuid)
+            )
         )
     ).firstOrNull()
 

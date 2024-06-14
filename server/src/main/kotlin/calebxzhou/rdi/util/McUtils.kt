@@ -12,6 +12,8 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
@@ -65,7 +67,7 @@ fun Fantasy.openIsland(iid: ObjectId): RuntimeWorldHandle {
     return  openIsland(iid.toHexString())
 }
 fun ServerPlayer.teleportTo(level: ServerLevel, pos: BlockPos) {
-    teleportTo(level, pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, 0f, 0f)
+    teleportTo(level, pos.x+0.5, pos.y + 2.0, pos.z + 0.5, 0f, 0f)
 }
 fun ServerPlayer.teleportTo(level: ServerLevel, posL: Long) {
     teleportTo(level,BlockPos.of(posL))
@@ -73,7 +75,12 @@ fun ServerPlayer.teleportTo(level: ServerLevel, posL: Long) {
 fun ServerPlayer.setSpawn(level: ServerLevel, pos: BlockPos) {
     setRespawnPosition(level.dimension(), pos, 0f, true, true)
 }
-
+fun ServerPlayer.goServerSpawn() {
+    teleportTo(mc.overworld(),Const.BASE_POS)
+}
+fun ServerPlayer.slowfall(){
+    addEffect(MobEffectInstance(MobEffects.SLOW_FALLING,200,5))
+}
 fun ServerPlayer.reset() {
     experienceLevel = 0
     inventory.clearContent()
