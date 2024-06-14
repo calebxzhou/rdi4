@@ -50,15 +50,7 @@ public final class Fantasy {
     private final Set<ServerLevel> unloadingQueue = new ReferenceOpenHashSet<>();
 
     static {
-        ServerTickEvents.START_SERVER_TICK.register(server -> {
-            Fantasy fantasy = get(server);
-            fantasy.tick();
-        });
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            Fantasy fantasy = get(server);
-            fantasy.onServerStopping();
-        });
     }
 
     private Fantasy(MinecraftServer server) {
@@ -84,7 +76,7 @@ public final class Fantasy {
         return instance;
     }
 
-    private void tick() {
+    public void tick() {
         Set<ServerLevel> deletionQueue = this.deletionQueue;
         if (!deletionQueue.isEmpty()) {
             deletionQueue.removeIf(this::tickDeleteWorld);
@@ -210,7 +202,7 @@ public final class Fantasy {
         return world.players().isEmpty() && world.getChunkSource().getLoadedChunksCount() <= 0;
     }
 
-    private void onServerStopping() {
+    public void onServerStopping() {
         List<RuntimeWorld> temporaryWorlds = this.collectTemporaryWorlds();
         for (RuntimeWorld temporary : temporaryWorlds) {
             this.kickPlayers(temporary);

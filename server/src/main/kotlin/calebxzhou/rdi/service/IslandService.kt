@@ -13,6 +13,8 @@ import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.BonemealableBlock
+import net.minecraft.world.level.block.SaplingBlock
 import org.bson.types.ObjectId
 import xyz.nucleoid.fantasy.Fantasy
 
@@ -36,7 +38,7 @@ object IslandService {
             val basePos = Const.BASE_POS
             world.placeBlock(basePos.offset(0, 0, 0), Blocks.DIRT)
             world.placeBlock(basePos.offset(0, 0, 1), Blocks.DIRT)
-            world.placeBlock(basePos.offset(0, 1, 0), Blocks.OAK_SAPLING)
+            world.placeBlock(basePos.offset(0, 1, 1), Blocks.OAK_SAPLING)
             //player.setSpawn(world,basePos)
             player.teleportTo(world, basePos.offset(0,4,0))
             player.slowfall()
@@ -93,7 +95,7 @@ object IslandService {
             return
         }
         if (island.owner.pid == player.uuid) {
-            player.err("s")
+            player.err("你是岛主，只能删除")
             return
         }
         dbcl.updateOne(
@@ -118,7 +120,8 @@ object IslandService {
             eq("_id", island.id),
             Updates.push("members", IslandMember(p2.uuid, IslandRole.CREW))
         )
-        p1.ok("已邀请${p2.name}加入你的岛屿")
+        p1.ok("已邀请${p2.nickname}加入你的岛屿")
+        p2.ok("${p1.nickname}邀请你加入了他的岛屿")
     }
     //踢出
     suspend fun kick(p1: ServerPlayer, p2: ServerPlayer) {
@@ -163,8 +166,8 @@ object IslandService {
             Updates.set("members.$[element].role", IslandRole.CREW),
             UpdateOptions().arrayFilters(listOf(eq("element.pid", p1.uuid)))
         )
-        p2.reset()
-        p1.ok("已删除岛屿成员 ${p2.name}")
+        p1.ok("已将岛屿转让给 ${p2.nickname}")
+        p2.ok("${p1.nickname}把岛屿转让给你了")
     }
 
     private val dbcl = db.getCollection<Island>("island")
@@ -189,4 +192,16 @@ object IslandService {
     ).firstOrNull()
 
     suspend fun getById(id: ObjectId): Island? = dbcl.find(eq("_id", id)).firstOrNull()
+    fun growTree(p1: ServerPlayer) {
+        val bpos = p1.blockPosition()
+        val bstate = p1.serverLevel().getBlockState(bpos)
+        val block = bstate.block
+            if(block is SaplingBlock){
+                block.advanceTree(p1.serverLevel(),bpos,bstate,p1.random)
+                p1.ok()
+            }
+        else{
+            p1.chat("请站在树苗上")
+        }
+    }
 }

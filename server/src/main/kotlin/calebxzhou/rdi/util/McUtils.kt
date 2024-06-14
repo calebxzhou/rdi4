@@ -76,6 +76,7 @@ fun ServerPlayer.setSpawn(level: ServerLevel, pos: BlockPos) {
     setRespawnPosition(level.dimension(), pos, 0f, true, true)
 }
 fun ServerPlayer.goServerSpawn() {
+    slowfall()
     teleportTo(mc.overworld(),Const.BASE_POS)
 }
 fun ServerPlayer.slowfall(){
@@ -87,6 +88,8 @@ fun ServerPlayer.reset() {
     setSpawn(mc.overworld(), Const.BASE_POS)
     kill()
 }
+val ServerPlayer.lookingBlock
+    get() = pick(16.0,0f,false).location
 fun Connection.preventLogin(reason: String){
     send(ClientboundLoginDisconnectPacket(mcText(reason)))
 }

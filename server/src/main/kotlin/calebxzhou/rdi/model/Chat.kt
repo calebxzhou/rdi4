@@ -2,13 +2,10 @@ package calebxzhou.rdi.model
 
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
-import java.util.UUID
+import java.util.*
 
-data class RAccount(
+data class Chat(
     @BsonId val id: ObjectId,
     val uuid: UUID,
-    val name: String,
-    var pwd: String,
-    val qq: String,
-    val score:Int = 0
+    val msg:String,
 )

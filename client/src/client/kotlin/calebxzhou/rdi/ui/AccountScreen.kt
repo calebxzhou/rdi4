@@ -27,7 +27,7 @@ class AccountScreen :ROkCancelScreen(RTitleScreen(),"输入昵称、密码、档
         }.also { registerWidget(it) }
         nameBox.value = LocalStorage["name"] ?: mc.user.name
         pwdBox.value = LocalStorage["pwd"] ?: ""
-        uuidBox.value = LocalStorage["uuid"] ?: mc.user.uuid
+        uuidBox.value = LocalStorage["uuid"] ?: Utils.createUuid(nameBox.value).toString()
         super.init()
     }
     override fun onSubmit() {

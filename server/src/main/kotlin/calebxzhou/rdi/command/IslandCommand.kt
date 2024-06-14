@@ -16,7 +16,7 @@ object IslandCommand {
     private val islandHelp = """
             =====RDI空岛v4管理菜单=====
             /island <...>
-            create 建岛 delete 删岛 
+            create 建岛 confirm_island_delete 删岛 
             home 回岛 sethome 更改传送点 kick 移除成员 invite 邀请成员
             transfer 改变岛主 quit 退岛
             ====================
@@ -31,13 +31,13 @@ object IslandCommand {
                     SharedSuggestionProvider.suggest(
                         arrayOf(
                             "create",
-                            "delete",
                             "home",
                             "sethome",
                             "kick",
                             "invite",
                             "transfer",
-                            "quit"
+                            "quit",
+                            "fuck-tree"
                         ), build
                     )
                 }.executes { ctx ->
@@ -65,10 +65,11 @@ object IslandCommand {
 
             when (param) {
                 "create" -> IslandService.create(p1)
-                "delete" -> IslandService.delete(p1)
+                "confirm_island_delete" -> IslandService.delete(p1)
                 "home" -> IslandService.home(p1)
                 "sethome" -> IslandService.sethome(p1)
                 "quit" -> IslandService.quit(p1)
+                "fuck-tree" -> IslandService.growTree(p1)
                 else -> p1.chat(islandHelp)
             }
         }

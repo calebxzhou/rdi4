@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(ServerChunkCache.class)
 public class mRandomTickSpeed {
-    @Redirect(method = "tickChunks",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/level/GameRules;getInt(Lnet/minecraft/world/level/GameRules$Key;)I"))
+    /*@Redirect(method = "tickChunks",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/level/GameRules;getInt(Lnet/minecraft/world/level/GameRules$Key;)I"))
     private int randomTickSpeed(GameRules instance, GameRules.Key<GameRules.IntegerValue> key){
         return 30 + RDI.getPlayerAmount()*3;
-    }
+    }*/
 }
