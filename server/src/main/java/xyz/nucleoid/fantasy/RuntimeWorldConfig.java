@@ -35,7 +35,7 @@ public final class RuntimeWorldConfig {
     private final GameRuleStore gameRules = new GameRuleStore();
     private RuntimeWorld.Constructor worldConstructor = RuntimeWorld::new;
 
-    private int sunnyTime = Integer.MAX_VALUE;
+    private int sunnyTime;
     private boolean raining;
     private int rainTime;
     private boolean thundering;

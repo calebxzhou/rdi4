@@ -1,7 +1,11 @@
 package calebxzhou.rdi.util
 
+import calebxzhou.rdi.net.protocol.CPacket
+import io.netty.channel.ChannelHandlerContext
+import io.netty.util.AttributeKey
 import org.bson.types.ObjectId
 import java.math.BigInteger
+import java.net.InetSocketAddress
 
 /**
  * calebxzhou @ 2024-06-02 11:55
@@ -23,3 +27,15 @@ fun ByteArray.toBase36(): String {
 
     return base36Str
 }
+fun ChannelHandlerContext.sendPacket(packet: CPacket){
+    this.channel().writeAndFlush(packet)
+}
+fun ChannelHandlerContext.sendOk(msg: String?){
+    sendPacket(OkCPacket(msg?:""))
+}
+fun ChannelHandlerContext.sendErr(msg: String?){
+    sendPacket(ErrCPacket(msg?:""))
+}
+var ChannelHandlerContext.clientIp: InetSocketAddress
+    get() = channel().attr<InetSocketAddress>(AttributeKey.valueOf("clientIp")).get()
+    set(value) = channel().attr<InetSocketAddress>(AttributeKey.valueOf("clientIp")).set(value)

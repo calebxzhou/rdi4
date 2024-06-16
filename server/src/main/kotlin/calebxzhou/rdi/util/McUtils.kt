@@ -89,7 +89,12 @@ fun ServerPlayer.reset() {
     kill()
 }
 val ServerPlayer.lookingBlock
-    get() = pick(16.0,0f,false).location
+    get() = pick(16.0,1f,true).location.run { BlockPos(x.toInt(), y.toInt(), z.toInt()) }
+val ServerPlayer.lookingBlockState
+    get() = lookingBlock
+
+        .run { serverLevel().getBlockState(this) }
+
 fun Connection.preventLogin(reason: String){
     send(ClientboundLoginDisconnectPacket(mcText(reason)))
 }

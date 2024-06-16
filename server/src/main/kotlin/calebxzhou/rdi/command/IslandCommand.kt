@@ -18,6 +18,7 @@ object IslandCommand {
             /island <...>
             create 建岛 confirm_island_delete 删岛 
             home 回岛 sethome 更改传送点 kick 移除成员 invite 邀请成员
+            fuck-tree 快速长树  
             transfer 改变岛主 quit 退岛
             ====================
             """.trimIndent()
@@ -37,7 +38,8 @@ object IslandCommand {
                             "invite",
                             "transfer",
                             "quit",
-                            "fuck-tree"
+                            "fuck-tree",
+
                         ), build
                     )
                 }.executes { ctx ->
@@ -70,6 +72,7 @@ object IslandCommand {
                 "sethome" -> IslandService.sethome(p1)
                 "quit" -> IslandService.quit(p1)
                 "fuck-tree" -> IslandService.growTree(p1)
+                //"force-random-tick" -> IslandService.randomTick(p1)
                 else -> p1.chat(islandHelp)
             }
         }

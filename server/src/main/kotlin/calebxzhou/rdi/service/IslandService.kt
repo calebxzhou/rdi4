@@ -6,14 +6,12 @@ import calebxzhou.rdi.model.Island
 import calebxzhou.rdi.model.IslandMember
 import calebxzhou.rdi.model.IslandRole
 import calebxzhou.rdi.util.*
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.*
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.BonemealableBlock
 import net.minecraft.world.level.block.SaplingBlock
 import org.bson.types.ObjectId
 import xyz.nucleoid.fantasy.Fantasy
@@ -197,11 +195,17 @@ object IslandService {
         val bstate = p1.serverLevel().getBlockState(bpos)
         val block = bstate.block
             if(block is SaplingBlock){
-                block.advanceTree(p1.serverLevel(),bpos,bstate,p1.random)
+                block.advanceTree(p1.serverLevel(),bpos,bstate,p1.serverLevel().random)
                 p1.ok()
             }
         else{
             p1.chat("请站在树苗上")
         }
     }
+
+    /*fun randomTick(p1: ServerPlayer) {
+        val pos = p1.blockPosition()
+        p1.serverLevel().getBlockState(pos).randomTick(p1.serverLevel(),pos,p1.serverLevel().random)
+        p1.ok()
+    }*/
 }

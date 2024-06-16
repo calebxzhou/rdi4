@@ -20,18 +20,18 @@ public class mChunkTickets {
 @Mixin(ServerLevel.class)
 //出生点减少常加载
 class mSpawnLoad {
-    @ModifyConstant(method = "setDefaultSpawnPos",constant = @Constant(intValue = 11))
+    /*@ModifyConstant(method = "setDefaultSpawnPos",constant = @Constant(intValue = 11))
     private int lessSpawnLoad(int constant){
         return 4;
-    }
+    }*/
 
 }
 @Mixin(PortalForcer.class)
 //地狱门减少加载
 class mPortalLoad{
-    @Redirect(method = "method_30479",at= @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerChunkCache;addRegionTicket(Lnet/minecraft/server/level/TicketType;Lnet/minecraft/world/level/ChunkPos;ILjava/lang/Object;)V"))
+    /*@Redirect(method = "method_30479",at= @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerChunkCache;addRegionTicket(Lnet/minecraft/server/level/TicketType;Lnet/minecraft/world/level/ChunkPos;ILjava/lang/Object;)V"))
     private void lessPortalLoad(ServerChunkCache instance, TicketType type, ChunkPos pos, int distance, Object value){
         instance.addRegionTicket(type, pos, 1, value);
-    }
+    }*/
 
 }

@@ -25,18 +25,18 @@ public class mGhast {
     //50血
     @Overwrite
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 60.0).add(Attributes.FOLLOW_RANGE, 64.0);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 60.0).add(Attributes.FOLLOW_RANGE, 128.0);
     }
     //生成概率x4
     @Overwrite
     public static boolean checkGhastSpawnRules(EntityType<Ghast> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-        return randomSource.nextInt(5) == 0 && Ghast.checkMobSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+        return randomSource.nextInt(3) == 0 && Ghast.checkMobSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
     }
 
-    //一次生成4个
+    //一次生成16个
     @Overwrite
     public int getMaxSpawnClusterSize() {
-        return 4;
+        return 16;
     }
 }
 @Mixin(Ghast.GhastMoveControl.class)
@@ -46,7 +46,7 @@ class mGhastMove{
             ,constant = @Constant(doubleValue = 0.1D)
     )
     private double change(double d){
-        return 0.3D;
+        return 0.5D;
     }
 }
 @Mixin(Ghast.RandomFloatAroundGoal.class)

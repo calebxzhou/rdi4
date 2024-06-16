@@ -49,9 +49,6 @@ public final class Fantasy {
     private final Set<ServerLevel> deletionQueue = new ReferenceOpenHashSet<>();
     private final Set<ServerLevel> unloadingQueue = new ReferenceOpenHashSet<>();
 
-    static {
-
-    }
 
     private Fantasy(MinecraftServer server) {
         this.server = server;
