@@ -1,5 +1,8 @@
 package calebxzhou.rdi.util
 
+import calebxzhou.rdi.RDI
+import java.io.File
+import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
@@ -13,6 +16,19 @@ fun String.isValidUuid() : Boolean{
     val uuidRegex = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex()
     return uuidRegex.matches(this)
 }
+fun getFileInJarUrl(fileInJar: String): String {
+    return RDI::class.java
+        .classLoader
+        .getResource(fileInJar)!!.file.replace("%20", " ")
+}
+fun getJarResourceStream(path: String): InputStream? {
+    return RDI::class.java.classLoader.getResourceAsStream(path)
+}
+fun getFileInJar(fileInJar: String): File {
+    return File(getFileInJarUrl(fileInJar))
+}
+
+
 object Utils {
     @JvmStatic
     fun createUuid(name: String): UUID {

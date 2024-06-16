@@ -18,5 +18,5 @@ object Const {
     const val VERSION = 0x430
 
     //显示版本
-    const val VERSION_STR = "RDI Skies 4.1.0"
+    const val VERSION_STR = "RDI Skies 4.4 @ MC1.20.1"
 }
