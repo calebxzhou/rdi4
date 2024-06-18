@@ -2,7 +2,6 @@ package calebxzhou.rdi.net
 
 import calebxzhou.rdi.net.protocol.CPacket
 import calebxzhou.rdi.net.protocol.SPacket
-import calebxzhou.rdi.ihq.net.protocol.general.*
 import calebxzhou.rdi.log
 import calebxzhou.rdi.net.protocol.general.MoveEntityXyzCPacket
 import calebxzhou.rdi.net.protocol.general.MovePlayerXyzSPacket

@@ -9,6 +9,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -82,6 +84,16 @@ class mGhastShoot{
         return 6.0D;
     }
 
+    //只有地狱才发火球
+    @Inject(
+            method = "tick",
+            at=@At("HEAD"),
+            cancellable = true)
+    private void netherFireballOnly(CallbackInfo ci){
+        if (ghast.level().dimensionTypeId() != BuiltinDimensionTypes.NETHER) {
+            ci.cancel();
+        }
+    }
     @Inject(
             method = "tick",
             at=@At("TAIL")

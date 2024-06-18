@@ -16,6 +16,6 @@ public class mFire {
      */
     @Overwrite
     private static int getFireTickDelay(RandomSource randomSource){
-        return randomSource.nextInt(20);
+        return 20;
     }
 }

@@ -20,7 +20,9 @@ class IslandScreen : RScreen("岛屿管理") {
     lateinit var memberBtn : RButton
     override fun init() {
         IhqClient.sendPacket(IslandMySPacket())
-        enterBtn = RButton(0,height-20,60,"进岛"){}.also { registerWidget(it) }
+        enterBtn = RButton(0,height-20,60,"进岛"){
+
+        }.also { registerWidget(it) }
         profileBtn = RButton(100,height-20,60,"个人信息"){}.also { registerWidget(it) }
         createBtn = RButton(200,height-20,60,"建岛"){
             IhqClient.sendPacket(IslandCreateSPacket())

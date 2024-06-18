@@ -3,7 +3,7 @@ package calebxzhou.rdi.ui.component
 import calebxzhou.rdi.log
 import calebxzhou.rdi.mixin.client.AEditBox
 import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.pressKey
+import calebxzhou.rdi.util.pressingKey
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
@@ -25,7 +25,7 @@ class RPasswordEditBox(label: String, x: Int, y: Int, width: Int) : REditBox(lab
         if (!this.isVisible) return
         this as AEditBox
         // 按alt显示密码
-        passwordVisible = isFocused && (mc pressKey InputConstants.KEY_LALT || mc pressKey  InputConstants.KEY_RALT)
+        passwordVisible = isFocused && (mc pressingKey InputConstants.KEY_LALT || mc pressingKey  InputConstants.KEY_RALT)
 
         //边框
         guiGraphics.fill(

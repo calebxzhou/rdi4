@@ -30,12 +30,6 @@ fun ByteArray.toBase36(): String {
 fun ChannelHandlerContext.sendPacket(packet: CPacket){
     this.channel().writeAndFlush(packet)
 }
-fun ChannelHandlerContext.sendOk(msg: String?){
-    sendPacket(OkCPacket(msg?:""))
-}
-fun ChannelHandlerContext.sendErr(msg: String?){
-    sendPacket(ErrCPacket(msg?:""))
-}
 var ChannelHandlerContext.clientIp: InetSocketAddress
     get() = channel().attr<InetSocketAddress>(AttributeKey.valueOf("clientIp")).get()
     set(value) = channel().attr<InetSocketAddress>(AttributeKey.valueOf("clientIp")).set(value)

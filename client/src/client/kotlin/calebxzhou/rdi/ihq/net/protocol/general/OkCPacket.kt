@@ -17,9 +17,7 @@ class OkCPacket(buf: ByteBuf): MessageCPacket(buf) {
             screen.onResponse(this)
         }
 
-        if(screen is RegScreen){
-            screen.onResponse(this)
-        }
+
         if(screen is IslandScreen){
             screen.onOk(this)
         }

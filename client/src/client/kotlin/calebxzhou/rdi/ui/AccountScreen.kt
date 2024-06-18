@@ -3,15 +3,13 @@ package calebxzhou.rdi.ui
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.REditBox
-import calebxzhou.rdi.ui.component.ROkCancelScreen
+import calebxzhou.rdi.ui.general.ROkCancelScreen
 import calebxzhou.rdi.ui.component.RPasswordEditBox
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
-import net.minecraft.core.UUIDUtil
-import java.util.UUID
 
-class AccountScreen :ROkCancelScreen(RTitleScreen(),"输入昵称、密码、档案号（MC-UUID）"){
+class AccountScreen : ROkCancelScreen(RTitleScreen(),"输入昵称、密码、档案号（MC-UUID）"){
     lateinit var nameBox : REditBox
     lateinit var pwdBox : REditBox
     lateinit var uuidBox : REditBox

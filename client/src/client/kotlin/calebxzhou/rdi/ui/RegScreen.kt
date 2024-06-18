@@ -1,15 +1,18 @@
 package calebxzhou.rdi.ui
 
-import calebxzhou.rdi.exception.RAccountException
+import calebxzhou.rdi.exception.RGeneralException
 import calebxzhou.rdi.ihq.net.IhqClient
 import calebxzhou.rdi.ihq.net.protocol.account.RegisterSPacket
 import calebxzhou.rdi.ihq.net.protocol.general.OkCPacket
 import calebxzhou.rdi.ui.component.REditBox
-import calebxzhou.rdi.ui.component.ROkCancelScreen
+import calebxzhou.rdi.ui.general.ROkCancelScreen
 import calebxzhou.rdi.ui.component.RPasswordEditBox
+import calebxzhou.rdi.ui.component.RScreen
+import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.util.*
+import net.minecraft.client.gui.screens.Screen
 
-class RegScreen: ROkCancelScreen(RTitleScreen(), "注册"){
+class RegScreen(prevScreen: RScreen) : ROkCancelScreen(prevScreen, "注册"){
 
     lateinit var nameBox : REditBox
     lateinit var qqBox : REditBox
@@ -28,23 +31,28 @@ class RegScreen: ROkCancelScreen(RTitleScreen(), "注册"){
         val pwd = pwdBox.value
         val cpwd = cpwdBox.value
         if(name.isBlank()||qq.isBlank()||pwd.isBlank())
-            throw RAccountException("输入框不能为空")
+            throw RGeneralException("输入框不能为空")
         if(pwd != cpwd)
-            throw RAccountException("密码与确认密码不一致")
+            throw RGeneralException("密码与确认密码不一致")
         if(!qq.isNumber() || qq.length !in 5 .. 10)
-            throw RAccountException("QQ号格式错误")
+            throw RGeneralException("QQ号格式错误")
         if(name.length>16)
-            throw RAccountException("名称过长，不允许超过16字符")
+            throw RGeneralException("名称过长，不允许超过16字符")
         if(pwd.length !in 6..16)
-            throw RAccountException("密码长度必须是6到16位")
+            throw RGeneralException("密码长度必须是6到16位")
         //开始注册
-        IhqClient.sendPacket(RegisterSPacket(name,pwd,qq))
+        IhqClient.post("register", listOf(
+            "pwd" to pwd,
+            "qq" to qq,
+            "name" to name,
+        )){
+            popupInfo("注册成功")
+            LocalStorage += "qq" to qq
+            LocalStorage += "pwd" to pwd
+            onClose()
+        }
 
 
-    }
-    fun onResponse(packet: OkCPacket) {
-        showToast(packet.msg)
-        onClose()
     }
 
 }
