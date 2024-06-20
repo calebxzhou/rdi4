@@ -10,15 +10,18 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen
 class ProfileScreen(val account: RAccount) : RScreen("个人信息管理"){
     lateinit var nameBtn : RTextButton
     lateinit var skinBtn : RTextButton
-    lateinit var capeBtn : RTextButton
+    lateinit var pwdBtn : RButton
 
     override fun init() {
         nameBtn = RTextButton(width/2, height/5+5,account.name){
-            mc goScreen RChangeNameScreen(ProfileScreen(account))
+            mc goScreen RChangeNameScreen(ProfileScreen(RAccount.now!!))
         }.also { registerWidget(it) }
-        val skincape = account.skin.takeLast(16)+"/"+account.cape.takeLast(16)
+        val skincape = "...${account.skin.takeLast(16)}/...${account.cape.takeLast(16)}"
         skinBtn = RTextButton(width/2, height/3,"皮肤披风：$skincape"){
-
+            mc goScreen RSkinCapeScreen(ProfileScreen(RAccount.now!!))
+        }.also { registerWidget(it) }
+        pwdBtn = RButton(width/2, height-30,"修改密码"){
+            mc goScreen RChangePwdScreen(ProfileScreen(RAccount.now!!))
         }.also { registerWidget(it) }
         super.init()
     }

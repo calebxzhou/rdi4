@@ -34,8 +34,8 @@ class RegScreen(prevScreen: RScreen) : ROkCancelScreen(prevScreen, "注册"){
             throw RGeneralException("QQ号格式错误")
         if(name.length>16)
             throw RGeneralException("名称过长，不允许超过16字符")
-        if(pwd.length !in 6..16)
-            throw RGeneralException("密码长度必须是6到16位")
+        if(pwd.length !in 1..16)
+            throw RGeneralException("密码长度必须是1到16位")
         //开始注册
         IhqClient.post("register", listOf(
             "pwd" to pwd,

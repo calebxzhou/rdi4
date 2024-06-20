@@ -36,7 +36,10 @@ fun getJarResourceStream(path: String): InputStream? {
 fun getFileInJar(fileInJar: String): File {
     return File(getFileInJarUrl(fileInJar))
 }
-
+fun String.isValidHttpUrl(): Boolean {
+    val urlRegex = "^(http://|https://).+".toRegex()
+    return this.matches(urlRegex)
+}
 val periodOfDay: String = when (LocalDateTime.now().hour) {
     in 0..5 -> "凌晨"
     in 6..8 -> "早上"

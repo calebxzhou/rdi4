@@ -13,7 +13,7 @@ import calebxzhou.rdi.util.showToast
 class RChangeNameScreen(prevScreen: RScreen) : ROkCancelScreen(prevScreen,"修改游戏昵称") {
     lateinit var nameBox: REditBox
     override fun init() {
-        nameBox = REditBox("昵称",width/2,height/2,100).also { registerWidget(it) }
+        nameBox = REditBox("昵称",width/2-50,height/2,100).also { registerWidget(it) }
         nameBox.value = RAccount.now?.name
         super.init()
     }

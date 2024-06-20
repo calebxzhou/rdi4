@@ -16,11 +16,11 @@ data class RAccount(
     @BsonId val id: ObjectId,
     @Contextual val uuid: UUID,
     var name: String,
-    val pwd: String,
+    var pwd: String,
     val qq: String,
     val score: Int = 0,
-    val skin: String = "",
-    val cape: String = "",
+    var skin: String = "",
+    var cape: String = "",
 ) {
     companion object {
         @JvmStatic
