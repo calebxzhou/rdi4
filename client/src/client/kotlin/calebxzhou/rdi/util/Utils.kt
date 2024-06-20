@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
 import java.util.UUID
 
 /**
@@ -36,7 +37,15 @@ fun getFileInJar(fileInJar: String): File {
     return File(getFileInJarUrl(fileInJar))
 }
 
-
+val periodOfDay: String = when (LocalDateTime.now().hour) {
+    in 0..5 -> "凌晨"
+    in 6..8 -> "早上"
+    in 9..10 -> "上午"
+    in 11..12 -> "中午"
+    in 13..17 -> "下午"
+    in 18..23 -> "晚上"
+    else -> "您好"
+}
 object Utils {
     @JvmStatic
     fun createUuid(name: String): UUID {

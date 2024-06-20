@@ -27,4 +27,9 @@ abstract class RScreen(private val name:String) : Screen(Component.literal(name)
     fun registerWidget(widget: AbstractWidget) {
         widgets += widget
     }
+
+    override fun clearWidgets() {
+        widgets.clear()
+        super.clearWidgets()
+    }
 }

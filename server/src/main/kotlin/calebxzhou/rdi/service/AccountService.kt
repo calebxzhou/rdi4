@@ -39,19 +39,19 @@ object AccountService {
             connection.preventLogin("RDI登录协议错误001")
             return null
         }
-        val name = pack.name.split("@").getOrNull(0) ?: let {
+
+        val name = pack.name.split("\n").getOrNull(0) ?: let {
             connection.preventLogin("RDI登录协议错误002")
             return null
         }
-        val pwd = pack.name.split("@").getOrNull(1) ?: ""
-        var player = runBlocking {
+        val pwd = pack.name.split("\n").getOrNull(1) ?: ""
+        val player = runBlocking {
             getByUuid(uuid)
         }
 
         if (player == null) {
-            //新玩家创建
-            player = RAccount(ObjectId(), uuid, name, "", "")
-            runBlocking { dbcl.insertOne(player) }
+            connection.preventLogin("没注册")
+            return null
         }
         if (player.pwd != pwd) {
             connection.preventLogin("密码错误")

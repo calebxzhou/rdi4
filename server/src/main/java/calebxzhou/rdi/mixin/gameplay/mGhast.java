@@ -100,7 +100,7 @@ class mGhastShoot{
     )
     private void changeCd2(CallbackInfo ci){
         if(chargeTime<=-40){
-            chargeTime=9;
+            chargeTime=19;
             this.ghast.setCharging(true);
         }
     }

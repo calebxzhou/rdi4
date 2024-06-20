@@ -2,15 +2,11 @@ package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.exception.RGeneralException
 import calebxzhou.rdi.ihq.net.IhqClient
-import calebxzhou.rdi.ihq.net.protocol.account.RegisterSPacket
-import calebxzhou.rdi.ihq.net.protocol.general.OkCPacket
 import calebxzhou.rdi.ui.component.REditBox
 import calebxzhou.rdi.ui.general.ROkCancelScreen
 import calebxzhou.rdi.ui.component.RPasswordEditBox
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.util.*
-import net.minecraft.client.gui.screens.Screen
 
 class RegScreen(prevScreen: RScreen) : ROkCancelScreen(prevScreen, "注册"){
 
@@ -47,7 +43,7 @@ class RegScreen(prevScreen: RScreen) : ROkCancelScreen(prevScreen, "注册"){
             "name" to name,
         )){
             popupInfo("注册成功")
-            LocalStorage += "qq" to qq
+            LocalStorage += "usr" to qq
             LocalStorage += "pwd" to pwd
             onClose()
         }

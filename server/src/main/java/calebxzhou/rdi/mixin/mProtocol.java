@@ -3,18 +3,14 @@ package calebxzhou.rdi.mixin;
 import calebxzhou.rdi.service.AccountService;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -30,35 +26,35 @@ abstract class mLoginProtocol0 {
 
     @Shadow
     ServerLoginPacketListenerImpl.State state;
-    @Unique
-    GameProfile profile;
-    ServerboundHelloPacket packet;
-    @Inject(method = "handleHello",at= @At(value = "NEW", target = "(Ljava/util/UUID;Ljava/lang/String;)Lcom/mojang/authlib/GameProfile;"), cancellable = true)
-    private void onPlayerLogin(ServerboundHelloPacket packet, CallbackInfo ci){
-        this.packet=packet;
-        var result = AccountService.INSTANCE.onLogin(packet,connection);
+    @Shadow
+    @Nullable
+    GameProfile gameProfile;
 
-        if(result == null){
-
-            ci.cancel();
-        }else{
-            profile = result;
+    @Overwrite
+    public void handleHello(ServerboundHelloPacket packet) {
+        var profile = AccountService.INSTANCE.onLogin(packet,connection);
+        if(profile == null){
+            return;
         }
-
-
+        this.gameProfile = profile;
+        state=ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
     }
 
-    @Redirect(method = "handleHello",at= @At(value = "NEW", target = "(Ljava/util/UUID;Ljava/lang/String;)Lcom/mojang/authlib/GameProfile;"))
-    private GameProfile createProfile(UUID id, String name){
-        return profile;
-    }
 
 
 
 }
 
-@Mixin(ConnectionProtocol.class)
+@Mixin(ServerboundHelloPacket.class)
 abstract class mLoginProtocol1 {
 
+    @ModifyConstant(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V",constant = @Constant(intValue = 16))
+    private static int readNameWithPwd(int constant){
+        return 64;
+    }
+    @Redirect(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V",at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;readOptional(Lnet/minecraft/network/FriendlyByteBuf$Reader;)Ljava/util/Optional;"))
+    private static Optional readUUID(FriendlyByteBuf instance, FriendlyByteBuf.Reader reader){
+        return Optional.of(instance.readUUID());
+    }
 
 }

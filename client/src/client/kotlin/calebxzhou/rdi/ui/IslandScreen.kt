@@ -1,6 +1,6 @@
 package calebxzhou.rdi.ui
 
-import calebxzhou.rdi.core.util.formatTimestamp
+import calebxzhou.rdi.util.formatTimestamp
 import calebxzhou.rdi.ihq.net.IhqClient
 import calebxzhou.rdi.ihq.net.protocol.general.OkCPacket
 import calebxzhou.rdi.ihq.net.protocol.island.IslandCreateSPacket

@@ -15,7 +15,7 @@ object Const {
     val SERVER_INET_ADDR = InetSocketAddress(SERVER_ADDR, SERVER_PORT)
 
     //版本号与协议号
-    const val VERSION = 0x430
+    const val VERSION = 0x440
 
     //显示版本
     const val VERSION_STR = "RDI Skies 4.4 @ MC1.20.1"

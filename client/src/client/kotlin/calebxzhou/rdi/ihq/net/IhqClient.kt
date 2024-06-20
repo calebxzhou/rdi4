@@ -1,7 +1,6 @@
 package calebxzhou.rdi.ihq.net
 
 import calebxzhou.rdi.Const
-import calebxzhou.rdi.ihq.net.protocol.CPacket
 import calebxzhou.rdi.ihq.net.protocol.SPacket
 import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.util.bgTask
@@ -11,20 +10,13 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.*
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelOption
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioDatagramChannel
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import java.net.URL
-import javax.swing.text.html.HTML.Tag.P
 
 object IhqClient {
     val connection = Bootstrap()
@@ -65,18 +57,30 @@ object IhqClient {
             bgTask { onSuccess(it) }
         }
     }
-
+    fun put(path: String, params: List<Pair<String, String>>?, onSuccess: suspend (HttpResponse) -> Unit) = bgTask{
+        send(HttpMethod.Put, path, params){
+            bgTask { onSuccess(it) }
+        }
+    }
     fun get(path: String, onSuccess: suspend (HttpResponse) -> Unit) {
         send(HttpMethod.Get, path, null){
             bgTask { onSuccess(it) }
         }
-    }fun get(path: String, params: List<Pair<String, String>>,onSuccess: suspend (HttpResponse) -> Unit) {
+    }
+    fun get(path: String, params: List<Pair<String, String>>, onSuccess: suspend (HttpResponse) -> Unit) {
         send(HttpMethod.Get, path, params){
             bgTask { onSuccess(it) }
         }
     }
 
-
+    suspend fun send(method: HttpMethod, path: String, params: List<Pair<String, String>>?,): HttpResponse{
+        return client.request("http://${Const.SERVER_ADDR}:${Const.IHQ_PORT}/$path") {
+            this.method = method
+            params?.forEach { (key, value) ->
+                parameter(key, value)
+            }
+        }
+    }
     fun send(method: HttpMethod, path: String, params: List<Pair<String, String>>?, onSuccess: (HttpResponse) -> Unit) = bgTask {
         try {
             val response = client.request("http://${Const.SERVER_ADDR}:${Const.IHQ_PORT}/$path") {
@@ -88,7 +92,13 @@ object IhqClient {
             if (response.status.isSuccess()) {
                 onSuccess(response)
             } else {
-                dialogErr("错误${response.status.value}：${response.bodyAsText()}")
+                val errText = when(response.status){
+                    HttpStatusCode.Unauthorized -> "账号密码错误"
+                    HttpStatusCode.NotFound -> "找不到请求"
+                    HttpStatusCode.BadRequest -> "请求格式错误，请更新客户端"
+                    else -> "未知错误"
+                }
+                dialogErr("错误 ：${errText}，${response.bodyAsText()}")
             }
             // Handle the response here
         } catch (e: Exception) {

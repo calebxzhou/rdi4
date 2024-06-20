@@ -13,9 +13,7 @@ import io.netty.buffer.ByteBuf
 class OkCPacket(buf: ByteBuf): MessageCPacket(buf) {
     override fun process() {
         val screen = mc.screen
-        if(screen is LoginScreen){
-            screen.onResponse(this)
-        }
+
 
 
         if(screen is IslandScreen){
