@@ -14,6 +14,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 /**
  * calebxzhou @ 2024-05-26 11:04
@@ -42,4 +44,15 @@ public abstract class mZombie extends Mob {
         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
 
     }
+    //更多小僵尸
+    @Overwrite
+    public static boolean getSpawnAsBabyOdds(RandomSource random) {
+        return random.nextFloat() < 0.55F;
+    }
+    //鸡骑
+    @ModifyConstant(method = "finalizeSpawn",constant = @Constant(doubleValue = 0.05))
+    private double moreChickenZombie(double constant){
+        return 0.55;
+    }
+
 }

@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import org.bson.types.ObjectId
@@ -61,7 +62,10 @@ fun ServerLevel.placeBlock(blockPos: BlockPos, block: Block) {
 }
 
 fun Fantasy.openIsland(iid: String): RuntimeWorldHandle {
-    return getOrOpenPersistentWorld(ResourceLocation("rdi", "i$iid"), RuntimeWorldConfig())
+    val conf = RuntimeWorldConfig()
+    conf.setGameRule(GameRules.RULE_KEEPINVENTORY,true)
+    conf.setGameRule(GameRules.RULE_RANDOMTICKING,50)
+    return getOrOpenPersistentWorld(ResourceLocation("rdi", "i$iid"), conf)
 }
 fun Fantasy.openIsland(iid: ObjectId): RuntimeWorldHandle {
     return  openIsland(iid.toHexString())

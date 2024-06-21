@@ -3,6 +3,7 @@ package calebxzhou.rdi.mixin.gameplay;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.EntityBasedExplosionDamageCalculator;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 /**
  * calebxzhou @ 2024-05-26 11:15
  */
-@Mixin(ExplosionDamageCalculator.class)
+@Mixin(EntityBasedExplosionDamageCalculator.class)
 public class mContainerNeverBoom {
     //有nbt数据的方块不会被炸
     @Overwrite

@@ -16,11 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class mEntitySight {
     @ModifyConstant(method = "hasLineOfSight",constant = @Constant(doubleValue = 128.0))
     private double entitySight(double d){
-        return 64;
+        return 192;
     }
     //不进行追踪 节约性能
-    @Inject(method = "hasLineOfSight",at=@At(value = "RETURN",ordinal = 2), cancellable = true)
+    /*@Inject(method = "hasLineOfSight",at=@At(value = "RETURN",ordinal = 2), cancellable = true)
     private void sight(Entity entity, CallbackInfoReturnable<Boolean> cir){
         cir.setReturnValue(true);
-    }
+    }*/
 }

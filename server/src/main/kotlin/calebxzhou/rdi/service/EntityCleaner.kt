@@ -47,7 +47,7 @@ object EntityCleaner : TimerTask() {
     override fun run() {
         mc.execute {
 
-            cleanMobs()
+            //cleanMobs()
             cleanRubbish()
         }
     }

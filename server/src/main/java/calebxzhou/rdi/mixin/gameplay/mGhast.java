@@ -58,7 +58,7 @@ class mGhastFly{
             ,constant = @Constant(doubleValue = 1.0D)
     )
     private double change(double d){
-        return 1.5D;
+        return 2.0D;
     }
 }
 @Mixin(Ghast.GhastShootFireballGoal.class)
@@ -69,23 +69,23 @@ class mGhastShoot{
     @Shadow @Final
     private Ghast ghast;
 
-    @ModifyConstant(
+    /*@ModifyConstant(
             method = "tick"
             ,constant = @Constant(intValue = 20)
     )
     private int changeCD(int constant){
         return 11;
-    }
-    @ModifyConstant(
+    }*/
+    /*@ModifyConstant(
             method = "tick"
             ,constant = @Constant(doubleValue = 4.0D)
     )
     private double changeSped(double constant){
         return 6.0D;
-    }
+    }*/
 
     //只有地狱才发火球
-    @Inject(
+    /*@Inject(
             method = "tick",
             at=@At("HEAD"),
             cancellable = true)
@@ -93,15 +93,15 @@ class mGhastShoot{
         if (ghast.level().dimensionTypeId() != BuiltinDimensionTypes.NETHER) {
             ci.cancel();
         }
-    }
-    @Inject(
+    }*/
+    /*@Inject(
             method = "tick",
             at=@At("TAIL")
     )
     private void changeCd2(CallbackInfo ci){
         if(chargeTime<=-40){
-            chargeTime=19;
+            chargeTime=9;
             this.ghast.setCharging(true);
         }
-    }
+    }*/
 }
