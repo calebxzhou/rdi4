@@ -9,7 +9,8 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 
-class RPasswordEditBox(label: String, x: Int, y: Int, width: Int) : REditBox(label, x, y, width) {
+class RPasswordEditBox(label: String, x: Int, y: Int, width: Int,) : REditBox(label, x, y, width,16) {
+    constructor(label: String) : this(label,0,0, 100)
     init {
         setHint(Component.literal(label))
     }
@@ -24,8 +25,8 @@ class RPasswordEditBox(label: String, x: Int, y: Int, width: Int) : REditBox(lab
     override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         if (!this.isVisible) return
         this as AEditBox
-        // 按alt显示密码
-        passwordVisible = isFocused && (mc pressingKey InputConstants.KEY_LALT || mc pressingKey  InputConstants.KEY_RALT)
+        // 鼠标框内显示密码
+        passwordVisible = isFocused //&& (mc pressingKey InputConstants.KEY_LALT || mc pressingKey  InputConstants.KEY_RALT)
 
         //边框
         guiGraphics.fill(

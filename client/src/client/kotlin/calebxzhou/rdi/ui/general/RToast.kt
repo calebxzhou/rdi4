@@ -1,9 +1,7 @@
-package calebxzhou.rdi.ui
+package calebxzhou.rdi.ui.general
 
-import calebxzhou.rdi.util.KLEIN_BLUE
-import calebxzhou.rdi.util.RED
-import calebxzhou.rdi.util.WHITE
-import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.ui.RMessageType
+import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.components.toasts.ToastComponent
@@ -13,7 +11,7 @@ import net.minecraft.util.Mth
 import kotlin.math.max
 
 
-class RToast(msg: String, val time: Int = 5000) : Toast {
+class RToast(val type: RMessageType, val msg: String, val time: Int = 5000) : Toast {
     var progress = 0f
     private var lastProgress = 0f
     private var lastProgressTime = 0L
@@ -23,13 +21,19 @@ class RToast(msg: String, val time: Int = 5000) : Toast {
 
     private var timeSinceLastVisible = 0L
     private var visibility = Toast.Visibility.SHOW
+    private val bgColor = when(type){
+        RMessageType.ERR -> LIGHT_RED
+        RMessageType.WARN -> LIGHT_YELLOW
+        RMessageType.INFO -> KLEIN_BLUE
+        RMessageType.OK -> LIGHT_GREEN
+    }
     override fun render(
         guiGraphics: GuiGraphics,
         toastComponent: ToastComponent,
         timeSinceLastVisible: Long
     ): Toast.Visibility {
 
-        guiGraphics.fill(3, 10, 157, 33, KLEIN_BLUE);
+        guiGraphics.fill(3, 10, 157, 33, bgColor);
         msgLines.forEachIndexed { i, str ->
             guiGraphics.drawString(mc.font, str, 18, 18 + i * 12, WHITE)
         }
@@ -38,7 +42,7 @@ class RToast(msg: String, val time: Int = 5000) : Toast {
             renderProgress(guiGraphics, timeSinceLastVisible)
         }
         checkVisibility(timeSinceLastVisible)
-        //renderDisplayTimeLeft(guiGraphics)
+        renderDisplayTimeLeft(guiGraphics)
 
         return visibility
     }

@@ -10,6 +10,7 @@ import com.mongodb.client.model.Filters.*
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SaplingBlock
@@ -200,6 +201,18 @@ object IslandService {
             }
         else{
             p1.chat("请站在树苗上")
+        }
+    }
+
+    fun toggleRain(p1: ServerPlayer) {
+        val level = p1.serverLevel()
+        if(!level.isRaining)
+            {
+                level.setWeatherParameters(0, ServerLevel.RAIN_DURATION.sample(level.random), true, true)
+                p1.ok("开始下雨")
+        } else {
+            level.setWeatherParameters( ServerLevel.RAIN_DELAY.sample(level.random), 0, false, false)
+            p1.ok("停雨")
         }
     }
 

@@ -3,10 +3,10 @@ package calebxzhou.rdi.util
 import calebxzhou.rdi.RDI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.InputStream
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.util.UUID
@@ -25,7 +25,12 @@ fun String.isValidUuid() : Boolean{
     val uuidRegex = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex()
     return uuidRegex.matches(this)
 }
-fun getFileInJarUrl(fileInJar: String): String {
+fun getFileInJarUrl(fileInJar: String): URL? {
+    return RDI::class.java
+        .classLoader
+        .getResource(fileInJar)
+}
+fun getFileInJarUrlString(fileInJar: String): String {
     return RDI::class.java
         .classLoader
         .getResource(fileInJar)!!.file.replace("%20", " ")
@@ -34,7 +39,7 @@ fun getJarResourceStream(path: String): InputStream? {
     return RDI::class.java.classLoader.getResourceAsStream(path)
 }
 fun getFileInJar(fileInJar: String): File {
-    return File(getFileInJarUrl(fileInJar))
+    return File(getFileInJarUrlString(fileInJar))
 }
 fun String.isValidHttpUrl(): Boolean {
     val urlRegex = "^(http://|https://).+".toRegex()

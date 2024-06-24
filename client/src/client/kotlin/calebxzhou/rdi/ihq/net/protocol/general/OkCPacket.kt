@@ -1,8 +1,6 @@
 package calebxzhou.rdi.ihq.net.protocol.general
 
 import calebxzhou.rdi.ui.IslandScreen
-import calebxzhou.rdi.ui.LoginScreen
-import calebxzhou.rdi.ui.RegScreen
 import calebxzhou.rdi.util.mc
 import io.netty.buffer.ByteBuf
 

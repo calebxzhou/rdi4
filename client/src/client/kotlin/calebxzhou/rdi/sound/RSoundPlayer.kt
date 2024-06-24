@@ -24,7 +24,11 @@ object RSoundPlayer {
         return player
     }
     fun stopAll(){
-        playerNow?.stop()
-        playerNow=null
+        try {
+            playerNow?.interrupt()
+            playerNow=null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

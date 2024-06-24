@@ -20,8 +20,8 @@ public class mItemEntity {
         return 20*60;
     }
     //捡起0延迟
-    @Overwrite
+    /*@Overwrite
     public void setDefaultPickUpDelay() {
         pickupDelay = 0;
-    }
+    }*/
 }

@@ -6,8 +6,9 @@ import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
 import com.mojang.blaze3d.platform.InputConstants.KEY_RETURN
+import net.minecraft.client.gui.screens.Screen
 
-abstract class ROkCancelScreen(val prevScreen: RScreen, name: String) : RScreen(name) {
+abstract class ROkCancelScreen(val prevScreen: Screen, name: String) : RScreen(name) {
     lateinit var okBtn : RButton
     lateinit var cancelBtn : RButton
 

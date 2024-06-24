@@ -27,12 +27,12 @@ public class mPlayer{
                 .add(Attributes.ATTACK_SPEED)
                 .add(Attributes.LUCK);
     }
-    @Inject(method = "canBeSeenAsEnemy" ,at=@At("HEAD"), cancellable = true)
+    /*@Inject(method = "canBeSeenAsEnemy" ,at=@At("HEAD"), cancellable = true)
     public void canBeSeenAsEnemy(CallbackInfoReturnable<Boolean> cir) {
         if((Object)this instanceof ServerPlayer sp){
             boolean result = (sp.gameMode.getGameModeForPlayer() == GameType.SURVIVAL || sp.isCreative()) && sp.canBeSeenByAnyone();
             cir.setReturnValue(result);
         }
 
-    }
+    }*/
 }

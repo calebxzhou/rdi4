@@ -19,7 +19,7 @@ data class VersionCPacket(val version: Int) :  CPacket {
     constructor(buf: ByteBuf) : this(buf.readShort().toInt())
 
     override fun process() {
-        if (version != Const.VERSION) {
+       /* if (version != Const.VERSION) {
                 popupInfo("RDI核心需要更新，即将开始下载")
 
             GlobalScope.launch {
@@ -30,6 +30,6 @@ data class VersionCPacket(val version: Int) :  CPacket {
                 exitProcess(0)
 
             }
-        }
+        }*/
     }
 }

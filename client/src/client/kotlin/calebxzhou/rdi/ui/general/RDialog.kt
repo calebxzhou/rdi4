@@ -1,9 +1,7 @@
-package calebxzhou.rdi.ui
+package calebxzhou.rdi.ui.general
 
-import calebxzhou.rdi.util.KLEIN_BLUE
-import calebxzhou.rdi.util.WHITE
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcWindowHandle
+import calebxzhou.rdi.ui.RMessageType
+import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Overlay
 import org.lwjgl.glfw.GLFW.*
@@ -11,15 +9,16 @@ import org.lwjgl.glfw.GLFW.*
 /**
  * Created  on 2023-07-23,22:05.
  */
-class RDialog private constructor(val msg: String) : Overlay() {
+enum class RDialogType{
+    CONFIRM,ALERT
+}
 
-    fun show(){
-        mc.overlay = this
-    }
+class RDialog (val msgType: RMessageType, val msg: String) : Overlay() {
+
 
     override fun render(guiGraphics: GuiGraphics, i: Int, j: Int, f: Float) {
-        val w = mc.window.width
-        val h = mc.window.height
+        val w = mcUIWidth
+        val h = mcUIHeight
         val baseH = h / 5
         guiGraphics.fill(0, baseH * 2, w, baseH * 3, KLEIN_BLUE)
         guiGraphics.drawCenteredString(
@@ -30,7 +29,7 @@ class RDialog private constructor(val msg: String) : Overlay() {
         )
         guiGraphics.drawCenteredString(
             mc.font,
-            "<右键点击：明白>",
+            "<右键点击=明白>",
             w / 2,
             h / 2 + 10,
             WHITE

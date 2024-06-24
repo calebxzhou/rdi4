@@ -1,5 +1,6 @@
 package calebxzhou.rdi.mixin;
 
+import calebxzhou.rdi.RDI;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -22,10 +23,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
@@ -164,10 +162,10 @@ class mGuardLevelTick2{
                 this.scheduleUnchecked(tick);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            ticksPerPosition = new ObjectOpenCustomHashSet(ScheduledTick.UNIQUE_TICK_HASH);
+            RDI.getRlog().warn(e.getLocalizedMessage());
+            ticksPerPosition = new ObjectOpenCustomHashSet<>(ScheduledTick.UNIQUE_TICK_HASH);
             tickQueue =  new PriorityQueue(ScheduledTick.DRAIN_ORDER);
-            pendingTicks.clear();
+            pendingTicks = new ArrayList<>();
         }
     }
 }

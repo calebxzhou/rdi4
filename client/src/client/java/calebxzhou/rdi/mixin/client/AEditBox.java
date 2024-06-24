@@ -23,6 +23,8 @@ public interface AEditBox {
     @Accessor
     int getFrame();
     @Accessor
+    boolean getIsEditable();
+    @Accessor
     Font getFont();
     @Accessor
     Component getHint();

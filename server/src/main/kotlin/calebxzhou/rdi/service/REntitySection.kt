@@ -47,7 +47,7 @@ class REntitySection<T : EntityAccess>(entityClazz: Class<T>, var chunkStatus: V
         }
 
         typeCount[entityClass] = currentCount + 1
-        storage += entity
+        storage .add(entity)
     }
 
     override fun remove(entity: T): Boolean {

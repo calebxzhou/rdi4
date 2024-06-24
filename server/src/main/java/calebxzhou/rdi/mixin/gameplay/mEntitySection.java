@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(EntitySectionStorage.class)
 public class mEntitySection {
-    @Redirect(method = "createSection",at= @At(value = "NEW", target = "(Ljava/lang/Class;Lnet/minecraft/world/level/entity/Visibility;)Lnet/minecraft/world/level/entity/EntitySection;"))
+    /*@Redirect(method = "createSection",at= @At(value = "NEW", target = "(Ljava/lang/Class;Lnet/minecraft/world/level/entity/Visibility;)Lnet/minecraft/world/level/entity/EntitySection;"))
     private EntitySection newREntitySeciton(Class entityClazz, Visibility chunkStatus){
 
         return new REntitySection(entityClazz,chunkStatus);
-    }
+    }*/
 }

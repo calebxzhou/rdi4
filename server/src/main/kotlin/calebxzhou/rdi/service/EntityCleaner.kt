@@ -22,9 +22,9 @@ object EntityCleaner : TimerTask() {
                 entity.discard()
             }
             //清理投掷物
-            if (entity is Projectile) {
+            /*if (entity is Projectile) {
                 entity.discard()
-            }
+            }*/
 
         }
     }
