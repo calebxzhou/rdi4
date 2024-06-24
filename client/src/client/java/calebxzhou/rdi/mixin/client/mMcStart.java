@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Main.class)
 public class mMcStart {
     @Inject(method = "main",at=@At("HEAD"),remap = false)
-    private static void load(String[] strings, CallbackInfo ci){
+    private static void RDI_onMcStart(String[] strings, CallbackInfo ci){
         RDI.onMcStart();
     }
 }

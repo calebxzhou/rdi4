@@ -25,7 +25,7 @@ object Gl {
             (color shr 16 and 0xFF) / 255f,
             (color shr 8 and 0xFF) / 255f,
             (color and 0xFF) / 255f,
-            1.0f
+            (color shr 24 and 0xFF) / 255f
         )
     }
 

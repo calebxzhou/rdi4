@@ -15,7 +15,7 @@ class OkCPacket(buf: ByteBuf): MessageCPacket(buf) {
 
 
         if(screen is IslandScreen){
-            screen.onOk(this)
+            //screen.onOk(this)
         }
     }
 }

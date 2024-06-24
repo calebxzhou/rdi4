@@ -35,10 +35,10 @@ abstract class ROkCancelScreen(val prevScreen: Screen, name: String) : RScreen(n
     private fun trySubmit() = try {
         onSubmit()
     }catch (e: RGeneralException) {
-        dialogErr("错误：${e.localizedMessage}")
+        alertErr("错误：${e.localizedMessage}")
     }
     catch (e: Exception) {
-        dialogErr("错误：$e")
+        alertErr("错误：$e")
         e.printStackTrace()
     }
 

@@ -2,6 +2,7 @@ package calebxzhou.rdi.model
 
 import calebxzhou.rdi.util.mc
 import com.mojang.authlib.GameProfile
+import io.ktor.client.plugins.auth.providers.*
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -17,7 +18,7 @@ data class RAccount(
     @Contextual val uuid: UUID,
     var name: String,
     var pwd: String,
-    val qq: String,
+    var qq: String,
     val score: Int = 0,
     var skin: String = "",
     var cape: String = "",
@@ -25,16 +26,27 @@ data class RAccount(
     companion object {
         @JvmStatic
         var now: RAccount? = null
+        val ihqCredential
+            get() = BasicAuthCredentials(now?.id.toString(), now?.pwd ?: "")
+
         @JvmStatic
-        var mcUserNow = now?.mcUser?:User("rdi",UUID.randomUUID().toString(),"",Optional.empty(),Optional.empty(),User.Type.MOJANG)
+        var mcUserNow = now?.mcUser ?: User(
+            "rdi",
+            UUID.randomUUID().toString(),
+            "",
+            Optional.empty(),
+            Optional.empty(),
+            User.Type.MOJANG
+        )
         val isLogin
             get() = now != null
     }
 
     @Transient
-    val profile = GameProfile(uuid,name)
+    val profile = GameProfile(uuid, name)
+
     @Transient
-    val mcUser = User(name,uuid.toString(),"",Optional.empty(),Optional.empty(),User.Type.MOJANG)
+    val mcUser = User(name, uuid.toString(), "", Optional.empty(), Optional.empty(), User.Type.MOJANG)
     val skinLocation
         get() = mc.skinManager.getInsecureSkinLocation(profile)
 }

@@ -11,8 +11,9 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 
 abstract class RScreen(private val name: String) : Screen(Component.literal(name)) {
-    var clearColor = true
-    var showTitle = true
+    open var clearColor = true
+    open var showTitle = true
+    open var showCloseButton = true
     private val widgets = arrayListOf<AbstractWidget>()
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -31,7 +32,12 @@ abstract class RScreen(private val name: String) : Screen(Component.literal(name
     open fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {}
     override fun init() {
         super.init()
+        if(showCloseButton){
+            widgets += RTextButton(5,5,"←返回/Esc"){onClose()}
+        }
         widgets.forEach { addRenderableWidget(it) }
+
+
     }
 
     fun registerWidget(widget: AbstractWidget) {

@@ -1,9 +1,7 @@
 package calebxzhou.rdi.sound
 
 import calebxzhou.rdi.log
-import calebxzhou.rdi.util.dialogErr
 import calebxzhou.rdi.util.getJarResourceStream
-import org.lwjgl.openal.AL10
 import java.io.InputStream
 
 object RSoundPlayer {

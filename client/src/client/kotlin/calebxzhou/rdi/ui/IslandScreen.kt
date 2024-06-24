@@ -8,7 +8,6 @@ import calebxzhou.rdi.ihq.net.protocol.island.IslandInfoCPacket
 import calebxzhou.rdi.ihq.net.protocol.island.IslandMySPacket
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.util.dialogInfo
 import calebxzhou.rdi.util.drawTextAtCenter
 import net.minecraft.client.gui.GuiGraphics
 
@@ -44,7 +43,4 @@ class IslandScreen : RScreen("岛屿管理") {
         this.packet = packet
     }
 
-    fun onOk(packet: OkCPacket) {
-        dialogInfo(packet.msg)
-    }
 }

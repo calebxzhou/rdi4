@@ -1,5 +1,6 @@
 package calebxzhou.rdi.util
 
+import calebxzhou.rdi.log
 import java.io.*
 
 /**
@@ -11,10 +12,15 @@ object LocalStorage {
     init {
         val file = File("rdi_kv.ser")
         if (file.exists()) {
-            val ois = ObjectInputStream(FileInputStream(file))
-            @Suppress("UNCHECKED_CAST")
-            kv = ois.readObject() as HashMap<String, String>
-            ois.close()
+            try {
+                val ois = ObjectInputStream(FileInputStream(file))
+                @Suppress("UNCHECKED_CAST")
+                kv = ois.readObject() as HashMap<String, String>
+                ois.close()
+            } catch (e: Exception) {
+                log.error("读取缓存出错：{}",e.toString())
+                log.error("重新创建缓存")
+            }
         }
     }
     operator fun plusAssign(pair: Pair<String,String>){
@@ -28,5 +34,10 @@ object LocalStorage {
         val oos = ObjectOutputStream(FileOutputStream("rdi_kv.ser"))
         oos.writeObject(kv)
         oos.close()
+    }
+
+    operator fun set(key: String, value: String) {
+        kv[key] = value
+        write()
     }
 }

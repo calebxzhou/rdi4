@@ -2,9 +2,10 @@ package calebxzhou.rdi.ihq.net
 
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.net.protocol.SPacket
+import calebxzhou.rdi.log
 import calebxzhou.rdi.model.RAccount
+import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.util.bgTask
-import calebxzhou.rdi.util.dialogErr
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
@@ -38,10 +39,7 @@ object IhqClient {
         install(Auth) {
             basic {
                 credentials {
-                    BasicAuthCredentials(
-                        username = RAccount.now?.id?.toString() ?: "",
-                        password = RAccount.now?.pwd ?: ""
-                    )
+                    RAccount.ihqCredential
                 }
                 realm = "Access to the '/' path"
             }
@@ -93,17 +91,20 @@ object IhqClient {
                 onSuccess(response)
             } else {
                 val errText = when(response.status){
-                    HttpStatusCode.Unauthorized -> "账号密码错误"
+                    HttpStatusCode.Unauthorized -> "未登录/用户名密码错误"
+                    HttpStatusCode.Conflict -> "已存在"
                     HttpStatusCode.NotFound -> "找不到请求"
                     HttpStatusCode.BadRequest -> "请求格式错误，请更新客户端"
                     else -> "未知错误"
                 }
-                dialogErr("错误 ：${errText}，${response.bodyAsText()}")
+                    alertErr("错误：${errText}，${response.bodyAsText()}")
+                    log.error("${response.status}")
+
             }
             // Handle the response here
         } catch (e: Exception) {
             e.printStackTrace()
-            dialogErr(e.localizedMessage)
+            alertErr(e.localizedMessage)
         }
     }
 

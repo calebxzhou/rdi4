@@ -1,12 +1,6 @@
 package calebxzhou.rdi.ui.layout
 
-import calebxzhou.rdi.model.RAccount
-import calebxzhou.rdi.ui.ProfileScreen
-import calebxzhou.rdi.ui.RChangePwdScreen
-import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.util.goScreen
-import calebxzhou.rdi.util.mc
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.layouts.LinearLayout
 
