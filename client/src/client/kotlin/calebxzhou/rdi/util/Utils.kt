@@ -41,6 +41,14 @@ fun getJarResourceStream(path: String): InputStream? {
 fun getFileInJar(fileInJar: String): File {
     return File(getFileInJarUrlString(fileInJar))
 }
+fun humanReadableByteCount(bytes: Long, si: Boolean = false): String {
+    val unit = if (si) 1000 else 1024
+    if (bytes < unit) return "$bytes B"
+    val exp = (Math.log(bytes.toDouble()) / Math.log(unit.toDouble())).toInt()
+    val prefix = (if (si) "kMGTPE" else "KMGTPE")[exp-1].toString() //+ (if (si) "" else "i")
+    val result = bytes / Math.pow(unit.toDouble(), exp.toDouble())
+    return String.format("%.2f %s", result, prefix)
+}
 fun String.isValidHttpUrl(): Boolean {
     val urlRegex = "^(http://|https://).+".toRegex()
     return this.matches(urlRegex)

@@ -14,6 +14,7 @@
     "mLoadingOverlay",
     "mMcStart",
     "mPauseScreen",
+    "mSaveBandwidth",
     "mScreenTransition",
     "mSkyBlue",
     "mTabPlayerHud",
@@ -27,7 +28,9 @@
   },
   "mixins": [
     "mAlwaysOfflineMode",
+    "mConnection",
     "mLoginProtocol1",
+    "mNetMetrics",
     "mNoChatBrackets",
     "mPlayerUuid",
     "mProtocolVersion",

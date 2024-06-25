@@ -1,5 +1,6 @@
 package calebxzhou.rdi.mixin.client;
 
+import calebxzhou.rdi.service.NetMetrics;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -9,8 +10,11 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * calebxzhou @ 2024-06-20 22:49
@@ -29,6 +33,10 @@ public abstract class mGui {
             private int heartHeight(int constant){
                 return 50;
             }*/
+    @Inject(method = "render",at=@At("HEAD"))
+    private void RDI$renderNetMetrics(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci){
+        NetMetrics.render(guiGraphics);
+    }
     @Overwrite
     private void renderHearts(
             GuiGraphics guiGraphics,

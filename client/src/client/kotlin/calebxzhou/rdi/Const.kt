@@ -13,7 +13,7 @@ object Const {
 
     const val SERVER_PORT = 38410
     const val IHQ_PORT = 38411
-    val SERVER_ADDR = if(DEBUG)"127.0.0.1" else "sy6.calebxzhou.cn"
+    val SERVER_ADDR = if(DEBUG)"127.0.0.1" else "rdi.calebxzhou.cn"
     val SERVER_INET_ADDR = InetSocketAddress(SERVER_ADDR, SERVER_PORT)
     val IHQ_INET_ADDR = InetSocketAddress(SERVER_ADDR, IHQ_PORT)
     //版本号与协议号

@@ -24,9 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class mSaveBandwidth {
     @Unique
     int tickAmount = 0;
-    //两秒发一次掉落物的
+    //3秒发一次掉落物的
     @Unique
-    int sendTickAmount = 40;
+    int sendTickAmount = 60;
 
     @Redirect(method = "tick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerEntity;sendChanges()V"))
     private void thottle(ServerEntity instance) {

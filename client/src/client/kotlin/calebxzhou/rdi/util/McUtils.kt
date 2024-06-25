@@ -26,7 +26,8 @@ fun mcMainThread(run: () -> Unit) {
     mc.execute(run)
 }
 
-val mcFont: () -> Font = { mc.font }
+val mcFont
+    get() =  mc.font 
 val mcWindowHandle
     get() = mc.window.window
 val mcUIWidth
@@ -64,19 +65,19 @@ fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String, height: Int) {
 }
 
 fun Screen.drawTextAt(gr: GuiGraphics, text: String, x: Int, y: Int) {
-    val font = mcFont()
+    val font = mcFont
     gr.drawString(font, text, x, y, 0xFFFFFF, false);
 }
 
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String, height: Int, color: Int) {
 
-    val font = mcFont()
+    val font = mcFont
     gr.drawString(font, text, width / 2 - font.width(text) / 2, height, color, false);
 }
 
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: Component, height: Int) {
 
-    val font = mcFont()
+    val font = mcFont
     gr.drawString(font, text, width / 2 - font.width(text) / 2, height, 0xFFFFFF, false);
 }
 
@@ -98,7 +99,9 @@ fun showToast(msg: String) {
 fun mcTextWidthOf(text: String): Int {
     return mc.font.width(text)
 }
-
+fun mcTextWidthOf(text: Component): Int {
+    return mc.font.width(text)
+}
 object McUtils {
     @JvmStatic
     fun getWindowSize(screenW: Int, screenH: Int): Pair<Int, Int> {
