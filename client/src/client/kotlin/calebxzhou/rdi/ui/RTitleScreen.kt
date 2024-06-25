@@ -3,13 +3,18 @@ package calebxzhou.rdi.ui
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.net.IhqClient
 import calebxzhou.rdi.launcher.SplashScreen
+import calebxzhou.rdi.launcher.SplashScreen.height
+import calebxzhou.rdi.launcher.SplashScreen.width
 import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
+import calebxzhou.rdi.ui.RLoadingOverlay.Companion
+import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.confirm
+import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
@@ -40,19 +45,17 @@ class RTitleScreen : RScreen("主页") {
     override var showTitle = false
     override var showCloseButton = false
     val CUBE_MAP: CubeMap = CubeMap(ResourceLocation("rdi", "textures/gui/title/background/panorama"))
-
+    val LOGO: ResourceLocation =
+        ResourceLocation("rdi", "textures/gui/title/mojangstudios.png")
     private
     val PANORAMA_OVERLAY: ResourceLocation =
         ResourceLocation("rdi", "textures/gui/title/background/panorama_overlay.png")
+    val SCREEN_BG: ResourceLocation =
+        ResourceLocation("rdi", "textures/screen_bg.png")
     private val panorama = PanoramaRenderer(CUBE_MAP)
     var shiftMode = false
     var ctrlMode = false
 
-    lateinit var play: RTextButton
-    lateinit var settings: RTextButton
-    lateinit var about: RTextButton
-    lateinit var quitBtn: RTextButton
-    lateinit var profileBtn: RTextButton
     private val regScreen = formScreen(this, "注册账号") {
         text("name", "昵称", 16) {
             if (it.value.length in 3..16) {
@@ -71,11 +74,11 @@ class RTitleScreen : RScreen("主页") {
         }
         pwd("pwd", "密码")
         pwd("cpwd", "确认密码")
-        submit { screen,inputs ->
+        submit { screen, inputs ->
             val pwd = inputs["pwd"]!!
             val cpwd = inputs["cpwd"]!!
             if (pwd != cpwd) {
-                alertErr("确认密码与密码不一致",screen)
+                alertErr("确认密码与密码不一致", screen)
                 return@submit
             }
             val qq = inputs["qq"]!!
@@ -98,7 +101,7 @@ class RTitleScreen : RScreen("主页") {
     private val loginScreen = formScreen(this, "登录账号") {
         text("usr", "QQ号/昵称/ID", 16)
         pwd("pwd", "密码")
-        submit { screen,inputs ->
+        submit { screen, inputs ->
             val usr = inputs["usr"]!!
             val pwd = inputs["pwd"]!!
             IhqClient.get(
@@ -117,77 +120,67 @@ class RTitleScreen : RScreen("主页") {
 
         }
     }.build()
-
+    val optScreen = ROptionScreen(
+        this@RTitleScreen,
+        "注册新账号" to {
+            mc goScreen regScreen
+        },
+        "登录已有账号" to {
+            mc goScreen loginScreen
+        },
+    )
     public override fun init() {
+        SplashScreen.hide()
+        val account = RAccount.now?:RAccount.DEFAULT
         //关闭音乐
         mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
-
-        play = RTextButton(width - 90, height - 15, "开始") {
-            SplashScreen.hide()
-            if (shiftMode) {
-                openFlatLevel()
-            } else if (ctrlMode) {
-                mc goScreen SelectWorldScreen(this)
-            } else {
-                if (RAccount.now == null) {
-                    mc goScreen ROptionScreen(
-                        this,
-                        "注册新账号" to {
-                            mc goScreen regScreen
-                        },
-                        "登录已有账号" to { mc goScreen loginScreen },
-                    )
-                } else {
-                    RSoundPlayer.stopAll()
-                    ConnectScreen.startConnecting(
-                        this,
-                        mc,
-                        ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
-                        Const.SERVER_DATA,
-                        false
-                    )
-
-                }
-            }
+        RPlayerHeadButton(account){
+            if(account==RAccount.DEFAULT)
+                mc goScreen optScreen
+            else
+            mc goScreen RProfileScreen(account)
+        }.apply {
+            x = mcUIWidth/2-width/2
+            y=2
         }.also { registerWidget(it) }
+        RGridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17).apply {
+            row(
+                5,
+                RTextButton("进入服务器") {
+                    if (RAccount.now == null) {
 
-        settings = RTextButton(width - 60, height - 15, "设置") {
-            if (shiftMode) {
-                mc goScreen ModsScreen(this)
-            } else {
-                mc goScreen OptionsScreen(this, mc.options)
-            }
-        }.also { registerWidget(it) }
+                        mc goScreen optScreen
+                    } else {
+                        RSoundPlayer.stopAll()
+                        ConnectScreen.startConnecting(
+                            this@RTitleScreen,
+                            mc,
+                            ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
+                            Const.SERVER_DATA,
+                            false
+                        )
 
-        about = RTextButton(width - 30, height - 15, "关于") {
-            if (shiftMode) {
-                mc goScreen JoinMultiplayerScreen(this)
-            } else {
-                //mc goScreen AccountScreen()
-            }
-        }.also { registerWidget(it) }
+                    }
 
-        quitBtn = RTextButton(width - 25, 5, "登出") {
-            RAccount.now?.let {
-                confirm( "真的要退出账号${it.name}吗？",this) {
-                    RAccount.now = null
-                    toastOk("成功退出登录！")
-                    mc goScreen RTitleScreen()
-                }
-            }
-        }.also {
-            it.visible = RAccount.isLogin
-            registerWidget(it)
-        }
 
-        profileBtn = RTextButton(width - 70, 5, "个人信息") {
-            RAccount.now?.let {
-                mc goScreen RProfileScreen(it)
-            }
-        }.also {
-            it.visible = RAccount.isLogin
-            registerWidget(it)
-        }
+                },
+                RTextButton("Mod列表") {
+                    mc goScreen ModsScreen(this@RTitleScreen)
+                },
+                RTextButton("设置") {
+                    mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
+                },
+                RTextButton("单人模式") {
+                    if (shiftMode)
+                        mc goScreen SelectWorldScreen(this@RTitleScreen)
+                    else
+                        openFlatLevel()
+                },
+                RTextButton("致谢") {
+                    mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
+                },
+            )
+        }.visitWidgets { registerWidget(it) }
 
 
         super.init()
@@ -198,21 +191,23 @@ class RTitleScreen : RScreen("主页") {
     }
 
     override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        panorama.render(partialTick, Mth.clamp(1f, 0.0f, 1.0f))
+        //panorama.render(partialTick, Mth.clamp(1f, 0.0f, 1.0f))
         RenderSystem.enableBlend()
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
-        guiGraphics.blit(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128)
+        //guiGraphics.blit(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128)
+        guiGraphics.blit(SCREEN_BG, 0, 0, 0f,0f, mcUIWidth,mcUIHeight, mcUIWidth, mcUIHeight)
+        guiGraphics.blit(LOGO, mcUIWidth/2-100, mcUIHeight/2-20, -0.0625f, 0.0f, 120, 60, 120, 120)
+        guiGraphics.blit(LOGO, mcUIWidth/2 -30, mcUIHeight/2-20, 0.0625f, 60.0f, 120, 60, 120, 120)
+
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //下方的灰条
         guiGraphics.fill(0, height - 20, width, height, 0xAA000000.toInt())
-        drawTextAt(guiGraphics, Const.VERSION_STR, 10, height - 15)
+        //drawTextAt(guiGraphics, Const.VERSION_STR, 10, height - 15)
 //上方的灰条（已登录
-        RAccount.now?.let {
-            guiGraphics.fill(0, 0, width, 20, 0xAA000000.toInt())
-            PlayerFaceRenderer.draw(guiGraphics, it.skinLocation, 4, 2, 15)
-            drawTextAt(guiGraphics, it.name, 25, 5)
-        }
-        //登出 个人信息
+        guiGraphics.fill(width/2-80, 0, width/2+80, 20, 0xAA000000.toInt())
+        /*RAccount.now?.let {
+            PlayerFaceRenderer.draw(guiGraphics, it.skinLocation, width/2-40, 2, 15)
+        }*/
 
 
     }
@@ -220,9 +215,6 @@ class RTitleScreen : RScreen("主页") {
     override fun tick() {
         shiftMode = mc pressingKey InputConstants.KEY_LSHIFT
         ctrlMode = mc pressingKey InputConstants.KEY_LCONTROL
-        if (mc pressingKey InputConstants.KEY_RETURN) {
-            play.onClick(0.0, 0.0)
-        }
     }
 
     private fun openFlatLevel() {

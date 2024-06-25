@@ -31,10 +31,10 @@ class mFastCreateMojangService {
      * @author calebxzhou
      * @reason 永远离线
      */
-    @Overwrite
+   /* @Overwrite
     private UserApiService createUserApiService(YggdrasilAuthenticationService yggdrasilAuthenticationService, GameConfig gameConfig) {
         return UserApiService.OFFLINE;
-    }
+    }*/
 }
 @Mixin(ProfileKeyPairManager.class)
 interface mFastCreateMojangService2{

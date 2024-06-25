@@ -31,6 +31,7 @@
     "mConnection",
     "mLoginProtocol1",
     "mNetMetrics",
+    "mNetMetrics2",
     "mNoChatBrackets",
     "mPlayerUuid",
     "mProtocolVersion",

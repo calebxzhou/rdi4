@@ -2,19 +2,11 @@ package calebxzhou.rdi.mixin.client;
 
 import calebxzhou.rdi.RDI;
 import calebxzhou.rdi.model.RAccount;
-import calebxzhou.rdi.util.LocalStorage;
-import net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl;
-import net.minecraft.client.User;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**

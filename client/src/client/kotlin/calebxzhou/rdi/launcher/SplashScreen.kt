@@ -24,6 +24,7 @@ object SplashScreen {
     init {
         val originalImage = ImageIcon(getFileInJarUrl("assets/rdi/textures/splash_screen.jpg")).image
         val scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH)
+        //splash.isAlwaysOnTop = true
         splash.layout = BorderLayout()
         splash.contentPane.background = Color(PINE_GREEN)
         splash.contentPane.add(JLabel(ImageIcon(scaledImage)), BorderLayout.CENTER)
@@ -54,6 +55,6 @@ object SplashScreen {
         }*/
     }
     fun hide(){
-        splash.dispose()
+        splash.isVisible =false
     }
 }

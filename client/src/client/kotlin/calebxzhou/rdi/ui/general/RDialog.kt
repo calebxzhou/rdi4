@@ -27,7 +27,7 @@ fun alertErr(msg: String, prevScreen: Screen) {
     dialog(msg, prevScreen, msgType = RMessageType.ERR)
 }
 fun alertErr(msg: String) {
-    dialog(msg, RTitleScreen(), msgType = RMessageType.ERR)
+    dialog(msg, null, msgType = RMessageType.ERR)
 }
 fun alertOk(msg: String, prevScreen: Screen) {
     dialog(msg, prevScreen, msgType = RMessageType.OK)
@@ -35,12 +35,12 @@ fun alertOk(msg: String, prevScreen: Screen) {
 
 fun dialog(
     msg: String,
-    prevScreen: Screen,
+    prevScreen: Screen?,
     diagType: RDialogType = RDialogType.ALERT,
     msgType: RMessageType = RMessageType.INFO,
     yesHandler: () -> Unit = {},
 ) {
-    if (isMcStarted) {
+    if (isMcStarted && prevScreen != null) {
         mc goScreen RDialog(msg, prevScreen, diagType, msgType, yesHandler)
     } else {
         when (diagType) {

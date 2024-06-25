@@ -4,6 +4,7 @@ import calebxzhou.rdi.util.*
 import io.netty.buffer.ByteBuf
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.network.PacketListener
 import net.minecraft.network.protocol.Packet
 import java.util.*
 
@@ -38,6 +39,7 @@ init {
     var rxKBps = 0f
     val rxKBpsStr
         get() = if(rxKBps>0.01f)"${String.format("%.2f",rxKBps)}K/s" else "总"+humanReadableByteCount(totalRxBytes)
+
     private val recordsTx = hashMapOf<Int,PacketRecord>()
     private val recordsRx = hashMapOf<Int,PacketRecord>()
     @JvmStatic
@@ -53,16 +55,29 @@ init {
         }
     }
     @JvmStatic
+    fun onPacketDecode(packetId: Int, packet: Packet<*>, byteBuf: ByteBuf) {
+        totalRxBytes += byteBuf.readerIndex()
+        recordsRx[packetId]?.let { record->
+            record.amount++
+            record.size += byteBuf.readerIndex()
+            recordsRx[packetId] = record
+        }?:let {
+            val record = PacketRecord(packet.javaClass)
+            recordsRx += packetId to record
+        }
+    }
+    @JvmStatic
     fun render(guiGraphics: GuiGraphics){
         val tx = mcText(
             "↑ $txKBpsStr"
-        ).withStyle(ChatFormatting.AQUA)
-        //${}
+        ).withStyle(ChatFormatting.GOLD)
         val rx = mcText("↓ $rxKBpsStr")
             .withStyle(ChatFormatting.GREEN)
         val text = tx.append(" ").append(rx)
         guiGraphics.drawString(mcFont,
             text,
-            mcUIWidth - mcTextWidthOf(text),0,0x000000,true)
+            mcUIWidth - mcTextWidthOf(text), mcUIHeight-10,0x000000,true)
     }
+
+
 }
