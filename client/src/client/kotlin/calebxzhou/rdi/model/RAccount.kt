@@ -20,11 +20,11 @@ data class RAccount(
     var pwd: String,
     var qq: String,
     val score: Int = 0,
-    var skin: String = "https://pic.imgdb.cn/item/6673efdcd9c307b7e9bc8a62.png",
-    var cape: String = "https://pic.imgdb.cn/item/6673f02ed9c307b7e9bd395c.png",
+    var skin: String?,// = "https://pic.imgdb.cn/item/6673efdcd9c307b7e9bc8a62.png",
+    var cape: String?,// = "https://pic.imgdb.cn/item/6673f02ed9c307b7e9bd395c.png",
 ) {
     companion object {
-        val DEFAULT = RAccount(ObjectId(), UUID.randomUUID(),"未登录","123456","12345",0)
+        val DEFAULT = RAccount(ObjectId(), UUID.randomUUID(),"未登录","123456","12345",0,null,null)
         @JvmStatic
         var now: RAccount? = null
         val ihqCredential

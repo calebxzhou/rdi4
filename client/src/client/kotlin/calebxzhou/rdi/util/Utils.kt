@@ -1,6 +1,7 @@
 package calebxzhou.rdi.util
 
 import calebxzhou.rdi.RDI
+import calebxzhou.rdi.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -9,14 +10,20 @@ import java.io.InputStream
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 /**
  * calebxzhou @ 2024-06-02 10:03
  */
 val scope = CoroutineScope(Dispatchers.IO)
 fun bgTask(block: suspend CoroutineScope.() -> Unit){
-    scope.launch { block() }
+    scope.launch { try {
+        block()
+    } catch (e: Exception) {
+        log.error("bgtask error: $e")
+        e.printStackTrace()
+    }
+    }
 }
 fun String.isNumber(): Boolean {
     return this.isNotEmpty() && this.all { it.isDigit() }
@@ -40,6 +47,12 @@ fun getJarResourceStream(path: String): InputStream? {
 }
 fun getFileInJar(fileInJar: String): File {
     return File(getFileInJarUrlString(fileInJar))
+}
+fun String.decodeBase64(): String {
+    // Decode the Base64 string to a byte array
+    val decodedBytes = Base64.getDecoder().decode(this)
+    // Convert the byte array to a String
+    return String(decodedBytes, Charsets.UTF_8)
 }
 fun humanReadableByteCount(bytes: Long, si: Boolean = false): String {
     val unit = if (si) 1000 else 1024

@@ -5,6 +5,6 @@ import calebxzhou.rdi.util.mcText
 import net.minecraft.client.gui.components.Checkbox
 import net.minecraft.network.chat.Component
 
-class RCheckbox(x: Int, y: Int, message: String) :
-    Checkbox(x, y, mcFont.width(message)+50, 80, mcText(message), false) {
+class RCheckbox(message: String,x: Int=0, y: Int=0, ) :
+    Checkbox(x, y, mcFont.width(message)+50, 20, mcText(message), false) {
 }

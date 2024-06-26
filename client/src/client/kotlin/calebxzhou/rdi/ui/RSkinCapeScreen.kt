@@ -25,11 +25,6 @@ class RSkinCapeScreen(prevScreen: RScreen) : ROkCancelScreen(prevScreen,"皮肤�
             alertErr("皮肤/披风格式错误，你需要填写图床链接\nhttp开头，.png结尾")
             return
         }
-        IhqClient.put("profile", listOf("skin" to skin,"cape" to cape)){
-            showToast("成功修改皮肤披风")
-            RAccount.now?.skin = skin
-            RAccount.now?.cape = cape
-            mc goScreen RProfileScreen(RAccount.now!!)
-        }
+
     }
 }

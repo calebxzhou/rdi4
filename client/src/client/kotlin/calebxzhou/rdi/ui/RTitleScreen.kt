@@ -74,15 +74,15 @@ class RTitleScreen : RScreen("主页") {
         }
         pwd("pwd", "密码")
         pwd("cpwd", "确认密码")
-        submit { screen, inputs ->
-            val pwd = inputs["pwd"]!!
-            val cpwd = inputs["cpwd"]!!
+        submit {
+            val pwd = it.formData["pwd"]!!
+            val cpwd = it.formData["cpwd"]!!
             if (pwd != cpwd) {
-                alertErr("确认密码与密码不一致", screen)
+                alertErr("确认密码与密码不一致", it.screen)
                 return@submit
             }
-            val qq = inputs["qq"]!!
-            val name = inputs["name"]!!
+            val qq = it.formData["qq"]!!
+            val name = it.formData["name"]!!
             IhqClient.post(
                 "register", listOf(
                     "pwd" to pwd,
@@ -98,12 +98,12 @@ class RTitleScreen : RScreen("主页") {
         }
 
     }.build()
-    private val loginScreen = formScreen(this, "登录账号") {
+    val loginScreen = formScreen(this, "登录账号") {
         text("usr", "QQ号/昵称/ID", 16)
         pwd("pwd", "密码")
-        submit { screen, inputs ->
-            val usr = inputs["usr"]!!
-            val pwd = inputs["pwd"]!!
+        submit {
+            val usr = it.formData["usr"]!!
+            val pwd = it.formData["pwd"]!!
             IhqClient.get(
                 "login", listOf(
                     "usr" to usr,

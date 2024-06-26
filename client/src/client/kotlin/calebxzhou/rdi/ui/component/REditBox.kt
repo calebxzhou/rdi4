@@ -14,6 +14,9 @@ val REQUIRED_VALIDATOR: REditBoxValidator = {box: REditBox ->
         REditBoxValidationResult(true)
     }
 }
+val DEFAULT_VALIDATOR: REditBoxValidator = {
+        REditBoxValidationResult(true)
+}
 open class REditBox(
      val label: String,
      x: Int,
@@ -22,9 +25,9 @@ open class REditBox(
      val length: Int = 16,
     val validator: REditBoxValidator = REQUIRED_VALIDATOR
 ) : EditBox(mcFont, x, y, width, 20, Component.literal(label)) {
-    constructor(label: String, length: Int) : this(label, 0, 0, length * 10, length)
-    constructor(label: String, length: Int,validator: REditBoxValidator) : this(label, 0, 0, length * 10, length,validator)
-
+    constructor(label: String, length: Int) : this(label, 0, 0, (length * 10).coerceAtMost(300), length)
+    constructor(label: String, length: Int,validator: REditBoxValidator) : this(label, 0, 0, (length * 10).coerceAtMost(300), length,validator)
+    var isNullable = false
     init {
         setHint(Component.literal(label))
         setMaxLength(length)
