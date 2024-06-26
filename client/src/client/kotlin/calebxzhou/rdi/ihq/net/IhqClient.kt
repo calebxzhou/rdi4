@@ -35,7 +35,8 @@ object IhqClient {
         })
         .bind(0)
         .syncUninterruptibly()
-    val client = HttpClient(CIO) {
+    val client
+    get() = HttpClient(CIO) {
         install(Auth) {
             basic {
                 credentials {

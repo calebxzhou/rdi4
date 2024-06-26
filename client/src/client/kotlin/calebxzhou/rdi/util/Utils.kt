@@ -2,6 +2,7 @@ package calebxzhou.rdi.util
 
 import calebxzhou.rdi.RDI
 import calebxzhou.rdi.log
+import calebxzhou.rdi.ui.general.alertErr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ fun bgTask(block: suspend CoroutineScope.() -> Unit){
         block()
     } catch (e: Exception) {
         log.error("bgtask error: $e")
+        alertErr("${e.localizedMessage}")
         e.printStackTrace()
     }
     }
@@ -31,6 +33,10 @@ fun String.isNumber(): Boolean {
 fun String.isValidUuid() : Boolean{
     val uuidRegex = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex()
     return uuidRegex.matches(this)
+}
+fun String.extractDomain(): String{
+    val uri = java.net.URI(this)
+    return "${uri.scheme}://${uri.host}/"
 }
 fun getFileInJarUrl(fileInJar: String): URL? {
     return RDI::class.java

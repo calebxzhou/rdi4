@@ -13,6 +13,7 @@ import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.general.alertErr
+import calebxzhou.rdi.ui.general.alertInfo
 import calebxzhou.rdi.ui.general.confirm
 import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.util.*
@@ -177,7 +178,7 @@ class RTitleScreen : RScreen("主页") {
                         openFlatLevel()
                 },
                 RTextButton("致谢") {
-                    mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
+                    alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe",this@RTitleScreen)
                 },
             )
         }.visitWidgets { registerWidget(it) }

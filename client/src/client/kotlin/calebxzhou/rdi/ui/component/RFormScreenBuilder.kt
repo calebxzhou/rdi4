@@ -62,6 +62,11 @@ class RFormScreenBuilder(val prevScreen: Screen, val title: String) {
                 super.init()
             }
 
+            override fun tick() {
+                if(okBtn.isHoveredOrFocused){
+                    okBtn.active = true
+                }
+            }
             override fun onSubmit() {
                 okBtn.active = false
                 widgets.forEach { (id, widget) ->

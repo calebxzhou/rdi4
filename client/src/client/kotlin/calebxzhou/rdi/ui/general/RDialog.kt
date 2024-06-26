@@ -73,6 +73,8 @@ class RDialog(
     override var showTitle = false
     lateinit var okBtn: RButton
     lateinit var cancelBtn: RButton
+    val lines = msg.split("\n")
+    var startY = mcUIHeight/2-lines.size*10
     override fun init() {
         okBtn = RButton(width / 2 - 50, mcUIHeight / 2 + 30, 50, "确定") { onYes() }.also { registerWidget(it) }
         cancelBtn = RButton(width / 2, mcUIHeight / 2 + 30, 50, "取消") { onNo() }.also { registerWidget(it) }
@@ -83,6 +85,7 @@ class RDialog(
         }
 
         super.init()
+
     }
 
     private fun onYes() {
@@ -117,7 +120,9 @@ class RDialog(
                 RMessageType.WARN -> LIGHT_YELLOW
             }
         )
-        drawTextAtCenter(guiGraphics, msg, mcUIHeight / 2 - 15)
+        lines.forEachIndexed { i,line->
+        drawTextAtCenter(guiGraphics, line, startY + i * 10)
+        }
         super.render(guiGraphics, mouseX, mouseY, partialTick)
 
 

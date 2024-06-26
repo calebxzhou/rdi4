@@ -19,7 +19,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.PlayerFaceRenderer
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 
 class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
@@ -37,13 +36,30 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
     private val picServerSkinScreen
         get() = formScreen(this, "导入图床皮肤披风") {
             text("skin", "皮肤链接", 256, defaultValue = account.skin, nullable = true)
-            text("cape", "披风", 256, defaultValue = account.cape, nullable = true)
+            text("cape", "披风链接", 256, defaultValue = account.cape, nullable = true)
             submit {
                 bgTask {
                     setPicServerSkinCape(it)
                 }
             }
         }.build()
+    private val blessingSkinScreen
+        get() = formScreen(this, "导入皮肤站皮肤披风") {
+            text("skin", "皮肤链接", 256,   nullable = true)
+            text("cape", "披风链接", 256,   nullable = true)
+            submit {
+                bgTask {
+                    setBlessingServerSkinCape(it)
+                }
+            }
+        }.build()
+    private suspend fun validateBlessingSkinCapeUrl(url:String,handler: RFormScreenSubmitHandler): Boolean{
+        if (!validateSkinCapeUrl(url, handler)) {
+            return false
+        }
+
+        return true
+    }
     private suspend fun validateSkinCapeUrl(url:String,handler: RFormScreenSubmitHandler): Boolean{
         if (!url.isValidHttpUrl()) {
             alertErr("链接必须http开头",handler.screen)
@@ -83,7 +99,63 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
         }
 
     }
+    private suspend fun setBlessingServerSkinCape(handler: RFormScreenSubmitHandler) {
+        var skin = handler.formData["skin"]?:""
+        var cape = handler.formData["cape"]?:""
+        if (skin.isNotBlank()) {
+            if(!skin.isValidHttpUrl()){
+                alertErr("皮肤链接格式错误",handler.screen)
+                return
+            }
+            if(!skin.contains("/skinlib/show/")){
+                alertErr("仅支持blessing skin架构的皮肤站", handler.screen)
+                return
+            }
+            val url = skin.extractDomain() + "texture/" + skin.substringAfterLast('/')
+            val resp = HttpClient().get(url)
+            if (!resp.status.isSuccess()) {
+                alertErr("获取皮肤失败：${resp.status}\n",handler.screen)
+                log.error(resp.status.toString()+""+resp.bodyAsText())
+                return
+            }
+            val hash = Json.parseToJsonElement(resp.bodyAsText().also { log.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content?:let {
+                alertErr("无法获取皮肤hash数据",handler.screen)
+                return
+            }
+            skin = skin.extractDomain()+"textures/"+hash
+        }
 
+        if (cape.isNotBlank()) {
+            if(!cape.isValidHttpUrl()){
+                alertErr("披风链接格式错误",handler.screen)
+                return
+            }
+            if(!cape.contains("/skinlib/show/")){
+                alertErr("仅支持blessing skin架构的皮肤站", handler.screen)
+                return
+            }
+            val resp = HttpClient().get(cape.extractDomain()+"texture/"+cape.substringAfterLast('/'))
+            if (!resp.status.isSuccess()) {
+                alertErr("获取披风失败：${resp.status}\n",handler.screen)
+                log.error(resp.status.toString()+""+resp.bodyAsText())
+                return
+            }
+            val hash = Json.parseToJsonElement(resp.bodyAsText().also { log.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content?:let {
+                alertErr("无法获取披风hash数据",handler.screen)
+                return
+            }
+            cape = cape.extractDomain()+"textures/"+hash
+        }
+
+
+        IhqClient.put("profile", listOf("skin" to skin,"cape" to cape)){
+            showToast("成功修改皮肤披风")
+            RAccount.now?.skin = skin
+            RAccount.now?.cape = cape
+            mc goScreen RProfileScreen(RAccount.now!!)
+        }
+
+    }
     private suspend fun setMojangSkinCape(handler: RFormScreenSubmitHandler) {
         val name = handler.formData["name"]
         val importSkin = handler.formData["skin"] == "true"
@@ -197,7 +269,7 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
                     mc goScreen ROptionScreen(
                         this@RProfileScreen,
                         "从正版玩家导入" to { mc goScreen mojangSkinScreen },
-                        "从皮肤站导入" to {},
+                        "从皮肤站导入" to {mc goScreen blessingSkinScreen},
                         "从图床导入" to {mc goScreen picServerSkinScreen}
                     )
                 },

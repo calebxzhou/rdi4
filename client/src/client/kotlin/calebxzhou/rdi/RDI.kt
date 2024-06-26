@@ -1,14 +1,18 @@
 package calebxzhou.rdi
 
+import calebxzhou.rdi.RDI.arrowCursor
+import calebxzhou.rdi.RDI.handCursor
+import calebxzhou.rdi.RDI.homeKey
+import calebxzhou.rdi.RDI.ibeamCursor
 import calebxzhou.rdi.ihq.net.IhqClient
 import calebxzhou.rdi.launcher.SplashScreen
 import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.serdes.serdesJson
-import calebxzhou.rdi.service.AccountService
 import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.ui.RTitleScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
+import io.ktor.client.*
+import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
@@ -26,7 +30,6 @@ import net.minecraft.client.gui.components.EditBox
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.opengl.GL
 import java.io.File
 import java.util.*
 import kotlin.random.Random
@@ -87,13 +90,10 @@ object RDI : ModInitializer {
         if (response.bodyAsText().toInt() != Const.IHQ_VERSION) {
             popupInfo("RDI核心需要更新，即将开始下载")
             val fileChannel: ByteWriteChannel = File("mods/rdi-1.0.0.jar").writeChannel()
-            IhqClient.get("core") {
-
-                response.bodyAsChannel().copyAndClose(fileChannel)
-                popupInfo("更新完成，请重启游戏")
-                exitProcess(0)
-
-            }
+            val fileResponse = HttpClient().get("http://${Const.SERVER_ADDR}:${Const.IHQ_PORT}/core")
+            fileResponse.bodyAsChannel().copyAndClose(fileChannel)
+            popupInfo("更新完成，请重启游戏")
+            exitProcess(0)
         }
     }
 
@@ -116,7 +116,7 @@ object RDI : ModInitializer {
             handCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_POINTING_HAND_CURSOR)
             ibeamCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR)
             arrowCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR)
-            SplashScreen.splash.isAlwaysOnTop =false
+            SplashScreen.splash.isAlwaysOnTop = false
         }
     }
 
@@ -132,17 +132,17 @@ object RDI : ModInitializer {
 
         if (isHovered) {
             if (!cursorTypeChanged) {
-                synchronized(this){
+                synchronized(this) {
 
-                cursorTypeChanged = true
-                //鼠标悬浮 光标形状改变
-                GLFW.glfwSetCursor(
-                    mcWindowHandle, when (widget) {
-                        is Button -> handCursor
-                        is EditBox -> ibeamCursor
-                        else -> arrowCursor
-                    }
-                )
+                    cursorTypeChanged = true
+                    //鼠标悬浮 光标形状改变
+                    GLFW.glfwSetCursor(
+                        mcWindowHandle, when (widget) {
+                            is Button -> handCursor
+                            is EditBox -> ibeamCursor
+                            else -> arrowCursor
+                        }
+                    )
                 }
 
             }
