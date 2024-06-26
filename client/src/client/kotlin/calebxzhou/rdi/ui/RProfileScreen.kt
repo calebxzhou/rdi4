@@ -60,7 +60,7 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
         val skin = handler.formData["skin"]?:""
         val cape = handler.formData["cape"]?:""
         if (skin.isNotBlank()) {
-            RAccount.now?.skin = skin
+
             if(!validateSkinCapeUrl(skin,handler)){
                 handler.finish()
                 return
@@ -68,7 +68,7 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
         }
 
         if (cape.isNotBlank()) {
-            RAccount.now?.cape = cape
+
             if(!validateSkinCapeUrl(cape,handler)){
                 handler.finish()
                 return
@@ -77,6 +77,8 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
 
         IhqClient.put("profile", listOf("skin" to skin,"cape" to cape)){
             showToast("成功修改皮肤披风")
+            RAccount.now?.skin = skin
+            RAccount.now?.cape = cape
             mc goScreen RProfileScreen(RAccount.now!!)
         }
 
@@ -124,14 +126,16 @@ class RProfileScreen(val account: RAccount) : RScreen("个人信息管理") {
                 val params = mutableListOf<Pair<String, String>>()
                 if (skinURL != null && importSkin) {
                     params += "skin" to skinURL
-                    RAccount.now?.skin = skinURL
+
                 }
                 if (capeURL != null && importCape) {
                     params += "cape" to capeURL
-                    RAccount.now?.cape = capeURL
+
                 }
                 IhqClient.put("profile", params) {
                     showToast("成功修改皮肤披风")
+                    RAccount.now?.skin = skinURL
+                    RAccount.now?.cape = capeURL
                     mc goScreen RProfileScreen(RAccount.now!!)
                 }
             } else {
