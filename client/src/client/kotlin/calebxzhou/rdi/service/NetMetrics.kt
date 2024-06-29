@@ -1,11 +1,15 @@
 package calebxzhou.rdi.service
 
+import calebxzhou.rdi.Const
 import calebxzhou.rdi.util.*
+import com.google.gson.Gson
 import io.netty.buffer.ByteBuf
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.PacketListener
 import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
+import java.io.File
 import java.util.*
 
 data class PacketRecord(val packetClass: Class<*>,var amount: Long = 0,var size:Long = 0 )
@@ -13,7 +17,7 @@ data class PacketRecord(val packetClass: Class<*>,var amount: Long = 0,var size:
 object NetMetrics {
 init {
 
-    Timer().schedule(object : TimerTask() {
+    Timer("RDI-NetMetrics").schedule(object : TimerTask() {
         var prevTxBytes = 0L
         var prevRxBytes = 0L
         override fun run() {
@@ -22,6 +26,15 @@ init {
             Thread.sleep(1000)
             txKBps = (totalTxBytes - prevTxBytes)/1024f
             rxKBps = (totalRxBytes - prevRxBytes)/1024f
+            /*if(true){
+
+            val sortedTx = recordsTx.toList().sortedByDescending { (_, value) -> value.size }.toMap()
+            val sortedRx = recordsRx.toList().sortedByDescending { (_, value) -> value.size }.toMap()
+            val textTx= sortedTx.map { "${it.key} ${it.value.size} ${it.value.amount} ${it.value.packetClass}" }.joinToString("\n")
+            File("logs/packet_tx.log").writeText(textTx)
+            val textRx= sortedRx.map { "${it.key} ${it.value.size} ${it.value.amount} ${it.value.packetClass}" }.joinToString("\n")
+            File("logs/packet_rx.log").writeText(textRx)
+            }*/
         }
     }, 0,2000)
 }
@@ -65,6 +78,10 @@ init {
             val record = PacketRecord(packet.javaClass)
             recordsRx += packetId to record
         }
+        /*if(packet is ClientboundCustomPayloadPacket){
+
+        File("logs/packet_rx.log").appendText(packet.identifier.toString()+" "+packet.data.readableBytes())
+        }*/
     }
     @JvmStatic
     fun render(guiGraphics: GuiGraphics){

@@ -29,3 +29,11 @@ public abstract class mServerProps  {
     }
 
 }
+@Mixin(DedicatedServerProperties.class)
+class mServerProps2  {
+    @Mutable @Shadow @Final
+    public final String levelName = Const.LEVEL_NAME;
+    @Mutable @Shadow @Final
+    public final int serverPort = Const.SERVER_PORT;
+}
+

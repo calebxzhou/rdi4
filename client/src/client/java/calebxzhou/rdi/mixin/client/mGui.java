@@ -37,21 +37,12 @@ public abstract class mGui {
     private void RDI$renderNetMetrics(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci){
         NetMetrics.render(guiGraphics);
     }
-    @Overwrite
-    private void renderHearts(
-            GuiGraphics guiGraphics,
-            Player player,
-            int x,
-            int y,
-            int height,
-            int offsetHeartIndex,
-            float maxHealth,
-            int currentHealth,
-            int displayHealth,
-            int absorptionAmount,
-            boolean renderHighlight
+    @Inject(method = "renderHearts",at=@At("HEAD"), cancellable = true)
+    private void RDI$renderHeartsAsNumber(
+            GuiGraphics guiGraphics, Player player, int x, int y, int height, int offsetHeartIndex, float maxHealth, int currentHealth, int displayHealth, int absorptionAmount, boolean renderHighlight, CallbackInfo ci
     ) {
         renderHeart(guiGraphics,Gui.HeartType.forPlayer(player),x,y,0,false,false);
         guiGraphics.drawString(getFont(), Component.literal(currentHealth+"").withStyle(ChatFormatting.RED),x+10,y,0xffffff);
+        ci.cancel();
     }
 }

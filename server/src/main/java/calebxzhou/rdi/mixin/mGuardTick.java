@@ -158,6 +158,15 @@ class mGuardLevelTick2{
     @Overwrite
     public void schedule(ScheduledTick tick) {
         try {
+            if(ticksPerPosition == null){
+                ticksPerPosition = new ObjectOpenCustomHashSet<>(ScheduledTick.UNIQUE_TICK_HASH);
+            }
+            if(tickQueue == null){
+                tickQueue =  new PriorityQueue(ScheduledTick.DRAIN_ORDER);
+            }
+            if(pendingTicks == null){
+                pendingTicks = new ArrayList<>();
+            }
             if (this.ticksPerPosition.add(tick)) {
                 this.scheduleUnchecked(tick);
             }

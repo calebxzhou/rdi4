@@ -1,6 +1,7 @@
 package calebxzhou.rdi
 
 import calebxzhou.rdi.Const.DEBUG
+import calebxzhou.rdi.Const.isLandMode
 import calebxzhou.rdi.command.*
 import calebxzhou.rdi.net.RPacketDecoder
 import calebxzhou.rdi.model.Island
@@ -47,7 +48,6 @@ val db = MongoClient.create(MongoClientSettings.builder()
     .build()).getDatabase("rdi")
 val rScope = GlobalScope
 val log: Logger = LoggerFactory.getLogger("rdi")
-
 object RDI : ModInitializer {
     @JvmStatic
     val rlog: Logger = log
@@ -66,6 +66,9 @@ object RDI : ModInitializer {
         get() = msPerTick > 50
 
     override fun onInitialize() {
+        if(isLandMode){
+            log.info("陆地服")
+        }
         runBlocking {
             log.info("prepare DB")
             db.getCollection<RAccount>("account")
@@ -106,8 +109,13 @@ object RDI : ModInitializer {
         }
         CommandRegistrationCallback.EVENT.register { commandDispatcher: CommandDispatcher<CommandSourceStack>, commandBuildContext: CommandBuildContext, commandSelection: Commands.CommandSelection ->
             commandDispatcher.register(MsptCommand.builder)
+            if(!isLandMode){
             commandDispatcher.register(IslandCommand.builder)
-            commandDispatcher.register(PasswordCommand.builder)
+            }
+            if(isLandMode){
+                commandDispatcher.register(RandomTeleportCommand.builder)
+            }
+            //commandDispatcher.register(PasswordCommand.builder)
             commandDispatcher.register(SpawnCommand.builder)
             //commandDispatcher.register(SlowfallCommand.builder)
 

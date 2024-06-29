@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.6-SNAPSHOT'
 	id 'maven-publish'
+	id 'application'
   id "org.jetbrains.kotlin.jvm" version "2.0.0"
 	id 'org.jetbrains.kotlin.plugin.serialization' version '2.0.0'
 }
@@ -8,6 +9,7 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 def ktor_version = '2.3.11'
+
 base {
 	archivesName = project.archives_base_name
 }
@@ -19,6 +21,14 @@ configurations {
 	implementation.extendsFrom includeImplementation
 }
 repositories {
+	mavenCentral()
+	maven {
+		url "https://maven2.bai.lol"
+		content {
+			includeGroup "lol.bai"
+			includeGroup "mcp.mobius.waila"
+		}
+	}
 	maven {
 		name = 'ParchmentMC'
 		url = 'https://maven.parchmentmc.org'
@@ -72,6 +82,8 @@ dependencies {
 	modImplementation("maven.modrinth:lazydfu:0.1.3")
 	modImplementation("maven.modrinth:ferrite-core:6.0.1")
 	modImplementation("maven.modrinth:indium:1.0.30+mc1.20.4")
+	modImplementation("mcp.mobius.waila:wthit:fabric-8.13.2")
+	modImplementation("maven.modrinth:badpackets:fabric-0.4.3")
 
 }
 
@@ -109,6 +121,11 @@ jar {
 	}
 	from {
 		configurations.includeImplementation.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	manifest {
+		attributes(
+				'Main-Class': 'calebxzhou.rdi.launcher.RLauncherKt'
+		)
 	}
 }
 remapJar{

@@ -1,20 +1,20 @@
 package calebxzhou.rdi.mixin;
 
-import calebxzhou.rdi.service.NetworkThrottler;
-import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.PacketSendListener;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.network.protocol.game.ClientboundLightUpdatePacketData;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import org.jetbrains.annotations.Nullable;
+import org.apache.commons.compress.utils.Lists;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.BitSet;
 
 /**
  * calebxzhou @ 2024-06-23 22:07
@@ -43,4 +43,17 @@ public class mSaveBandwidth {
             instance.sendChanges();
         }
     }
+}
+@Mixin(ClientboundLightUpdatePacketData.class)
+class mNoSendLightData{
+    //不发送亮度数据给客户端 自己算
+    /*@Overwrite
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeBitSet(new BitSet());
+        buffer.writeBitSet(new BitSet());
+        buffer.writeBitSet(new BitSet());
+        buffer.writeBitSet(new BitSet());
+        buffer.writeCollection(new ArrayList<>(), FriendlyByteBuf::writeByteArray);
+        buffer.writeCollection(new ArrayList<>(), FriendlyByteBuf::writeByteArray);
+    }*/
 }

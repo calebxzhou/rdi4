@@ -18,8 +18,8 @@ public abstract class mMobNoDayBurn extends LivingEntity {
     }
 
     //所有怪物不受白天影响 除了幻翼
-    @Overwrite
+    /*@Overwrite
     public boolean isSunBurnTick() {
         return level().isDay() && getType() == EntityType.PHANTOM;
-    }
+    }*/
 }

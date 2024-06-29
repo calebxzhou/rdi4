@@ -1,10 +1,12 @@
 package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.Const
+import calebxzhou.rdi.RDI.loadedModsIdName
 import calebxzhou.rdi.ihq.net.IhqClient
 import calebxzhou.rdi.launcher.SplashScreen
 import calebxzhou.rdi.launcher.SplashScreen.height
 import calebxzhou.rdi.launcher.SplashScreen.width
+import calebxzhou.rdi.log
 import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
@@ -21,6 +23,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import com.terraformersmc.modmenu.gui.ModsScreen
 import io.ktor.client.statement.*
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.gui.screens.ConnectScreen
@@ -30,6 +33,7 @@ import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.client.renderer.CubeMap
 import net.minecraft.client.renderer.PanoramaRenderer
+import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
@@ -135,6 +139,18 @@ class RTitleScreen : RScreen("主页") {
         val account = RAccount.now?:RAccount.DEFAULT
         //关闭音乐
         mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
+        FabricLoader.getInstance().allMods.forEach {
+            var modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${it.metadata.id}", it.metadata.name)
+            if(modName == it.metadata.name){
+                modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${it.metadata.id}.base", it.metadata.name)
+            }
+            if(modName == it.metadata.name){
+                modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${it.metadata.id}.${it.metadata.id}", it.metadata.name)
+            }
+            loadedModsIdName += it.metadata.id to modName
+        }
+
+        log.info(loadedModsIdName)
         RPlayerHeadButton(account){
             if(account==RAccount.DEFAULT)
                 mc goScreen optScreen
@@ -146,8 +162,8 @@ class RTitleScreen : RScreen("主页") {
         }.also { registerWidget(it) }
         RGridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17).apply {
             row(
-                5,
-                RTextButton("进入服务器") {
+                6,
+                RTextButton("进入空岛服") {
                     if (RAccount.now == null) {
 
                         mc goScreen optScreen
@@ -157,6 +173,23 @@ class RTitleScreen : RScreen("主页") {
                             this@RTitleScreen,
                             mc,
                             ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
+                            Const.SERVER_DATA,
+                            false
+                        )
+
+                    }
+
+
+                }, RTextButton("进入陆地服") {
+                    if (RAccount.now == null) {
+
+                        mc goScreen optScreen
+                    } else {
+                        RSoundPlayer.stopAll()
+                        ConnectScreen.startConnecting(
+                            this@RTitleScreen,
+                            mc,
+                            ServerAddress(Const.SERVER_ADDR, Const.LAND_SERVER_PORT),
                             Const.SERVER_DATA,
                             false
                         )

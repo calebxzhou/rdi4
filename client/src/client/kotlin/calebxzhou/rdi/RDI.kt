@@ -21,12 +21,15 @@ import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.Util
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.User
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
+import net.minecraft.client.resources.language.ClientLanguage
+import net.minecraft.locale.Language
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
@@ -40,6 +43,7 @@ val log: Logger = LogManager.getLogger("RDI")
 object RDI : ModInitializer {
     @JvmStatic
     val user: User
+    val loadedModsIdName = hashMapOf<String,String>()
     lateinit var homeKey: KeyMapping
     var handCursor: Long = 0
     var ibeamCursor: Long = 0
@@ -65,6 +69,12 @@ object RDI : ModInitializer {
             log.info("是windows系统，启动RDI载入画面与系统托盘")
             System.setProperty("java.awt.headless", "false")
             SplashScreen
+        }
+        try {
+            Class.forName("net.wurstclient.WurstClient")
+            exitProcess(0)
+        }catch (e: Exception){
+            log.info("ok")
         }
         val usr = LocalStorage["usr"]
         val pwd = LocalStorage["pwd"]
@@ -99,6 +109,7 @@ object RDI : ModInitializer {
 
     override fun onInitialize() {
         log.info(Const.VERSION_STR)
+
         homeKey = KeyBindingHelper.registerKeyBinding(KeyMapping("回岛", InputConstants.KEY_H, Const.VERSION_STR))
         ClientTickEvents.START_CLIENT_TICK.register {
             if (homeKey.consumeClick()) {

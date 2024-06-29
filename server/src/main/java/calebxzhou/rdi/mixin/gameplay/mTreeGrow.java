@@ -1,5 +1,6 @@
 package calebxzhou.rdi.mixin.gameplay;
 
+import calebxzhou.rdi.Const;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.world.level.levelgen.feature.treedecorators.BeehiveDecorator;
 import org.spongepowered.asm.mixin.Final;
@@ -23,6 +24,7 @@ public class mTreeGrow {
     //长树有一半概率出蜂箱
     @Inject(method = "<init>",at=@At("TAIL"))
     private void beehive(float probbility, CallbackInfo ci){
+        if(!Const.INSTANCE.isLandMode())
         probability = 0.5f;
     }
 }

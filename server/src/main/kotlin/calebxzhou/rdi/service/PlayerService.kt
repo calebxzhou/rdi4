@@ -1,5 +1,6 @@
 package calebxzhou.rdi.service
 
+import calebxzhou.rdi.Const
 import calebxzhou.rdi.db
 import calebxzhou.rdi.log
 import calebxzhou.rdi.model.Chat
@@ -33,6 +34,7 @@ object PlayerService {
     }
     //加入服务器后
     fun afterJoin(player: ServerPlayer) {
+        if(!Const.isLandMode)
         player.goServerSpawn()
 
     }

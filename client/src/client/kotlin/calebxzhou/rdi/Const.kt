@@ -12,6 +12,7 @@ object Const {
     val DEBUG = System.getProperty("rdi.debug").toBoolean()
 
     const val SERVER_PORT = 38410
+    const val LAND_SERVER_PORT = 38420
     const val IHQ_PORT = 38411
     val SERVER_ADDR = if(DEBUG)"127.0.0.1" else "rdi.calebxzhou.cn"
     val SERVER_INET_ADDR = InetSocketAddress(SERVER_ADDR, SERVER_PORT)
@@ -21,7 +22,7 @@ object Const {
     const val IHQ_VERSION = 0x450
 
     //显示版本
-    const val VERSION_STR = "RDI Skies 4.5"
+    const val VERSION_STR = "RDI 4.5"
     val SERVER_DATA
         get() = ServerData("RDI", VERSION_STR,false)
 }

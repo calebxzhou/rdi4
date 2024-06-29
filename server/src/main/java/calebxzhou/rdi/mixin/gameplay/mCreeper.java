@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class mCreeper {
     @Shadow
     @Mutable
-    private int explosionRadius = 4;
+    private int explosionRadius = 1;
     @Shadow
     @Mutable
     private int maxSwell = 20;
