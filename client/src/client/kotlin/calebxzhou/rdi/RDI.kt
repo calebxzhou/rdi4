@@ -43,6 +43,7 @@ val log: Logger = LogManager.getLogger("RDI")
 object RDI : ModInitializer {
     @JvmStatic
     val user: User
+    @JvmField
     val loadedModsIdName = hashMapOf<String,String>()
     lateinit var homeKey: KeyMapping
     var handCursor: Long = 0

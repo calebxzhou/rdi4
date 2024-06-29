@@ -38,6 +38,7 @@
     "mPlayerUuid",
     "mProtocolVersion",
     "mSessionService",
-    "gameplay.mPlayer"
+    "gameplay.mPlayer",
+    "wthit.mModInfo"
   ]
 }
