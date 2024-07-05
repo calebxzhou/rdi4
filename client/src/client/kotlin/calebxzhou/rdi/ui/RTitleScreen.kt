@@ -4,19 +4,14 @@ import calebxzhou.rdi.Const
 import calebxzhou.rdi.RDI.loadedModsIdName
 import calebxzhou.rdi.ihq.net.IhqClient
 import calebxzhou.rdi.launcher.SplashScreen
-import calebxzhou.rdi.launcher.SplashScreen.height
-import calebxzhou.rdi.launcher.SplashScreen.width
 import calebxzhou.rdi.log
 import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.ui.RLoadingOverlay.Companion
-import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.alertInfo
-import calebxzhou.rdi.ui.general.confirm
 import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -25,10 +20,8 @@ import com.terraformersmc.modmenu.gui.ModsScreen
 import io.ktor.client.statement.*
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.OptionsScreen
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.client.renderer.CubeMap
@@ -37,7 +30,6 @@ import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
-import net.minecraft.util.Mth
 import net.minecraft.world.Difficulty
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.GameType
@@ -149,7 +141,15 @@ class RTitleScreen : RScreen("主页") {
             }
             loadedModsIdName += it.metadata.id to modName
         }
-
+        loadedModsIdName += listOf(
+            "minecraft" to "原版",
+            "ad_astra" to "星之所向",
+            "immersive_aircraft" to "拟真飞行器",
+            "vinery" to "葡园酒香",
+            "createdeco" to "机械动力：装饰",
+            "illagerinvasion" to "灾厄入侵",
+            "adorn" to "装饰",
+        )
         log.info(loadedModsIdName)
         RPlayerHeadButton(account){
             if(account==RAccount.DEFAULT)
@@ -163,7 +163,7 @@ class RTitleScreen : RScreen("主页") {
         RGridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17).apply {
             row(
                 6,
-                RTextButton("进入空岛服") {
+                 RTextButton("多人生存") {
                     if (RAccount.now == null) {
 
                         mc goScreen optScreen
@@ -180,38 +180,26 @@ class RTitleScreen : RScreen("主页") {
                     }
 
 
-                }, RTextButton("进入陆地服") {
-                    if (RAccount.now == null) {
-
-                        mc goScreen optScreen
-                    } else {
-                        RSoundPlayer.stopAll()
-                        ConnectScreen.startConnecting(
-                            this@RTitleScreen,
-                            mc,
-                            ServerAddress(Const.SERVER_ADDR, Const.LAND_SERVER_PORT),
-                            Const.SERVER_DATA,
-                            false
-                        )
-
-                    }
-
-
                 },
-                RTextButton("Mod列表") {
-                    mc goScreen ModsScreen(this@RTitleScreen)
-                },
-                RTextButton("设置") {
-                    mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
-                },
-                RTextButton("单人模式") {
+                RTextButton("单人创造") {
                     if (shiftMode)
                         mc goScreen SelectWorldScreen(this@RTitleScreen)
                     else
                         openFlatLevel()
                 },
+                RTextButton("Mod管理") {
+                    mc goScreen ModsScreen(this@RTitleScreen)
+                },
+                RTextButton("设置") {
+                    mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
+                },
+
                 RTextButton("致谢") {
-                    alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe",this@RTitleScreen)
+                    alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe\nMod建议：ForiLuSa",this@RTitleScreen)
+                },
+                RTextButton("QQ群") {
+                    copyToClipboard("1095925708")
+                    alertInfo("已复制QQ群号：1095925708\n欢迎加入RDI玩家交流群！",this@RTitleScreen)
                 },
             )
         }.visitWidgets { registerWidget(it) }

@@ -35,7 +35,7 @@ public abstract class mExplosion {
 class mHigherExplosion {
     @Redirect(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
     private void higherExplode(Entity instance, Vec3 deltaMovement) {
-        if (instance instanceof Player)
+        //if (instance instanceof Player)
             instance.setDeltaMovement(deltaMovement.add(500, 1000, 500));
     }
 }

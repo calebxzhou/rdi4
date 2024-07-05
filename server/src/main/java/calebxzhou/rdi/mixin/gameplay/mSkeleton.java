@@ -29,7 +29,7 @@ public abstract class mSkeleton {
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.4)
-                .add(Attributes.MAX_HEALTH,50);
+                .add(Attributes.MAX_HEALTH,5);
     }
 }
 @Mixin(RangedBowAttackGoal.class)

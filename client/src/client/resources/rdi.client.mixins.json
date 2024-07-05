@@ -36,6 +36,7 @@
     "mNetThrottler",
     "mNoChatBrackets",
     "mPlayerUuid",
+    "mProfileTexture",
     "mProtocolVersion",
     "mSessionService",
     "gameplay.mPlayer",

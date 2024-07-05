@@ -24,6 +24,6 @@ public class mCreeper {
 
     @Overwrite
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.4);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.5);
     }
 }

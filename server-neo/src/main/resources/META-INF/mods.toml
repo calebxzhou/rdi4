@@ -1,0 +1,11 @@
+modLoader = "javafml" #mandatory
+loaderVersion = "[4.10,)" #mandatory
+license = "1"
+[[mods]] #mandatory
+modId = "rdi" #mandatory
+version = "4.6neo" #mandatory
+displayName = "RDI" #mandatory
+authors = "calebxzhou" #optional
+description = '''1'''
+[[mixins]]
+config = "rdi.mixins.json"

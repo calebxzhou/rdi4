@@ -21,8 +21,8 @@ object RandomTeleportCommand {
                 }
                 player.health=1F
                 player.foodData.foodLevel=1
-                val x =Random.nextDouble(-5000.0, 5000.0)
-                val z =Random.nextDouble(-5000.0, 5000.0)
+                val x =Random.nextDouble(-10000.0, 10000.0)
+                val z =Random.nextDouble(-10000.0, 10000.0)
                 val levelChunk: LevelChunk =
                     player.level().getChunk(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z))
                 val y = levelChunk.getHeight(

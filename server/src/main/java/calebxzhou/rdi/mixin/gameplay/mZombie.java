@@ -31,11 +31,11 @@ public abstract class mZombie extends Mob {
     @Overwrite
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.40f)
+                .add(Attributes.MOVEMENT_SPEED, 0.50f)
                 .add(Attributes.ATTACK_DAMAGE, 4.0)
                 .add(Attributes.ARMOR, 2.0)
                 .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
-                .add(Attributes.MAX_HEALTH,50);
+                .add(Attributes.MAX_HEALTH,5);
     }
 
     @Overwrite
@@ -45,14 +45,14 @@ public abstract class mZombie extends Mob {
 
     }
     //更多小僵尸
-    @Overwrite
+    /*@Overwrite
     public static boolean getSpawnAsBabyOdds(RandomSource random) {
         return random.nextFloat() < 0.55F;
-    }
+    }*/
     //鸡骑
-    @ModifyConstant(method = "finalizeSpawn",constant = @Constant(doubleValue = 0.05))
+    /*@ModifyConstant(method = "finalizeSpawn",constant = @Constant(doubleValue = 0.05))
     private double moreChickenZombie(double constant){
         return 0.55;
-    }
+    }*/
 
 }

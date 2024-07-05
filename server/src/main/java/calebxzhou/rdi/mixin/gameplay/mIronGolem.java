@@ -26,14 +26,14 @@ public abstract class mIronGolem {
                 .add(Attributes.ATTACK_DAMAGE, 25.0);
     }
     //什么都攻击
-    @Overwrite
+    /*@Overwrite
     public boolean canAttackType(EntityType<?> entityType) {
         if (isPlayerCreated() && entityType == EntityType.PLAYER) {
             return false;
         }else{
             return true;
         }
-    }
+    }*/
 
 
 }
