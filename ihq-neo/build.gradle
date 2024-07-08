@@ -1,0 +1,53 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'application'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.0.0'
+    id("io.ktor.plugin") version '2.3.11'
+}
+
+group = 'calebxzhou.rdi'
+version = '1.0-SNAPSHOT'
+def ktor_version = '2.3.11'
+
+repositories {
+    mavenCentral()
+            {
+                url = 'https://repo.codemc.io/repository/maven-public/'
+            }
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation 'ch.qos.logback:logback-classic:1.5.6'
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    // https://mvnrepository.com/artifact/io.netty/netty-all
+    implementation 'io.netty:netty-all:4.1.110.Final'
+// https://mvnrepository.com/artifact/io.github.oshai/kotlin-logging-jvm
+    implementation 'io.github.oshai:kotlin-logging-jvm:6.0.9'
+// https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-kotlin-coroutine
+    implementation 'org.mongodb:mongodb-driver-kotlin-coroutine:5.1.0'
+// https://mvnrepository.com/artifact/io.ktor/ktor-server-core
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
+
+}
+ktor {
+    fatJar {
+        archiveFileName.set("fat.jar")
+    }
+}
+
+application {
+    mainClass = 'calebxzhou.rdi.ihq.MainKt'
+}
+
+
+test {
+    useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(17)
+}
