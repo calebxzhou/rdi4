@@ -1,0 +1,44 @@
+{
+  "required": true,
+  "package": "calebxzhou.rdi.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "rdi.refmap.json",
+  "mixins": [
+    "mAlwaysOfflineMode",
+    "mLoginProtocol1",
+    "mNetMetrics",
+    "mNetMetrics2",
+    "mNetThrottler",
+    "mNoChatBrackets",
+    "mPlayerUuid",
+    "mProfileTexture",
+    "mProtocolVersion",
+    "mSessionService",
+    "gameplay.mPlayer"
+  ],
+  "client": [
+    "AEditBox",
+    "ALoadingOverlay",
+    "AMc",
+    "mChat",
+    "mFastCreateMojangService",
+    "mFastCreateMojangService2",
+    "mGui",
+    "mLoadingOverlay",
+    "mMcStart",
+    "mPauseScreen",
+    "mSaveBandwidth",
+    "mSaveBandwidth2",
+    "mScreenTransition",
+    "mSkyBlue",
+    "mTabPlayerHud",
+    "mTitleScreen",
+    "mTooltip",
+    "mWidgetMouseCursor",
+    "mWindowTitle"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
