@@ -2,7 +2,6 @@ package calebxzhou.rdi.model
 
 import calebxzhou.rdi.util.mc
 import com.mojang.authlib.GameProfile
-import io.ktor.client.plugins.auth.providers.*
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -27,8 +26,6 @@ data class RAccount(
         val DEFAULT = RAccount(ObjectId(), UUID.randomUUID(),"未登录","123456","12345",0,null,null)
         @JvmStatic
         var now: RAccount? = null
-        val ihqCredential
-            get() = BasicAuthCredentials(now?.id.toString(), now?.pwd ?: "")
 
         @JvmStatic
         var mcUserNow = now?.mcUser ?: User(

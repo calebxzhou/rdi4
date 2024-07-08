@@ -17,31 +17,29 @@ fun confirm(msg: String,
             prevScreen: Screen,yesHandler: () -> Unit){
     dialog(msg, prevScreen,RDialogType.CONFIRM, yesHandler = yesHandler)
 }
-fun alertInfo(msg: String, prevScreen: Screen) {
+fun alertInfo(msg: String, prevScreen: Screen?=null) {
     dialog(msg, prevScreen, msgType = RMessageType.INFO)
 }
-fun alertWarn(msg: String, prevScreen: Screen) {
+fun alertWarn(msg: String, prevScreen: Screen?=null) {
     dialog(msg, prevScreen, msgType = RMessageType.WARN)
 }
-fun alertErr(msg: String, prevScreen: Screen) {
+fun alertErr(msg: String, prevScreen: Screen?=null) {
     dialog(msg, prevScreen, msgType = RMessageType.ERR)
 }
-fun alertErr(msg: String) {
-    dialog(msg, null, msgType = RMessageType.ERR)
-}
-fun alertOk(msg: String, prevScreen: Screen) {
+fun alertOk(msg: String, prevScreen: Screen?=null) {
     dialog(msg, prevScreen, msgType = RMessageType.OK)
 }
 
 fun dialog(
     msg: String,
-    prevScreen: Screen?,
+    prevScreen: Screen?=null,
     diagType: RDialogType = RDialogType.ALERT,
     msgType: RMessageType = RMessageType.INFO,
     yesHandler: () -> Unit = {},
 ) {
-    if (isMcStarted && prevScreen != null) {
-        mc goScreen RDialog(msg, prevScreen, diagType, msgType, yesHandler)
+    val screenNow = prevScreen ?: mc.screen
+    if (isMcStarted && screenNow != null) {
+        mc goScreen RDialog(msg, screenNow, diagType, msgType, yesHandler)
     } else {
         when (diagType) {
             RDialogType.ALERT -> {

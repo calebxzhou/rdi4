@@ -135,34 +135,13 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
 
-    // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib
-
-
-    //implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-
-
 
     implementation "thedarkcolour:kotlinforforge:$kff_version"
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
     implementation fg.deobf("curse.maven:jei-238222:4712868")
     implementation fg.deobf("curse.maven:curios-309927:4583413")
     implementation fg.deobf("curse.maven:terrafirmacraft-302973:5478226")
-    /*
-    // compile against the API
-    compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-${wthitVersion}")
 
-    // run against the full jar
-    runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-${wthitVersion}")
-    runtimeOnly fg.deobf("lol.bai:badpackets:forge-${badpacketsVersion}")*/
-
-    //compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:15.2.0.25")
-    //compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:15.2.0.25")
-    //runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge-15.2.0.25") 
-    // TODO: Reimplement for 1.20.2 and onwards
-    //implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.2"))
-    //implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.3.2")) {
-    //    jarJar.ranged(it, "[0.3.2,)")
-    //}
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

@@ -1,6 +1,6 @@
 package calebxzhou.rdi.util
 
-import calebxzhou.rdi.net.protocol.CPacket
+import calebxzhou.rdi.net.protocol.game.CGamePacket
 import io.netty.channel.ChannelHandlerContext
 import io.netty.util.AttributeKey
 import java.math.BigInteger
@@ -31,7 +31,7 @@ fun humanReadableByteCount(bytes: Long, si: Boolean = false): String {
     val result = bytes / Math.pow(unit.toDouble(), exp.toDouble())
     return String.format("%.2f %s", result, prefix)
 }
-fun ChannelHandlerContext.sendPacket(packet: CPacket){
+fun ChannelHandlerContext.sendPacket(packet: CGamePacket){
     this.channel().writeAndFlush(packet)
 }
 var ChannelHandlerContext.clientIp: InetSocketAddress

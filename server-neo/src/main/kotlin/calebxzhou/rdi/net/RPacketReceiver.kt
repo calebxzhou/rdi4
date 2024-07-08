@@ -1,6 +1,6 @@
 package calebxzhou.rdi.net
 
-import calebxzhou.rdi.net.protocol.SPacket
+import calebxzhou.rdi.net.protocol.game.SGamePacket
 import calebxzhou.rdi.service.PlayerService
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
@@ -12,17 +12,11 @@ import io.netty.channel.SimpleChannelInboundHandler
  */
 class RPacketReceiver : SimpleChannelInboundHandler<Any>() {
     override fun channelRead0(ctx: ChannelHandlerContext, packet: Any){
-
-
-            when(packet){
-                is SPacket -> PlayerService.onlinePlayers[ctx]?.let { player ->
-                        packet.process(player)
-                }
-
-                else -> {}
+        if(packet is SGamePacket){
+            PlayerService.onlinePlayers[ctx]?.let { player ->
+                packet.process(player)
             }
-
-
+        }
     }
 
 

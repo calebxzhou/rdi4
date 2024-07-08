@@ -1,10 +1,7 @@
 package calebxzhou.rdi.net
 
-import calebxzhou.rdi.net.protocol.CPacket
-import calebxzhou.rdi.net.protocol.SPacket
 import calebxzhou.rdi.log
-import calebxzhou.rdi.net.protocol.general.MoveEntityXyzCPacket
-import calebxzhou.rdi.net.protocol.general.MovePlayerXyzSPacket
+import calebxzhou.rdi.net.protocol.game.*
 import io.netty.buffer.ByteBuf
 
 /**
@@ -14,31 +11,33 @@ object RPacketSet {
     private var packCount = 0
 
     //c2s
-    private val packetIdReaders = linkedMapOf<Int, (ByteBuf) -> SPacket>()
+    private val packetIdReaders = linkedMapOf<Int, (ByteBuf) -> SGamePacket>()
 
     //s2c
-    private val packetWriterClassIds = linkedMapOf<Class<out CPacket>, Int>()
+    private val packetWriterClassIds = linkedMapOf<Class<out CGamePacket>, Int>()
 
     init {
-        registerPacket(MoveEntityXyzCPacket::class.java)
-        registerPacket(::MovePlayerXyzSPacket)
+        registerPacket(MoveEntityXyzCGamePacket::class.java)
+        registerPacket(MoveEntityWpCGamePacket::class.java)
+        registerPacket(::MovePlayerXyzSGamePacket)
+        registerPacket(::MovePlayerWpSGamePacket)
     }
 
     //注册S包
-    private fun registerPacket(reader: (ByteBuf) -> SPacket) {
+    private fun registerPacket(reader: (ByteBuf) -> SGamePacket) {
         packetIdReaders += packCount to reader
         packCount++
     }
 
     //注册C包
-    private fun registerPacket(writerClass: Class<out CPacket>) {
+    private fun registerPacket(writerClass: Class<out CGamePacket>) {
         packetWriterClassIds += writerClass to packCount
         packCount++
     }
 
 
     //客户端传入S包
-    fun create(packetId: Int, data: ByteBuf): SPacket? = packetIdReaders[packetId]?.run {
+    fun create(packetId: Int, data: ByteBuf): SGamePacket? = packetIdReaders[packetId]?.run {
         val packet = invoke(data)
         data.readerIndex(data.readerIndex() + data.readableBytes())
         return packet
@@ -48,7 +47,7 @@ object RPacketSet {
     }
 
 
-    fun getPacketId(packetClass: Class<out CPacket>): Int? = packetWriterClassIds[packetClass]
+    fun getPacketId(packetClass: Class<out CGamePacket>): Int? = packetWriterClassIds[packetClass]
 
 
 }
