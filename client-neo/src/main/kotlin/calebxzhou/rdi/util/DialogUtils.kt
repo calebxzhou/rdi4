@@ -3,7 +3,6 @@ package calebxzhou.rdi.util
 import com.mojang.blaze3d.platform.GLX
 import com.mojang.blaze3d.platform.Window
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 import kotlin.system.exitProcess
 
 object DialogUtils {

@@ -1,7 +1,6 @@
 package calebxzhou.rdi.util
 
 import calebxzhou.rdi.ui.RMessageType
-import calebxzhou.rdi.ui.RTitleScreen
 import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft

@@ -11,11 +11,11 @@ import io.netty.handler.codec.MessageToMessageEncoder
 
 class RPacketEncoder : MessageToMessageEncoder<SPacket>() {
     override fun encode(ctx: ChannelHandlerContext, packet: SPacket, out: MutableList<Any>) {
-        RPacketSet.getPacketId(packet.javaClass)?.let { packetId ->
+        RPacketSet[packet.javaClass]?.let { packetId ->
 
             val msg: ByteBuf = Unpooled.buffer()
             //写包ID
-            msg.writeByte(packetId)
+            msg.writeByte(packetId.toInt())
             //写请求ID
             msg.writeByte(IhqClient.reqId.toInt())
             packet.write(msg)

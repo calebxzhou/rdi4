@@ -1,13 +1,11 @@
 package calebxzhou.rdi.service
 
-import calebxzhou.rdi.ihq.net.IhqClient
+import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.log
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
 import com.mojang.authlib.minecraft.MinecraftSessionService
 import com.mojang.authlib.properties.Property
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import java.net.InetAddress
 
@@ -25,7 +23,8 @@ class RSessionService : MinecraftSessionService{
         requireSecure: Boolean
     ): Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> {
         val uuid = profile.id
-        val response = runBlocking {  IhqClient.send(HttpMethod.Get,"skin", listOf("uuid" to uuid.toString()))}
+            //TODO 用apache http client实现
+       /* val response = runBlocking {  IhqClient.send(HttpMethod.Get,"skin", listOf("uuid" to uuid.toString()))}
         if(response.status.isSuccess()){
             val data = runBlocking {  response.bodyAsText()} .split("\n")
             val skin = data.getOrNull(0)
@@ -40,9 +39,9 @@ class RSessionService : MinecraftSessionService{
                 params += MinecraftProfileTexture.Type.CAPE to MinecraftProfileTexture(cape, mapOf())
             }
             return params
-        }else{
+        }else{*/
             return mapOf()
-        }
+        //}
 
     }
 

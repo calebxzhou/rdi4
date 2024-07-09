@@ -4,7 +4,6 @@ import calebxzhou.rdi.util.LIGHT_RED
 import calebxzhou.rdi.util.LIGHT_YELLOW
 import calebxzhou.rdi.util.PINE_GREEN
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil
 
 class RTooltip {
     companion object{

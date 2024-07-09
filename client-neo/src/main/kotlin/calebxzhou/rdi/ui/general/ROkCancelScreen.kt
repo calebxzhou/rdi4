@@ -1,9 +1,10 @@
 package calebxzhou.rdi.ui.general
 
-import calebxzhou.rdi.exception.RGeneralException
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.util.*
+import calebxzhou.rdi.util.goScreen
+import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.util.pressingKey
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
 import com.mojang.blaze3d.platform.InputConstants.KEY_RETURN
 import net.minecraft.client.gui.screens.Screen
@@ -34,8 +35,6 @@ abstract class ROkCancelScreen(val prevScreen: Screen, name: String) : RScreen(n
 
     private fun trySubmit() = try {
         onSubmit()
-    }catch (e: RGeneralException) {
-        alertErr("错误：${e.localizedMessage}")
     }
     catch (e: Exception) {
         alertErr("错误：$e")

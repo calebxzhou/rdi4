@@ -30,6 +30,19 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 repositories {
     mavenCentral()
+    // Other repositories can go above or below Modrinth's. We don't need priority :)
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        forRepositories(fg.repository) // Only add this if you're using ForgeGradle, otherwise remove this line
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
@@ -128,52 +141,34 @@ sourceSets.main.resources {
 processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+configurations.configureEach {
+    resolutionStrategy   .eachDependency { details ->
+                if (details.requested.group == 'org.jetbrains'
+                        && !details.requested.name.contains('annotations') ) {
+                    details.useVersion "23.0.0"
+                }
+            }
+}
 jarJar.enable()
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-
-
-    // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib
-
-
     //implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
     implementation "thedarkcolour:kotlinforforge:$kff_version"
     minecraftLibrary 'org.mongodb:bson:5.1.0'
     implementation(jarJar("org.mongodb:bson:5.1.0")) {
         jarJar.ranged(it, "[5.1.0,)")
     }
-
     minecraftLibrary 'com.googlecode.soundlibs:jorbis:0.0.17.4'
     implementation(jarJar('com.googlecode.soundlibs:jorbis:0.0.17.4')) {
         jarJar.ranged(it, "[0.0.17.4,)")
     }
 
-    minecraftLibrary 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
-    implementation(jarJar('org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3')) {
-        jarJar.ranged(it, "[1.6.3,)")
-    }
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
     implementation fg.deobf("curse.maven:jei-238222:4712868")
     implementation fg.deobf("curse.maven:curios-309927:4583413")
     implementation fg.deobf("curse.maven:terrafirmacraft-302973:5478226")
     implementation fg.deobf("maven.modrinth:jade:11.9.4+forge")
-    /*
-    // compile against the API
-    compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-${wthitVersion}")
-
-    // run against the full jar
-    runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-${wthitVersion}")
-    runtimeOnly fg.deobf("lol.bai:badpackets:forge-${badpacketsVersion}")*/
-
-    //compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:15.2.0.25")
-    //compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:15.2.0.25")
-    //runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge-15.2.0.25") 
-    // TODO: Reimplement for 1.20.2 and onwards
-    //implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.2"))
-    //implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.3.2")) {
-    //    jarJar.ranged(it, "[0.3.2,)")
-    //}
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

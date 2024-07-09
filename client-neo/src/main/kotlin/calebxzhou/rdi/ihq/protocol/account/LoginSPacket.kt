@@ -1,7 +1,7 @@
 package calebxzhou.rdi.ihq.protocol.account
 
-import calebxzhou.rdi.util.ByteBufUtils.writeString
 import calebxzhou.rdi.ihq.protocol.SPacket
+import calebxzhou.rdi.util.writeString
 import io.netty.buffer.ByteBuf
 
 /**

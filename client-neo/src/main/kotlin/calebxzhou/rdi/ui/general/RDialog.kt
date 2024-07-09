@@ -1,7 +1,6 @@
 package calebxzhou.rdi.ui.general
 
 import calebxzhou.rdi.ui.RMessageType
-import calebxzhou.rdi.ui.RTitleScreen
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.util.*

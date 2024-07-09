@@ -8,7 +8,7 @@ class RPacketDecoder : MessageToMessageDecoder<DatagramPacket>() {
     override fun decode(ctx: ChannelHandlerContext, msg: DatagramPacket, out: MutableList<Any?>) {
         val datas = msg.content()
         //包id
-        val packetId = datas.readByte().toInt()
+        val packetId = datas.readByte()
         //请求id
         val reqId = datas.readByte()
         out += RPacketSet.create(packetId, datas)

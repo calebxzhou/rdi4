@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.server.packs.resources.ReloadInstance;
-import org.jetbrains.annotations.Nullable;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 @Mixin(Minecraft.class)
 public abstract class mLoadingOverlay {
-    @Shadow public abstract void setOverlay(@Nullable Overlay loadingGui);
+    @Shadow public abstract void setOverlay(Overlay loadingGui);
 
     /*@Shadow public abstract void setOverlay(@Nullable Overlay loadingGui);
 

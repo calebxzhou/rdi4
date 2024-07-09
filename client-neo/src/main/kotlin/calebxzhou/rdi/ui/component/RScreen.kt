@@ -1,10 +1,6 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.craftcone.utils.Gl
-import calebxzhou.rdi.util.PINE_GREEN
-import calebxzhou.rdi.util.WHITE
 import calebxzhou.rdi.util.drawTextAtCenter
-import calebxzhou.rdi.util.mcFont
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen

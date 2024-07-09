@@ -2,18 +2,13 @@ package calebxzhou.rdi.launcher
 
 import calebxzhou.rdi.util.PINE_GREEN
 import calebxzhou.rdi.util.getFileInJarUrl
-import calebxzhou.rdi.util.getFileInJarUrlString
-import org.intellij.lang.annotations.JdkConstants.FontStyle
 import java.awt.*
-import java.awt.Color.green
-import java.awt.SystemColor.text
 import java.io.File
 import java.util.*
 import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JWindow
 import javax.swing.SwingConstants
-import kotlin.concurrent.thread
 
 object SplashScreen {
     val duration: Int = 10000

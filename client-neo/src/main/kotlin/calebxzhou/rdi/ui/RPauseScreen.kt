@@ -2,7 +2,6 @@ package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.util.goScreen
 import calebxzhou.rdi.util.mc

@@ -1,22 +1,17 @@
 package calebxzhou.rdi.ui
 
-import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.util.McUtils
 import calebxzhou.rdi.util.ServerConnector.ping
 import calebxzhou.rdi.util.mc
-import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Overlay
-import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.client.renderer.CubeMap
 import net.minecraft.client.renderer.PanoramaRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ReloadInstance
 import net.minecraft.util.FastColor.ARGB32
 import net.minecraft.util.Mth
-import net.minecraftforge.fml.loading.ImmediateWindowHandler
 import java.util.*
 import java.util.function.Consumer
 import kotlin.math.min

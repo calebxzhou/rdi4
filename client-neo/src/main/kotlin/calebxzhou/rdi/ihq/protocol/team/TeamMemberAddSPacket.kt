@@ -1,7 +1,7 @@
 package calebxzhou.rdi.ihq.protocol.team
 
-import calebxzhou.rdi.util.ByteBufUtils.writeObjectId
 import calebxzhou.rdi.ihq.protocol.SPacket
+import calebxzhou.rdi.util.writeObjectId
 import io.netty.buffer.ByteBuf
 import org.bson.types.ObjectId
 

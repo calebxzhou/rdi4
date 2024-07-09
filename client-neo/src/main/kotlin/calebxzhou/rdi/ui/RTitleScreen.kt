@@ -1,15 +1,8 @@
 package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.Const
-import calebxzhou.rdi.ihq.net.IhqClient
-import calebxzhou.rdi.launcher.SplashScreen
-import calebxzhou.rdi.launcher.SplashScreen.height
-import calebxzhou.rdi.launcher.SplashScreen.width
-import calebxzhou.rdi.log
 import calebxzhou.rdi.model.RAccount
-import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.general.alertErr
@@ -18,16 +11,11 @@ import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
-import io.ktor.client.statement.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.OptionsScreen
-import net.minecraft.client.gui.screens.TitleScreen.CUBE_MAP
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
-import net.minecraft.client.renderer.CubeMap
-import net.minecraft.client.renderer.PanoramaRenderer
-import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
@@ -70,7 +58,7 @@ class RTitleScreen : RScreen("主页") {
                     submit {
                         val usr = it.formData["usr"]!!
                         val pwd = it.formData["pwd"]!!
-                        IhqClient.get(
+                        /*IhqClient.get(
                             "login", listOf(
                                 "usr" to usr,
                                 "pwd" to pwd
@@ -82,7 +70,7 @@ class RTitleScreen : RScreen("主页") {
                             RAccount.now = account
                             toastOk("登录成功")
                             mc goScreen RTitleScreen()
-                        }
+                        }*/
 
                     }
                 }.build()
@@ -115,7 +103,7 @@ class RTitleScreen : RScreen("主页") {
                     }
                     val qq = it.formData["qq"]!!
                     val name = it.formData["name"]!!
-                    IhqClient.post(
+                    /*IhqClient.post(
                         "register", listOf(
                             "pwd" to pwd,
                             "qq" to qq,
@@ -126,7 +114,7 @@ class RTitleScreen : RScreen("主页") {
                         LocalStorage += "usr" to qq
                         LocalStorage += "pwd" to pwd
                         mc goScreen RTitleScreen()
-                    }
+                    }*/
                 }
 
             }.build()
@@ -163,8 +151,8 @@ class RTitleScreen : RScreen("主页") {
         RPlayerHeadButton(account) {
             if (account == RAccount.DEFAULT)
                 mc goScreen optScreen(this)
-            else
-                mc goScreen RProfileScreen(account)
+            /*else
+                mc goScreen RProfileScreen(account)*/
         }.apply {
             x = mcUIWidth / 2 - width / 2
             y = 2

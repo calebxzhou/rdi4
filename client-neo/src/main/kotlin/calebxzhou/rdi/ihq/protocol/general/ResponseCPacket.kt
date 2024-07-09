@@ -1,8 +1,8 @@
 package calebxzhou.rdi.ihq.protocol.general
 
-import calebxzhou.rdi.util.ByteBufUtils.readString
-import calebxzhou.rdi.ihq.net.IhqClient
+import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.CPacket
+import calebxzhou.rdi.util.readString
 import io.netty.buffer.ByteBuf
 
 /**

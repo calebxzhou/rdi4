@@ -9,7 +9,6 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11C.*
-import java.awt.Color.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 

@@ -1,10 +1,6 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.rdi.log
 import calebxzhou.rdi.mixin.client.AEditBox
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.pressingKey
-import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
