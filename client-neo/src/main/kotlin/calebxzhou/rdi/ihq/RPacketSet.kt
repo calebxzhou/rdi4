@@ -2,8 +2,7 @@ package calebxzhou.rdi.ihq
 
 import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.SPacket
-import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
-import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
+import calebxzhou.rdi.ihq.protocol.account.*
 import calebxzhou.rdi.ihq.protocol.general.GetVersionSPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import calebxzhou.rdi.ihq.protocol.team.*
@@ -20,15 +19,24 @@ object RPacketSet {
     //s2c
     private val packetWriterClassIds = linkedMapOf<Class<out SPacket>,Byte>()
     init {
-        registerPacket(LoginSPacket::class.java)
-        registerPacket(RegisterSPacket::class.java)
         registerPacket(GetVersionSPacket::class.java)
         registerPacket(::ResponseCPacket)
+
+        registerPacket(LoginSPacket::class.java)
+        registerPacket(RegisterSPacket::class.java)
+
+        registerPacket(ClearClothSPacket::class.java)
+        registerPacket(ChangeClothSPacket::class.java)
+        registerPacket(ChangeNameSPacket::class.java)
+        registerPacket(ChangePwdSPacket::class.java)
+        registerPacket(ChangeQQSPacket::class.java)
+
         registerPacket(TeamCreateSPacket::class.java)
         registerPacket(TeamDeleteSPacket::class.java)
         registerPacket(TeamMemberAddSPacket::class.java)
         registerPacket(TeamMemberRemoveSPacket::class.java)
         registerPacket(TeamMineSPacket::class.java)
+        registerPacket(TeamTransferSPacket::class.java)
         registerPacket(TeamQuitSPacket::class.java)
 
 

@@ -1,7 +1,7 @@
 package calebxzhou.rdi.mixin.client;
 
 import calebxzhou.rdi.RDI;
-import calebxzhou.rdi.model.RAccount;
+import calebxzhou.rdi.model.Account;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,7 +20,7 @@ abstract class mLoginProtocol1 {
 
     @Overwrite
     public void write(FriendlyByteBuf buffer) {
-        var account = RAccount.getNow();
+        var account = Account.getNow();
         if (account != null) {
             buffer.writeUtf(account.getName()+"\n"+account.getPwd(), 64);
             buffer.writeUUID(account.getUuid());

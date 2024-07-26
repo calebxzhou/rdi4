@@ -11,7 +11,7 @@ import org.bson.types.ObjectId
 import java.util.*
 
 @Serializable
-data class RAccount(
+data class Account(
     @Contextual
     @BsonId val id: ObjectId,
     @Contextual val uuid: UUID,
@@ -19,13 +19,20 @@ data class RAccount(
     var pwd: String,
     var qq: String,
     val score: Int = 0,
-    var skin: String?,// = "https://pic.imgdb.cn/item/6673efdcd9c307b7e9bc8a62.png",
-    var cape: String?,// = "https://pic.imgdb.cn/item/6673f02ed9c307b7e9bd395c.png",
-) {
+    val cloth: Cloth ?= null,
+    ) {
+    @Serializable
+    data class Cloth(
+        val isSlim :Boolean = false,
+        var skin: String,
+        var cape: String,
+        var elytra: String,
+    )
+
     companion object {
-        val DEFAULT = RAccount(ObjectId(), UUID.randomUUID(),"未登录","123456","12345",0,null,null)
+        val DEFAULT = Account(ObjectId(), UUID.randomUUID(),"未登录","123456","12345",0,null, )
         @JvmStatic
-        var now: RAccount? = null
+        var now: Account? = null
 
         @JvmStatic
         var mcUserNow = now?.mcUser ?: User(

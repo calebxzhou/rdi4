@@ -1,6 +1,6 @@
 package calebxzhou.rdi.service
 
-import calebxzhou.rdi.model.RAccount
+import calebxzhou.rdi.model.Account
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.UserAuthentication
 import com.mojang.authlib.UserType
@@ -26,11 +26,11 @@ class RUserAuthService : UserAuthentication {
     }
 
     override fun getAvailableProfiles(): Array<GameProfile?> {
-        return arrayOf(RAccount.now?.profile)
+        return arrayOf(Account.now?.profile)
     }
 
     override fun getSelectedProfile(): GameProfile? {
-        return RAccount.now?.profile
+        return Account.now?.profile
     }
 
     override fun selectGameProfile(profile: GameProfile?) {

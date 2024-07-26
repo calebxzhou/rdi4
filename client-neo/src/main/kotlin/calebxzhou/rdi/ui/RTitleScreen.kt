@@ -1,7 +1,11 @@
 package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.Const
-import calebxzhou.rdi.model.RAccount
+import calebxzhou.rdi.ihq.IhqClient
+import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
+import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
+import calebxzhou.rdi.model.Account
+import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.ROptionScreen
@@ -58,19 +62,15 @@ class RTitleScreen : RScreen("主页") {
                     submit {
                         val usr = it.formData["usr"]!!
                         val pwd = it.formData["pwd"]!!
-                        /*IhqClient.get(
-                            "login", listOf(
-                                "usr" to usr,
-                                "pwd" to pwd
-                            )
-                        ) {
-                            val account = serdesJson.decodeFromString<RAccount>(it.bodyAsText())
+                        IhqClient.send(LoginSPacket(usr,pwd)){ resp->
+                            val account = serdesJson.decodeFromString<Account>(resp.data)
                             LocalStorage += "usr" to usr
                             LocalStorage += "pwd" to pwd
-                            RAccount.now = account
+                            Account.now = account
                             toastOk("登录成功")
                             mc goScreen RTitleScreen()
-                        }*/
+                        }
+
 
                     }
                 }.build()
@@ -103,18 +103,13 @@ class RTitleScreen : RScreen("主页") {
                     }
                     val qq = it.formData["qq"]!!
                     val name = it.formData["name"]!!
-                    /*IhqClient.post(
-                        "register", listOf(
-                            "pwd" to pwd,
-                            "qq" to qq,
-                            "name" to name,
-                        )
-                    ) {
+
+                    IhqClient.send(RegisterSPacket(name,pwd,qq)){ resp->
                         toastOk("注册成功")
                         LocalStorage += "usr" to qq
                         LocalStorage += "pwd" to pwd
                         mc goScreen RTitleScreen()
-                    }*/
+                    }
                 }
 
             }.build()
@@ -125,7 +120,7 @@ class RTitleScreen : RScreen("主页") {
 
     public override fun init() {
         //SplashScreen.hide()
-        val account = RAccount.now ?: RAccount.DEFAULT
+        val account = Account.now ?: Account.DEFAULT
         //关闭音乐
         mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
         /*FabricLoader.getInstance().allMods.forEach {
@@ -149,7 +144,7 @@ class RTitleScreen : RScreen("主页") {
         )
         log.info(loadedModsIdName)*/
         RPlayerHeadButton(account) {
-            if (account == RAccount.DEFAULT)
+            if (account == Account.DEFAULT)
                 mc goScreen optScreen(this)
             /*else
                 mc goScreen RProfileScreen(account)*/
@@ -161,7 +156,7 @@ class RTitleScreen : RScreen("主页") {
             row(
                 6,
                 RTextButton("多人生存") {
-                    if (RAccount.now == null) {
+                    if (Account.now == null) {
 
                         mc goScreen optScreen(this@RTitleScreen)
                     } else {

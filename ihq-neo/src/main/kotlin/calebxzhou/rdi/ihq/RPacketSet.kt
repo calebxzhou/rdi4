@@ -38,6 +38,7 @@ object RPacketSet {
         registerPacket { TeamMemberAddSPacket(it) }
         registerPacket { TeamMemberRemoveSPacket(it) }
         registerPacket { TeamMineSPacket() }
+        registerPacket { TeamTransferSPacket(it) }
         registerPacket { TeamQuitSPacket() }
     }
 
