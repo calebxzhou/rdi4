@@ -1,13 +1,12 @@
 package calebxzhou.rdi.ihq.protocol.account
 
+import calebxzhou.rdi.ihq.log
 import calebxzhou.rdi.ihq.protocol.SPacket
 import calebxzhou.rdi.ihq.service.PlayerService
-import calebxzhou.rdi.ihq.util.account
-import calebxzhou.rdi.ihq.util.err
-import calebxzhou.rdi.ihq.util.ok
-import calebxzhou.rdi.ihq.util.readString
+import calebxzhou.rdi.ihq.util.*
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
+import kotlinx.serialization.encodeToString
 
 /**
  * Created  on 2023-07-13,17:27.
@@ -22,9 +21,11 @@ data class LoginSPacket(
 
     override suspend fun process(ctx: ChannelHandlerContext) {
         PlayerService.validate(usr, pwd)?.let { account ->
+            log.info { "${usr}登录成功" }
             ctx.account=account
-            ctx.ok()
+            ctx.ok(serdesJson.encodeToString(account))
         }?:let {
+            log.info { "${usr}登录失败" }
             ctx.err("密码错误")
         }
     }

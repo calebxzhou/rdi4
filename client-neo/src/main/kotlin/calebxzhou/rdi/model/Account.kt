@@ -1,6 +1,7 @@
 package calebxzhou.rdi.model
 
 import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.util.toUUID
 import com.mojang.authlib.GameProfile
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -14,23 +15,21 @@ import java.util.*
 data class Account(
     @Contextual
     @BsonId val id: ObjectId,
-    @Contextual val uuid: UUID,
     var name: String,
     var pwd: String,
     var qq: String,
     val score: Int = 0,
-    val cloth: Cloth ?= null,
+    var cloth: Cloth ?= null,
     ) {
     @Serializable
     data class Cloth(
         val isSlim :Boolean = false,
         var skin: String,
-        var cape: String,
-        var elytra: String,
+        var cape: String
     )
 
     companion object {
-        val DEFAULT = Account(ObjectId(), UUID.randomUUID(),"未登录","123456","12345",0,null, )
+        val DEFAULT = Account(ObjectId(),  "未登录","123456","12345",0,null, )
         @JvmStatic
         var now: Account? = null
 
@@ -46,12 +45,13 @@ data class Account(
         val isLogin
             get() = now != null
     }
-
+    @Contextual
+    val uuid = id.toUUID()
     @Transient
     val profile = GameProfile(uuid, name)
 
     @Transient
-    val mcUser = User(name, uuid.toString(), "", Optional.empty(), Optional.empty(), User.Type.MOJANG)
+    val mcUser = User(name,uuid.toString(), "", Optional.empty(), Optional.empty(), User.Type.MOJANG)
     val skinLocation
         get() = mc.skinManager.getInsecureSkinLocation(profile)
 }

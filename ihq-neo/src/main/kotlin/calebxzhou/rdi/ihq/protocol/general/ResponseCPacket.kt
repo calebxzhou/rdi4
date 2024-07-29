@@ -9,10 +9,11 @@ import io.netty.buffer.ByteBuf
  */
 //处理成功&数据
 data class ResponseCPacket(
+    val reqId: Byte,
     val ok: Boolean,
     val data: String
 ) : CPacket {
     override fun write(buf: ByteBuf) {
-        buf.writeBoolean(ok).writeString(data)
+        buf.writeByte(reqId.toInt()).writeBoolean(ok).writeString(data)
     }
 }

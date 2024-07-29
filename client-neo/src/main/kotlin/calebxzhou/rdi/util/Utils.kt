@@ -6,9 +6,11 @@ import calebxzhou.rdi.ui.general.alertErr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.bson.types.ObjectId
 import java.io.File
 import java.io.InputStream
 import java.net.URL
+import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.util.*
@@ -86,4 +88,20 @@ object Utils {
     fun createUuid(name: String): UUID {
         return UUID.nameUUIDFromBytes(name.toByteArray(StandardCharsets.UTF_8));
     }
+}fun UUID.toBytes(): ByteArray {
+    val bb = ByteBuffer.wrap(ByteArray(16))
+    bb.putLong(this.mostSignificantBits)
+    bb.putLong(this.leastSignificantBits)
+    return bb.array()
+}fun UUID.toObjectId() : ObjectId {
+    val uuidBytes = this.toBytes()
+    val objectIdBytes = uuidBytes.sliceArray(0..11)
+    return ObjectId(objectIdBytes)
+}
+fun ObjectId.toUUID() : UUID{
+    val objectIdBytes = this.toByteArray()
+    val bb = ByteBuffer.wrap(ByteArray(16))
+    bb.put(objectIdBytes)
+//    bb.putLong(0)
+    return UUID(bb.getLong(0), bb.getLong(8))
 }

@@ -153,8 +153,14 @@ jarJar.enable()
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-    //implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-    implementation "thedarkcolour:kotlinforforge:$kff_version"
+    minecraftLibrary 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
+    implementation(jarJar('org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3')) {
+        jarJar.ranged(it, "[1.6.3,)")
+    }
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
+
+    //implementation "thedarkcolour:kotlinforforge-neoforge:$kff_version"
     minecraftLibrary 'org.mongodb:bson:5.1.0'
     implementation(jarJar("org.mongodb:bson:5.1.0")) {
         jarJar.ranged(it, "[5.1.0,)")

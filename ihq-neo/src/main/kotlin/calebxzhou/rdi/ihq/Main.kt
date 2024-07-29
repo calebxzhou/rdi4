@@ -45,9 +45,9 @@ fun main() {
         .handler(object : ChannelInitializer<NioDatagramChannel>() {
             override fun initChannel(ch: NioDatagramChannel) {
                 ch.pipeline()
-                    .addLast("decoder", RPacketDecoder())
+                    .addLast("decoder", RIhqPacketDecoder())
                     .addLast("packet_handler", RPacketReceiver())
-                    .addLast("encoder", RPacketEncoder())
+                    .addLast("encoder", RIhqPacketEncoder())
                 // Add your other handlers here
 
             }

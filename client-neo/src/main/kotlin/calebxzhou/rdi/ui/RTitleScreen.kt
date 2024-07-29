@@ -7,10 +7,13 @@ import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
+import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
+import calebxzhou.rdi.ui.RTitleScreen.Companion.optScreen
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.alertInfo
+import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -60,17 +63,8 @@ class RTitleScreen : RScreen("主页") {
                     text("usr", "QQ号/昵称/ID", 16)
                     pwd("pwd", "密码")
                     submit {
-                        val usr = it.formData["usr"]!!
-                        val pwd = it.formData["pwd"]!!
-                        IhqClient.send(LoginSPacket(usr,pwd)){ resp->
-                            val account = serdesJson.decodeFromString<Account>(resp.data)
-                            LocalStorage += "usr" to usr
-                            LocalStorage += "pwd" to pwd
-                            Account.now = account
-                            toastOk("登录成功")
-                            mc goScreen RTitleScreen()
-                        }
 
+                        onLogin(it)
 
                     }
                 }.build()
@@ -95,26 +89,53 @@ class RTitleScreen : RScreen("主页") {
                 pwd("pwd", "密码")
                 pwd("cpwd", "确认密码")
                 submit {
-                    val pwd = it.formData["pwd"]!!
-                    val cpwd = it.formData["cpwd"]!!
-                    if (pwd != cpwd) {
-                        alertErr("确认密码与密码不一致", it.screen)
-                        return@submit
-                    }
-                    val qq = it.formData["qq"]!!
-                    val name = it.formData["name"]!!
-
-                    IhqClient.send(RegisterSPacket(name,pwd,qq)){ resp->
-                        toastOk("注册成功")
-                        LocalStorage += "usr" to qq
-                        LocalStorage += "pwd" to pwd
-                        mc goScreen RTitleScreen()
-                    }
+                    onRegister(it)
                 }
 
             }.build()
         }
 
+        fun onRegister(it: RFormScreenSubmitHandler) {
+            val pwd = it.formData["pwd"]!!
+            val cpwd = it.formData["cpwd"]!!
+            if (pwd != cpwd) {
+                alertErr("确认密码与密码不一致", it.screen)
+                return
+            }
+            val qq = it.formData["qq"]!!
+            val name = it.formData["name"]!!
+
+            IhqClient.send(RegisterSPacket(name, pwd, qq)) { resp ->
+                if(resp.ok){
+
+                toastOk("注册成功")
+                LocalStorage += "usr" to qq
+                LocalStorage += "pwd" to pwd
+                mc goScreen RTitleScreen()
+                }else{
+                    dialog(resp.data,it.screen)
+                }
+            }
+        }
+
+        fun onLogin(it: RFormScreenSubmitHandler) {
+
+            val usr = it.formData["usr"]!!
+            val pwd = it.formData["pwd"]!!
+            IhqClient.send(LoginSPacket(usr, pwd)) { resp ->
+                if (resp.ok) {
+
+                    val account = serdesJson.decodeFromString<Account>(resp.data)
+                    LocalStorage += "usr" to usr
+                    LocalStorage += "pwd" to pwd
+                    Account.now = account
+                    toastOk("登录成功")
+                    mc goScreen RTitleScreen()
+                } else {
+                    dialog("密码错误", it.screen)
+                }
+            }
+        }
     }
 
 

@@ -4,7 +4,6 @@ import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.SPacket
 import calebxzhou.rdi.ihq.protocol.account.*
 import calebxzhou.rdi.ihq.protocol.general.GetVersionSPacket
-import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import calebxzhou.rdi.ihq.protocol.team.*
 import io.netty.buffer.ByteBuf
 
@@ -22,7 +21,6 @@ object RPacketSet {
 
     init {
         registerPacket { GetVersionSPacket() }
-        registerPacket(ResponseCPacket::class.java)
 
         registerPacket { LoginSPacket(it) }
         registerPacket { RegisterSPacket(it) }

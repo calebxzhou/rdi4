@@ -148,11 +148,11 @@ fun ByteBuf.readVarIntArray(maxLength: Int): IntArray {
 fun ChannelHandlerContext.send(packet: CPacket){
     this.channel().writeAndFlush(packet)
 }
-fun ChannelHandlerContext.ok(data: String?=null){
-    this.channel().writeAndFlush(ResponseCPacket(true,""))
+fun ChannelHandlerContext.ok(data: String=""){
+    this.channel().writeAndFlush(ResponseCPacket(reqId,true,data))
 }
 fun ChannelHandlerContext.err(msg: String){
-    this.channel().writeAndFlush(ResponseCPacket(false,msg))
+    this.channel().writeAndFlush(ResponseCPacket(reqId,false,msg))
 }
 operator fun <T> ChannelHandlerContext.get(key: String): T? {
     return this.channel().attr<T>(AttributeKey.valueOf<T>(key)).get()
