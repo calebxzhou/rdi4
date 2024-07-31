@@ -31,6 +31,8 @@ val mcUIWidth
     get() = mc.window.guiScaledWidth
 val mcUIHeight
     get() = mc.window.guiScaledHeight
+val mcUIScale
+    get() = mc.window.guiScale
 val mcText: (String) -> MutableComponent = {
     Component.literal(it)
 }
@@ -44,7 +46,12 @@ infix fun Minecraft.goScreen(screen: Screen) {
 infix fun Minecraft.pressingKey(keyCode: Int): Boolean {
     return InputConstants.isKeyDown(mcWindowHandle, keyCode)
 }
-
+operator fun MutableComponent.plus(component:Component): MutableComponent {
+    return append(component)
+}
+operator  fun MutableComponent.plus(component:String): MutableComponent {
+    return append(component)
+}
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
 }

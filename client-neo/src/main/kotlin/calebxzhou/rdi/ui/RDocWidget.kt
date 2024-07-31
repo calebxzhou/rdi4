@@ -13,13 +13,14 @@ import net.minecraft.client.gui.components.ImageWidget
 import net.minecraft.client.gui.components.MultiLineTextWidget
 import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.layouts.LayoutSettings
+import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.client.gui.layouts.SpacerElement
 import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
-import java.util.function.Consumer
+import net.minecraft.world.item.ItemStack
 
 fun docWidget(x:Int = 0,y:Int = 20,width: Int = mcUIWidth-5 , height: Int = mcUIHeight-25, builder: RDocWidget.Builder.()->Unit) : RDocWidget.Builder{
     return RDocWidget.Builder(x, y, width, height).apply(builder)
@@ -109,12 +110,27 @@ class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Conte
             narration.append(content).append("\n")
         }
         //图片
-        fun img(path: String){
+        fun img(path: String,width: Int = 128,height: Int = 128){
             helper.addChild(
-                ImageWidget(64,64, ResourceLocation("rdi","textures/${path}.png")),
+                ImageWidget(width,height, ResourceLocation("rdi","textures/${path}.png")),
+                this.alignHeader.paddingTop(3).paddingBottom(3)
+            )
+        }
+        //物品
+        fun items(vararg items: ItemStack){
+            val row = LinearLayout(items.size*32,0,LinearLayout.Orientation.HORIZONTAL)
+            items.forEach {
+                row.addChild(
+                    RItemWidget(it,32,32)
+                )
+            }
+            row.arrangeElements()
+            helper.addChild(
+                row,
                 this.alignHeader.paddingTop(3).paddingBottom(3)
             )
         }
     }
 
 }
+
