@@ -1,6 +1,7 @@
 package calebxzhou.rdi.ui.component
 
 import calebxzhou.rdi.util.drawTextAtCenter
+import calebxzhou.rdi.util.mcText
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
@@ -17,7 +18,7 @@ abstract class RScreen(private val name: String) : Screen(Component.literal(name
             renderBackground(guiGraphics)
         }
         if (showTitle) {
-            drawTextAtCenter(guiGraphics, name, 10)
+            drawTextAtCenter(guiGraphics, name, 5)
         }
         doRender(guiGraphics, mouseX, mouseY, partialTick)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
@@ -27,7 +28,7 @@ abstract class RScreen(private val name: String) : Screen(Component.literal(name
     override fun init() {
         super.init()
         if(showCloseButton){
-            widgets += RTextButton(5,5,"←返回/Esc"){onClose()}
+            widgets += RTextButton(5,5, mcText("←返回/Esc")){onClose()}
         }
         widgets.forEach { addRenderableWidget(it) }
 
