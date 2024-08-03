@@ -33,9 +33,6 @@ import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
-import java.awt.im.InputContext
-import java.util.*
-import javax.swing.text.html.HTML.Tag.I
 
 class RTitleScreen : RScreen("主页") {
     override var showTitle = false

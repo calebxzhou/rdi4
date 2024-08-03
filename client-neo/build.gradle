@@ -49,6 +49,16 @@ repositories {
         url = "https://modmaven.dev"
     }
     maven {
+        // location of the maven that hosts JEI files before January 2023
+        name = "Progwml6's maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
         name = "CurseForge"
         url = "https://minecraft.curseforge.com/api/maven/"
     }
@@ -171,9 +181,15 @@ dependencies {
     }
 
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
-    implementation fg.deobf("curse.maven:jei-238222:4712868")
+   // implementation fg.deobf("curse.maven:jei-238222:4712868")
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
     implementation fg.deobf("curse.maven:curios-309927:4583413")
-    implementation fg.deobf("curse.maven:terrafirmacraft-302973:5478226")
+
+   // implementation fg.deobf("curse.maven:terrafirmacraft-302973:5478226")
+    implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
     implementation fg.deobf("maven.modrinth:jade:11.9.4+forge")
 }
 

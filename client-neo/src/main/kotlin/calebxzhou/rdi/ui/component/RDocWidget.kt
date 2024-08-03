@@ -1,4 +1,4 @@
-package calebxzhou.rdi.ui
+package calebxzhou.rdi.ui.component
 
 import calebxzhou.rdi.util.mcFont
 import calebxzhou.rdi.util.mcText
@@ -22,7 +22,7 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 
-fun docWidget(x:Int = 0,y:Int = 20,width: Int = mcUIWidth-5 , height: Int = mcUIHeight-25, builder: RDocWidget.Builder.()->Unit) : RDocWidget.Builder{
+fun docWidget(x:Int = 0,y:Int = 20,width: Int = mcUIWidth-5 , height: Int = mcUIHeight-25, builder: RDocWidget.Builder.()->Unit) : RDocWidget.Builder {
     return RDocWidget.Builder(x, y, width, height).apply(builder)
 }
 class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Content) :
@@ -73,7 +73,7 @@ class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Conte
 
         fun build(): RDocWidget {
             grid.arrangeElements()
-            return RDocWidget(x,y,width,height,Content(this.grid, this.narration))
+            return RDocWidget(x,y,width,height, Content(this.grid, this.narration))
         }
 
         //一级标题 居中 绿粗
@@ -121,7 +121,7 @@ class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Conte
             val row = LinearLayout(items.size*32,0,LinearLayout.Orientation.HORIZONTAL)
             items.forEach {
                 row.addChild(
-                    RItemWidget(it,32,32)
+                    RItemStackWidget(it,32,32)
                 )
             }
             row.arrangeElements()

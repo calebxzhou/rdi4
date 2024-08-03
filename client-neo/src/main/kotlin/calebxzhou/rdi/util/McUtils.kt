@@ -33,8 +33,10 @@ val mcUIHeight
     get() = mc.window.guiScaledHeight
 val mcUIScale
     get() = mc.window.guiScale
-val mcText: (String) -> MutableComponent = {
-    Component.literal(it)
+fun mcText(str: String?=null): MutableComponent  {
+    return str?.let {
+        Component.literal(it)
+    }?:Component.empty()
 }
 
 infix fun Minecraft.goScreen(screen: Screen) {
@@ -109,6 +111,7 @@ fun mcTextWidthOf(text: Component): Int {
 fun copyToClipboard(s: String) {
     GLFW.glfwSetClipboardString(mcWindowHandle,s)
 }
+
 object McUtils {
     @JvmStatic
     fun getWindowSize(screenW: Int, screenH: Int): Pair<Int, Int> {

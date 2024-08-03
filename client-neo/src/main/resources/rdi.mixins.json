@@ -14,7 +14,8 @@
     "mProfileTexture",
     "mProtocolVersion",
     "mSessionService",
-    "gameplay.mPlayer"
+    "gameplay.mPlayer",
+    "tfc.mTfcOverlay"
   ],
   "client": [
     "AEditBox",

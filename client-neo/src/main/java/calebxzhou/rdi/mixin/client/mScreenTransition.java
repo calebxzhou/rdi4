@@ -1,5 +1,6 @@
 package calebxzhou.rdi.mixin.client;
 
+import calebxzhou.rdi.RDI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -19,6 +20,6 @@ public class mScreenTransition {
     @Inject(method = "setScreen",at=@At("HEAD"))
     private void log(Screen guiScreen, CallbackInfo ci){
 
-        /*RDI.log().info("画面迁移：{} -> {}", screen != null ? screen.getClass().getCanonicalName() : "null",guiScreen.getClass()!=null ? guiScreen.getClass().getCanonicalName() : "null");*/
+        RDI.log().info("画面迁移：{} -> {}", screen != null ? screen.getClass().getCanonicalName() : "null",guiScreen!=null ? guiScreen.getClass().getCanonicalName() : "null");
     }
 }

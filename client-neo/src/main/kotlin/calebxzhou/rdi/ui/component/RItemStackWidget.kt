@@ -1,24 +1,34 @@
-package calebxzhou.rdi.ui
+package calebxzhou.rdi.ui.component
 
+import calebxzhou.rdi.RDIJeiPlugin
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcFont
 import calebxzhou.rdi.util.mcText
+import calebxzhou.rdi.util.pressingKey
+import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.platform.Lighting
+import mezz.jei.api.recipe.RecipeIngredientRole
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Tooltip
+import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.client.resources.model.BakedModel
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import org.joml.Matrix4f
 
-class RItemWidget(val itemStack: ItemStack, width: Int = 16, height: Int = 16) : AbstractWidget(0, 0,
-    width, height, mcText("")) {
+//物品展示控件
+class RItemStackWidget(val itemStack: ItemStack, width: Int = 16, height: Int = 16) : AbstractWidget(
+    0, 0,
+    width, height, mcText("")
+) {
     init {
-        tooltip = Tooltip.create(itemStack.hoverName,itemStack.hoverName)
+        tooltip = Tooltip.create(itemStack.hoverName, itemStack.hoverName)
     }
+
     override fun renderWidget(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
         if (itemStack.isEmpty)
             return
@@ -59,16 +69,35 @@ class RItemWidget(val itemStack: ItemStack, width: Int = 16, height: Int = 16) :
         //渲染数量
         pose.pushPose()
         pose.translate(0.0f, 0.0f, 200.0f)
-        pGuiGraphics.drawString(mcFont, mcText("${itemStack.count}"), x + width-10, y + height-10, 16777215, true)
+        pGuiGraphics.drawString(mcFont, mcText("${itemStack.count}"), x + width - 10, y + height - 10, 16777215, true)
         pose.popPose()
         //真Y要往下串点,不然跟tooltip位置对不上
         this.isHovered =
-            (pMouseX >= x) && (pMouseY >= realY) && (pMouseX < x + this.width) && (pMouseY < realY + this.height+10)
-
+            (pMouseX >= x) && (pMouseY >= realY) && (pMouseX < x + this.width) && (pMouseY < realY + this.height + 10)
+        if (this.isHoveredOrFocused) {
+            //高亮显示
+            pGuiGraphics.fillGradient(
+                RenderType.guiOverlay(),
+                x,
+                y,
+                x + width,
+                y + height,
+                0x80FFFFFF.toInt(),
+                0x80FFFFFF.toInt(),
+                0
+            )
+            if(mc pressingKey InputConstants.KEY_R){
+                //打开jei合成表
+                val ingredient =  RDIJeiPlugin.jeiRuntime.ingredientManager.createTypedIngredient(itemStack).get()//getFocusFactory()
+                val focus = RDIJeiPlugin.jeiRuntime.jeiHelpers.focusFactory.createFocus(RecipeIngredientRole.OUTPUT, ingredient)
+                RDIJeiPlugin.jeiRuntime.recipesGui.show(focus)
+            }
+        }
     }
 
     override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput) {
-
+        pNarrationElementOutput.add(NarratedElementType.USAGE, itemStack.hoverName)
     }
+
 
 }
