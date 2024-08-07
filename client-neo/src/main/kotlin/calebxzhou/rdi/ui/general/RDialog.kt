@@ -66,15 +66,15 @@ class RDialog(
     val yesHandler: () -> Unit = {},
 ) : RScreen("提示") {
     override var clearColor = false
-    override var showCloseButton = false
+    override var closeable = false
     override var showTitle = false
     lateinit var okBtn: RButton
     lateinit var cancelBtn: RButton
     val lines = msg.split("\n")
     var startY = mcUIHeight/2-lines.size*10
     override fun init() {
-        okBtn = RButton(width / 2 - 50, mcUIHeight / 2 + 30, 50, mcText("确定")) { onYes() }.also { registerWidget(it) }
-        cancelBtn = RButton(width / 2, mcUIHeight / 2 + 30, 50, mcText("取消")) { onNo() }.also { registerWidget(it) }
+        okBtn = RButton(mcText("确定"),width / 2 - 50, mcUIHeight / 2 + 30, 50, ) { onYes() }.also { registerWidget(it) }
+        cancelBtn = RButton( mcText("取消"),width / 2, mcUIHeight / 2 + 30, 50) { onNo() }.also { registerWidget(it) }
         if (diagType == RDialogType.ALERT) {
             cancelBtn.visible = false
             okBtn.x = width / 2 - 25

@@ -163,7 +163,8 @@ object ROverlay {
             val stack = guiGraphics.pose()
             stack.pushPose()
             stack.translate((x + 10).toFloat(), (y + 2).toFloat(), 0f)
-            val comp = mcText("AP${mc.player?.armorValue?:0}")
+            //乘5为了显示满100 原版满20
+            val comp = mcText("AP${(mc.player?.armorValue ?: 0)*5}")
             guiGraphics.drawString(
                 gui.font,
                 comp,

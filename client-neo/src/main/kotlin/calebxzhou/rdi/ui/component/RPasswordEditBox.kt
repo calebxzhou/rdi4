@@ -5,13 +5,15 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 
-class RPasswordEditBox(label: String, x: Int, y: Int, width: Int,) : REditBox(label, x, y, width,16) {
-    constructor(label: String) : this(label,0,0, 100)
+class RPasswordEditBox(label: String, x: Int=0, y: Int=0, width: Int=100,val defaultValue: String?=null) : REditBox(label, x, y, width,16) {
+
+    var passwordVisible = false
     init {
         setHint(Component.literal(label))
+        if (defaultValue != null) {
+            value = defaultValue
+        }
     }
-    var passwordVisible = false
-
     override fun tick() {
 
         super.tick()

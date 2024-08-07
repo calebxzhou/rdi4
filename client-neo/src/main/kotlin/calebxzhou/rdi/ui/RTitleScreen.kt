@@ -8,11 +8,9 @@ import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.component.*
-import calebxzhou.rdi.ui.general.ROptionScreen
-import calebxzhou.rdi.ui.general.alertErr
-import calebxzhou.rdi.ui.general.alertInfo
-import calebxzhou.rdi.ui.general.dialog
+import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.RGridLayout
+import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
@@ -36,7 +34,7 @@ import net.minecraft.world.level.levelgen.presets.WorldPresets
 
 class RTitleScreen : RScreen("主页") {
     override var showTitle = false
-    override var showCloseButton = false
+    override var closeable = false
     val LOGO: ResourceLocation =
         ResourceLocation("rdi", "textures/gui/title/mojangstudios.png")
 
@@ -47,27 +45,24 @@ class RTitleScreen : RScreen("主页") {
 
     companion object {
         val optScreen = { prevScreen: RScreen ->
-            ROptionScreen(
-                prevScreen,
+            optionScreen(prevScreen) {
                 "注册新账号" to {
-                    mc goScreen regScreen(it)
-                },
+                    mc goScreen regScreen(mcScreen)
+                }
                 "登录已有账号" to {
-                    mc goScreen loginScreen(it)
-                },
-            )
+                    mc goScreen loginScreen(mcScreen)
+                }
+            }
         }
         val loginScreen =
             { prevScreen: RScreen ->
                 formScreen(prevScreen, "登录账号") {
-                    text("usr", "QQ号/昵称/ID", 16)
-                    pwd("pwd", "密码")
+                    text("usr", "QQ号/昵称/ID", 16, defaultValue = LocalStorage["usr"])
+                    pwd("pwd", "密码", defaultValue = LocalStorage["pwd"])
                     submit {
-
                         onLogin(it)
-
                     }
-                }.build()
+                }
             }
         val regScreen = { prevScreen: RScreen ->
             formScreen(prevScreen, "注册账号") {
@@ -92,7 +87,7 @@ class RTitleScreen : RScreen("主页") {
                     onRegister(it)
                 }
 
-            }.build()
+            }
         }
 
         fun onRegister(it: RFormScreenSubmitHandler) {
@@ -106,14 +101,14 @@ class RTitleScreen : RScreen("主页") {
             val name = it.formData["name"]!!
 
             IhqClient.send(RegisterSPacket(name, pwd, qq)) { resp ->
-                if(resp.ok){
+                if (resp.ok) {
 
-                toastOk("注册成功")
-                LocalStorage += "usr" to qq
-                LocalStorage += "pwd" to pwd
-                mc goScreen RTitleScreen()
-                }else{
-                    dialog(resp.data,it.screen)
+                    toastOk("注册成功")
+                    LocalStorage += "usr" to qq
+                    LocalStorage += "pwd" to pwd
+                    mc goScreen RTitleScreen()
+                } else {
+                    dialog(resp.data, it.screen)
                 }
             }
         }
@@ -173,49 +168,33 @@ class RTitleScreen : RScreen("主页") {
             x = mcUIWidth / 2 - width / 2
             y = 2
         }.also { registerWidget(it) }
-        RGridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17).apply {
-            row(
-                6,
-                RTextButton("多人生存") {
-                    if (Account.now == null) {
+        gridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17) {
+            button("开始") {
+                if (Account.now == null) {
+                    mc goScreen optScreen(this@RTitleScreen)
+                } else {
+                    RSoundPlayer.stopAll()
+                    ConnectScreen.startConnecting(
+                        this@RTitleScreen,
+                        mc,
+                        ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
+                        Const.SERVER_DATA,
+                        false
+                    )
+                }
+            }
+            button("设置") {
+                mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
+            }
+            button("致谢") {
+                alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe\nMod建议：ForiLuSa", this@RTitleScreen)
+            }
+            button("QQ群") {
+                copyToClipboard("1095925708")
+                alertInfo("已复制QQ群号：1095925708\n欢迎加入RDI玩家交流群！", this@RTitleScreen)
 
-                        mc goScreen optScreen(this@RTitleScreen)
-                    } else {
-                        RSoundPlayer.stopAll()
-                        ConnectScreen.startConnecting(
-                            this@RTitleScreen,
-                            mc,
-                            ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
-                            Const.SERVER_DATA,
-                            false
-                        )
-
-                    }
-
-
-                },
-                RTextButton("单人创造") {
-                    if (shiftMode)
-                        mc goScreen SelectWorldScreen(this@RTitleScreen)
-                    else
-                        openFlatLevel()
-                },
-                RTextButton("Mod管理") {
-                    mc goScreen net.minecraftforge.client.gui.ModListScreen(this@RTitleScreen)
-                },
-                RTextButton("设置") {
-                    mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
-                },
-
-                RTextButton("致谢") {
-                    alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe\nMod建议：ForiLuSa", this@RTitleScreen)
-                },
-                RTextButton("QQ群") {
-                    copyToClipboard("1095925708")
-                    alertInfo("已复制QQ群号：1095925708\n欢迎加入RDI玩家交流群！", this@RTitleScreen)
-                },
-            )
-        }.visitWidgets { registerWidget(it) }
+            }
+        }.buildForIteration { registerWidget(it) }
 
 
         super.init()
@@ -250,8 +229,8 @@ class RTitleScreen : RScreen("主页") {
     override fun tick() {
         shiftMode = mc pressingKey InputConstants.KEY_LSHIFT
         ctrlMode = mc pressingKey InputConstants.KEY_LCONTROL
-        if(mc pressingKey InputConstants.KEY_Z){
-            mc goScreen object : RScreen("文档测试"){
+        if (mc pressingKey InputConstants.KEY_Z) {
+            mc goScreen object : RScreen("文档测试") {
                 override fun init() {
 
                     val widget = docWidget {
@@ -261,11 +240,11 @@ class RTitleScreen : RScreen("主页") {
                         spacer(5)
                         img("gui/title/mojangstudios")
                         items(
-                            ItemStack( Items.ENCHANTED_BOOK,16),
-                            ItemStack( Items.DARK_OAK_DOOR,16),
-                            ItemStack( Items.GRASS_BLOCK,16),
-                            ItemStack( Items.GRASS_BLOCK,16),
-                            ItemStack( Items.GRASS_BLOCK,16),
+                            ItemStack(Items.ENCHANTED_BOOK, 16),
+                            ItemStack(Items.DARK_OAK_DOOR, 16),
+                            ItemStack(Items.GRASS_BLOCK, 16),
+                            ItemStack(Items.GRASS_BLOCK, 16),
+                            ItemStack(Items.GRASS_BLOCK, 16),
                         )
                         p("正文正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦")
                         p("正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦正文啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶反反复复烦烦烦烦烦烦烦烦烦烦烦烦烦烦烦")

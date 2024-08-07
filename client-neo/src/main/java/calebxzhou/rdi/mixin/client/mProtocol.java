@@ -22,12 +22,10 @@ abstract class mLoginProtocol1 {
     public void write(FriendlyByteBuf buffer) {
         var account = Account.getNow();
         if (account != null) {
-            buffer.writeUtf(account.getName()+"\n"+account.getPwd(), 64);
+            buffer.writeUtf(account.getName(), 64);
             buffer.writeUUID(account.getUuid());
         }else{
-            RDI.log().warn("account is null");
-            buffer.writeUtf("", 64);
-            buffer.writeUUID(UUID.randomUUID());
+            throw new IllegalStateException("账号为null,不允许登录");
         }
     }
 

@@ -9,11 +9,8 @@ import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import calebxzhou.rdi.log
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.ui.component.*
-import calebxzhou.rdi.ui.general.ROptionScreen
-import calebxzhou.rdi.ui.general.alertErr
-import calebxzhou.rdi.ui.general.confirm
-import calebxzhou.rdi.ui.general.dialog
-import calebxzhou.rdi.ui.layout.RGridLayout
+import calebxzhou.rdi.ui.general.*
+import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -50,7 +47,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                     setMojangSkinCape(it)
                 }
             }
-        }.build()
+        }
     private val picServerSkinScreen
         get() = formScreen(this, "导入图床皮肤披风") {
             text("skin", "皮肤链接", 256, defaultValue = account.cloth?.skin, nullable = true)
@@ -61,7 +58,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                     setPicServerCloth(it)
                 }
             }
-        }.build()
+        }
     private val blessingSkinScreen
         get() = formScreen(this, "导入皮肤站皮肤披风") {
             text("skin", "皮肤链接", 256, nullable = true)
@@ -71,7 +68,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                     setBlessingServerSkinCape(it)
                 }
             }
-        }.build()
+        }
 
     //验证服饰链接（有效url，并且能够获取png图片）
     private fun validateClothUrl(url: String, handler: RFormScreenSubmitHandler): Boolean {
@@ -249,7 +246,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                     params += "cape" to capeURL
 
                 }
-                val packet = ChangeClothSPacket(Account.Cloth(isSlim, skinURL?:"", capeURL?:""))
+                val packet = ChangeClothSPacket(Account.Cloth(isSlim, skinURL ?: "", capeURL ?: ""))
                 IhqClient.send(packet) { skinResponseHandler(packet, it) }
             } else {
                 alertErr("获取皮肤失败")
@@ -262,92 +259,90 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
     }
 
     override fun init() {
-        RGridLayout().apply {
-            row(
-                6,
-                RButton("改QQ") {
-                    mc goScreen formScreen(this@RProfileScreen, "换QQ") {
-                        text("qq", "新QQ", 10, defaultValue = account.qq)
-                        submit {
-                            val qq = it.formData["qq"]!!
-                            IhqClient.send(ChangeQQSPacket(qq)) { resp ->
-                                if (resp.ok) {
-                                    showToast("成功修改qq为${qq}")
-                                    Account.now?.qq = qq
-                                    LocalStorage["usr"] = qq
-                                    mc goScreen RProfileScreen(Account.now!!)
-                                } else {
-                                    dialog(resp.data, it.screen)
-                                }
+        gridLayout {
+            button("改QQ") {
+                mc goScreen formScreen(this@RProfileScreen, "换QQ") {
+                    text("qq", "新QQ", 10, defaultValue = account.qq)
+                    submit {
+                        val qq = it.formData["qq"]!!
+                        IhqClient.send(ChangeQQSPacket(qq)) { resp ->
+                            if (resp.ok) {
+                                showToast("成功修改qq为${qq}")
+                                Account.now?.qq = qq
+                                LocalStorage["usr"] = qq
+                                mc goScreen RProfileScreen(Account.now!!)
+                            } else {
+                                dialog(resp.data, it.screen)
                             }
                         }
-                    }.build()
-                },
-                RButton("改密码") {
-                    mc goScreen formScreen(this@RProfileScreen, "修改密码") {
-                        pwd("opwd", "旧密码")
-                        pwd("pwd", "新密码")
-                        pwd("cpwd", "确认密码")
-                        submit {
-                            val opwd = it.formData["opwd"]!!
-                            if (account.pwd != opwd) {
-                                alertErr("旧密码错误")
-                                return@submit
-                            }
-                            val pwd = it.formData["pwd"]!!
-                            val cpwd = it.formData["cpwd"]!!
-                            if (pwd != cpwd) {
-                                alertErr("确认密码与密码不一致")
-                                return@submit
-                            }
-                            IhqClient.send(ChangePwdSPacket(pwd)) { resp ->
-                                if (resp.ok) {
-                                    showToast("成功修改密码为${pwd}")
-                                    LocalStorage += "pwd" to pwd
-                                    Account.now?.pwd = pwd
-                                    LocalStorage["pwd"] = pwd
-                                    mc goScreen RProfileScreen(Account.now!!)
-                                } else {
-                                    dialog(resp.data, it.screen)
-                                }
-                            }
-                        }
-                    }.build()
-                },
-                RButton("皮肤披风") {
-                    mc goScreen ROptionScreen(
-                        this@RProfileScreen,
-                        "从正版玩家导入" to { mc goScreen mojangSkinScreen },
-                        "从皮肤站导入" to { mc goScreen blessingSkinScreen },
-                        "从图床导入" to { mc goScreen picServerSkinScreen }
-                    )
-                },
-                RButton("改昵称") {
-                    mc goScreen formScreen(this@RProfileScreen, "修改昵称") {
-                        text("name", "昵称", 16, defaultValue = account.name)
-                        submit {
-                            val name = it.formData["name"]!!
-                            IhqClient.send(ChangeNameSPacket(name)) { resp ->
-                                if (resp.ok) {
-                                    showToast("成功修改昵称为${name}")
-                                    Account.now?.name = name
-                                    mc goScreen RProfileScreen(Account.now!!)
-                                } else {
-                                    dialog(resp.data, it.screen)
-                                }
-                            }
-                        }
-                    }.build()
-                },
-                RButton("登出") {
-                    confirm("真的要退出账号${account.name}吗？", this@RProfileScreen) {
-                        Account.now = null
-                        toastOk("成功退出登录！")
-                        mc goScreen RTitleScreen()
                     }
-                },
-            )
-        }.visitWidgets { registerWidget(it) }
+                }
+            }
+            button("改密码") {
+                mc goScreen formScreen(this@RProfileScreen, "修改密码") {
+                    pwd("opwd", "旧密码")
+                    pwd("pwd", "新密码")
+                    pwd("cpwd", "确认密码")
+                    submit {
+                        val opwd = it.formData["opwd"]!!
+                        if (account.pwd != opwd) {
+                            alertErr("旧密码错误")
+                            return@submit
+                        }
+                        val pwd = it.formData["pwd"]!!
+                        val cpwd = it.formData["cpwd"]!!
+                        if (pwd != cpwd) {
+                            alertErr("确认密码与密码不一致")
+                            return@submit
+                        }
+                        IhqClient.send(ChangePwdSPacket(pwd)) { resp ->
+                            if (resp.ok) {
+                                showToast("成功修改密码为${pwd}")
+                                LocalStorage += "pwd" to pwd
+                                Account.now?.pwd = pwd
+                                LocalStorage["pwd"] = pwd
+                                mc goScreen RProfileScreen(Account.now!!)
+                            } else {
+                                dialog(resp.data, it.screen)
+                            }
+                        }
+                    }
+                }
+            }
+            button("皮肤披风") {
+                mc goScreen optionScreen(this@RProfileScreen) {
+                    "从正版玩家导入" to mojangSkinScreen
+                    "从皮肤站导入" to blessingSkinScreen
+                    "从图床导入" to picServerSkinScreen
+                }
+
+            }
+            button("改昵称") {
+                mc goScreen formScreen(this@RProfileScreen, "修改昵称") {
+                    text("name", "昵称", 16, defaultValue = account.name)
+                    submit {
+                        val name = it.formData["name"]!!
+                        IhqClient.send(ChangeNameSPacket(name)) { resp ->
+                            if (resp.ok) {
+                                showToast("成功修改昵称为${name}")
+                                Account.now?.name = name
+                                mc goScreen RProfileScreen(Account.now!!)
+                            } else {
+                                dialog(resp.data, it.screen)
+                            }
+                        }
+                    }
+                }
+            }
+            button("登出") {
+                confirm("真的要退出账号${account.name}吗？", this@RProfileScreen) {
+                    Account.now = null
+                    toastOk("成功退出登录！")
+                    mc goScreen RTitleScreen()
+                }
+            }
+        }.buildForIteration { registerWidget(it) }
+
         super.init()
     }
 

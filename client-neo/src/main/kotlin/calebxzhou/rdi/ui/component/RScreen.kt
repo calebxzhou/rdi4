@@ -5,12 +5,14 @@ import calebxzhou.rdi.util.mcText
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 
-abstract class RScreen(private val name: String) : Screen(Component.literal(name)) {
+abstract class RScreen(val title: MutableComponent) : Screen(title) {
+    constructor(name: String) : this(mcText(name))
     open var clearColor = true
     open var showTitle = true
-    open var showCloseButton = true
+    open var closeable = true
+
     private val widgets = arrayListOf<AbstractWidget>()
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -18,7 +20,7 @@ abstract class RScreen(private val name: String) : Screen(Component.literal(name
             renderBackground(guiGraphics)
         }
         if (showTitle) {
-            drawTextAtCenter(guiGraphics, name, 5)
+            drawTextAtCenter(guiGraphics, title, 5)
         }
         doRender(guiGraphics, mouseX, mouseY, partialTick)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
@@ -27,12 +29,10 @@ abstract class RScreen(private val name: String) : Screen(Component.literal(name
     open fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {}
     override fun init() {
         super.init()
-        if(showCloseButton){
-            widgets += RTextButton(5,5, mcText("←返回/Esc")){onClose()}
+        if(closeable){
+            widgets += RTextButton(mcText("←返回/Esc"),5,5){onClose()}
         }
         widgets.forEach { addRenderableWidget(it) }
-
-
     }
 
     fun registerWidget(widget: AbstractWidget) {
@@ -45,5 +45,9 @@ abstract class RScreen(private val name: String) : Screen(Component.literal(name
     override fun clearWidgets() {
         widgets.clear()
         super.clearWidgets()
+    }
+
+    override fun shouldCloseOnEsc(): Boolean {
+        return closeable
     }
 }

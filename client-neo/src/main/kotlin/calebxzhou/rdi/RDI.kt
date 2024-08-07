@@ -1,10 +1,12 @@
 package calebxzhou.rdi
 
+import calebxzhou.craftcone.utils.Gl
 import calebxzhou.rdi.RDI.Companion.arrowCursor
 import calebxzhou.rdi.RDI.Companion.handCursor
 import calebxzhou.rdi.RDI.Companion.ibeamCursor
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.ROverlay
+import calebxzhou.rdi.util.PINE_GREEN
 import calebxzhou.rdi.util.mcWindowHandle
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
@@ -12,6 +14,7 @@ import mezz.jei.api.runtime.IJeiRuntime
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RenderGuiOverlayEvent
+import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
@@ -70,6 +73,7 @@ object RDIEvents{
         busL.addListener(::load)
         busL.addListener(::loadComplete)
         busL.addListener(::registerOverlays)
+        bus.addListener(::pureColorBackground)
     }
     fun checkGuiOverlays(event: RenderGuiOverlayEvent.Pre){
         val id = event.overlay.id
@@ -105,6 +109,9 @@ object RDIEvents{
     fun registerOverlays(event: RegisterGuiOverlaysEvent){
         event.registerAboveAll(ROverlay.Armor.ID, ROverlay.Armor)
         event.registerAboveAll(ROverlay.Network.ID, ROverlay.Network)
+    }
+    fun pureColorBackground(event: ScreenEvent.BackgroundRendered){
+        event.guiGraphics.fill(0,0,event.guiGraphics.guiWidth(),event.guiGraphics.guiHeight(), PINE_GREEN)
     }
 }
 @JeiPlugin

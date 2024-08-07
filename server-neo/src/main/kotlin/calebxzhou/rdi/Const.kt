@@ -17,7 +17,7 @@ object Const {
     val LEVEL_NAME = "world"
 
     //版本号与协议号
-    const val VERSION = 0x440
+    const val VERSION = 0x460
 
     //显示版本
     const val VERSION_STR = "RDI 4.6 @ MC1.20.1"

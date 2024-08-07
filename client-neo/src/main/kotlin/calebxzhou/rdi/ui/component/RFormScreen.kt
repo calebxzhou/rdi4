@@ -1,26 +1,27 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.rdi.ui.general.ROkCancelScreen
 import calebxzhou.rdi.ui.general.alertErr
-import calebxzhou.rdi.util.drawTextAt
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcTextWidthOf
+import calebxzhou.rdi.util.*
+import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
+import com.mojang.blaze3d.platform.InputConstants.KEY_RETURN
+import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
 
 
-fun formScreen(prevScreen: Screen, title: String, builder: RFormScreenBuilder.() -> Unit): RFormScreenBuilder {
-    return RFormScreenBuilder(prevScreen, title).apply(builder)
+fun formScreen(prevScreen: Screen, title: String, builder: RFormScreen.() -> Unit): RScreen {
+    return RFormScreen(prevScreen, title).apply(builder).build()
 }
 data class RFormScreenSubmitHandler(val screen:Screen,val okBtn:RButton,val formData:Map<String, String>){
     fun finish(){
         okBtn.active=true
     }
 }
-class RFormScreenBuilder(val prevScreen: Screen, val title: String) {
+class RFormScreen(val prev: Screen, val title: String) {
     private val widgets = linkedMapOf<String, AbstractWidget>()
     private lateinit var handler: (RFormScreenSubmitHandler)->Unit
+
     fun text(
         id: String,
         label: String,
@@ -37,8 +38,8 @@ class RFormScreenBuilder(val prevScreen: Screen, val title: String) {
         }
     }
 
-    fun pwd(id: String, label: String) {
-        widgets += id to RPasswordEditBox(label)
+    fun pwd(id: String, label: String,defaultValue: String? = null,) {
+        widgets += id to RPasswordEditBox(label,defaultValue=defaultValue)
     }
     fun checkbox(id: String, label: String) {
         widgets += id to RCheckbox(label)
@@ -48,9 +49,30 @@ class RFormScreenBuilder(val prevScreen: Screen, val title: String) {
         this.handler = (handler)
     }
 
-    fun build(): ROkCancelScreen {
-        return object : ROkCancelScreen(prevScreen, title) {
+    fun build(): RScreen {
+        return object : RScreen(title) {
+            lateinit var okBtn : RButton
+            lateinit var cancelBtn : RButton
+            override fun tick() {
+                if (mc pressingKey KEY_RETURN || mc pressingKey KEY_NUMPADENTER) {
+                    if (okBtn.visible && okBtn.active){
+                        try {
+                            onSubmit()
+                        }
+                        catch (e: Exception) {
+                            alertErr("错误：$e")
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                if(okBtn.isHoveredOrFocused){
+                    okBtn.active = true
+                }
+                super.tick()
+            }
             override fun init() {
+                okBtn = RButton(mcText("确定").withStyle(ChatFormatting.GREEN),width/2-50, height-20, 50, ) { onSubmit() }.also { registerWidget(it) }
+                cancelBtn = RButton(mcText("取消"),width/2, height-20, 50, ) { onClose() }.also { registerWidget(it) }
                 var y = 50
                 widgets.forEach {
                     val widget = it.value
@@ -62,12 +84,7 @@ class RFormScreenBuilder(val prevScreen: Screen, val title: String) {
                 super.init()
             }
 
-            override fun tick() {
-                if(okBtn.isHoveredOrFocused){
-                    okBtn.active = true
-                }
-            }
-            override fun onSubmit() {
+            fun onSubmit() {
                 okBtn.active = false
                 widgets.forEach { (id, widget) ->
                     if (widget is REditBox) {

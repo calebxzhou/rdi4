@@ -2,7 +2,6 @@ package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.RTextButton
-import calebxzhou.rdi.ui.general.ROkCancelScreen
 import calebxzhou.rdi.util.mcText
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.components.AbstractWidget

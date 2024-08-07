@@ -30,6 +30,19 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 repositories {
     mavenCentral()
+    // Other repositories can go above or below Modrinth's. We don't need priority :)
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        forRepositories(fg.repository) // Only add this if you're using ForgeGradle, otherwise remove this line
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
     maven {
         name = 'Kotlin for Forge'
         url = 'https://thedarkcolour.github.io/KotlinForForge/'
@@ -140,7 +153,7 @@ dependencies {
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
     implementation fg.deobf("curse.maven:jei-238222:4712868")
     implementation fg.deobf("curse.maven:curios-309927:4583413")
-    implementation fg.deobf("curse.maven:terrafirmacraft-302973:5478226")
+    implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
 
 }
 
