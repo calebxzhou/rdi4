@@ -1,5 +1,6 @@
 package calebxzhou.rdi.ui.component
 
+import calebxzhou.rdi.log
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
@@ -105,6 +106,7 @@ class RFormScreen(val prev: Screen, val title: String) {
                                 widget.selected().toString()
                             }
                             else -> {
+                                log.error("不支持的控件类型：${widget.javaClass.name}")
                                 ""
                             }
                         }
