@@ -1,12 +1,16 @@
 package calebxzhou.rdi.util
 
+import calebxzhou.rdi.mixin.client.ATutorial
 import calebxzhou.rdi.ui.RMessageType
 import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
+import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.tutorial.Tutorial
+import net.minecraft.client.tutorial.TutorialStepInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import org.lwjgl.glfw.GLFW
@@ -33,18 +37,21 @@ val mcUIHeight
     get() = mc.window.guiScaledHeight
 val mcUIScale
     get() = mc.window.guiScale
+
 fun mcText(str: String?=null): MutableComponent  {
     return str?.let {
         Component.literal(it)
     }?:Component.empty()
 }
 
-infix fun Minecraft.goScreen(screen: Screen) {
+infix fun Minecraft.goScreen(screen: Screen?) {
     execute {
         setScreen(screen)
     }
 }
-
+infix fun Minecraft.titled(title:String){
+    mc.window.setTitle(title)
+}
 infix fun Minecraft.pressingKey(keyCode: Int): Boolean {
     return InputConstants.isKeyDown(mcWindowHandle, keyCode)
 }
@@ -57,7 +64,14 @@ operator  fun MutableComponent.plus(component:String): MutableComponent {
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
 }
+fun Minecraft.addToast(toast: Toast){
+    mc.toasts.addToast(toast)
+}
+fun Tutorial .goStep(value: TutorialStepInstance) = (this as ATutorial).setInstance(value)
 
+fun Minecraft.addChatMessage(msg: Component){
+    mc.gui.chat.addMessage(msg)
+}
 fun mcButton(text: String, x: Int, y: Int, w: Int, h: Int, onPress: Button.OnPress): Button {
     return mcButton(mcText(text), x, y, w, h, onPress);
 }

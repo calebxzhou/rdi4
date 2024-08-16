@@ -15,7 +15,7 @@ object NetThrottler {
     private val packetTicks = packetTickInterval.mapValues { 0 }.toMutableMap()
     @JvmStatic
     fun allowSendPacket(packet: Packet<*>): Boolean{
-        packetTickInterval[packet.javaClass]?.let { interval ->
+        /*packetTickInterval[packet.javaClass]?.let { interval ->
             packetTicks[packet.javaClass]?.let { ticks ->
                 if(ticks >= interval){
                     packetTicks[packet.javaClass] = 0
@@ -25,7 +25,7 @@ object NetThrottler {
                     return false
                 }
             }
-        }
+        }*/
         return true
     }
 }

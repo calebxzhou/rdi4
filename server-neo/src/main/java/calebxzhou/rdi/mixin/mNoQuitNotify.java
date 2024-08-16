@@ -26,10 +26,7 @@ public class mNoQuitNotify {
     private void noBroadcastDisconnecting(PlayerList instance, Component component, boolean bl){
         //什么都不做
     }
-    @Inject(method = "onDisconnect",at=@At("TAIL"))
-    private void onPlayerDisconn(Component reason, CallbackInfo ci){
-        PlayerService.INSTANCE.afterDisconnect(player);
-    }
+
 }
 @Mixin(PlayerList.class)
 class mNoJoinNotify{
@@ -38,9 +35,5 @@ class mNoJoinNotify{
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
     private void nojoinsay(PlayerList instance, Component component, boolean bl){
         //什么都不做
-    }
-    @Inject(method = "placeNewPlayer",at=@At("TAIL"))
-    private void afterPlayerJoin(Connection netManager, ServerPlayer player, CallbackInfo ci){
-        PlayerService.INSTANCE.afterJoin(player);
     }
 }

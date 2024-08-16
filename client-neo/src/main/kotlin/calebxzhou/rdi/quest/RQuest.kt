@@ -7,4 +7,10 @@ data class RQuest(
     val description: String,
     val needs: List<ItemStack>,
     val rewards: List<ItemStack>
-)
+){
+    companion object{
+        val ALL = listOf<RQuest>(
+            //RQuest("捡东西","捡",)
+        )
+    }
+}

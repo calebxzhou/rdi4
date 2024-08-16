@@ -5,6 +5,8 @@
   "refmap": "rdi.refmap.json",
   "mixins": [
     "mAlwaysOfflineMode",
+    "mBeacon",
+    "mBeaconSection",
     "mLoginProtocol1",
     "mNetMetrics",
     "mNetMetrics2",
@@ -15,15 +17,19 @@
     "mProtocolVersion",
     "mSessionService",
     "gameplay.mPlayer",
-    "tfc.mTfcOverlay"
+    "jade.mModNameChineseDisplay",
+    "tfc.mTfcOverlay",
+    "tfc.mTfcSizeTooltip"
   ],
   "client": [
     "AEditBox",
     "ALoadingOverlay",
     "AMc",
+    "ATutorial",
     "mChat",
     "mFastCreateMojangService",
     "mFastCreateMojangService2",
+    "mForceAddToast",
     "mGui",
     "mLoadingOverlay",
     "mMcStart",
@@ -36,8 +42,10 @@
     "mTabPlayerHud",
     "mTitleScreen",
     "mTooltip",
+    "mTutorial",
     "mWidgetMouseCursor",
-    "mWindowTitle"
+    "mWindowTitle",
+    "tfc.mTfcKnappingScreen"
   ],
   "injectors": {
     "defaultRequire": 1

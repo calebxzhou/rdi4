@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 public class mChunkTickets {
 }
+/*
 @Mixin(ServerLevel.class)
 //出生点减少常加载
 class mSpawnLoad {
@@ -34,4 +35,4 @@ class mPortalLoad{
         instance.addRegionTicket(type, pos, 1, value);
     }
 
-}
+}*/

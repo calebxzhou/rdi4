@@ -7,9 +7,9 @@ import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
+import calebxzhou.rdi.tutorial.TutorialManager
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.*
-import calebxzhou.rdi.ui.layout.RGridLayout
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -17,7 +17,6 @@ import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.OptionsScreen
-import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -31,6 +30,7 @@ import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
+import java.io.File
 
 class RTitleScreen : RScreen("主页") {
     override var showTitle = false
@@ -47,10 +47,10 @@ class RTitleScreen : RScreen("主页") {
         val optScreen = { prevScreen: RScreen ->
             optionScreen(prevScreen) {
                 "注册新账号" to {
-                    mc goScreen regScreen(mcScreen)
+                    mc goScreen regScreen(it.mcScreen)
                 }
                 "登录已有账号" to {
-                    mc goScreen loginScreen(mcScreen)
+                    mc goScreen loginScreen(it.mcScreen)
                 }
             }
         }
@@ -169,27 +169,16 @@ class RTitleScreen : RScreen("主页") {
             y = 2
         }.also { registerWidget(it) }
         gridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17) {
-            button("开始") {
-                if (Account.now == null) {
-                    mc goScreen optScreen(this@RTitleScreen)
-                } else {
-                    RSoundPlayer.stopAll()
-                    ConnectScreen.startConnecting(
-                        this@RTitleScreen,
-                        mc,
-                        ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
-                        Const.SERVER_DATA,
-                        false
-                    )
-                }
+            imageButton("start.png", "开始") {
+                start()
             }
-            button("设置") {
+            imageButton("settings.png", "设置") {
                 mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
             }
-            button("致谢") {
+            imageButton("thank.png", "致谢") {
                 alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe\nMod建议：ForiLuSa", this@RTitleScreen)
             }
-            button("QQ群") {
+            imageButton("qq.png", "QQ群") {
                 copyToClipboard("1095925708")
                 alertInfo("已复制QQ群号：1095925708\n欢迎加入RDI玩家交流群！", this@RTitleScreen)
 
@@ -198,6 +187,24 @@ class RTitleScreen : RScreen("主页") {
 
 
         super.init()
+    }
+
+    fun start() {
+        if (!File("tutorial1_done").exists()) {
+            TutorialManager.startTutorial()
+        } else
+            if (Account.now == null) {
+                mc goScreen optScreen(this@RTitleScreen)
+            } else {
+                RSoundPlayer.stopAll()
+                ConnectScreen.startConnecting(
+                    this@RTitleScreen,
+                    mc,
+                    ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
+                    Const.SERVER_DATA,
+                    false
+                )
+            }
     }
 
     override fun shouldCloseOnEsc(): Boolean {
@@ -255,6 +262,9 @@ class RTitleScreen : RScreen("主页") {
                 }
             }
         }
+        if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
+            start()
+        }
     }
 
     private fun openFlatLevel() {
@@ -284,5 +294,6 @@ class RTitleScreen : RScreen("主页") {
             }
         }
     }
+
 
 }

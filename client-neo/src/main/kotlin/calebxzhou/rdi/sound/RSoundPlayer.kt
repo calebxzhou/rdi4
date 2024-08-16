@@ -7,7 +7,7 @@ import java.io.InputStream
 object RSoundPlayer {
     var playerNow: OggPlayer? = null
     fun play(path:String): OggPlayer? {
-        getJarResourceStream(path)?.let {
+        getJarResourceStream("assets/rdi/sounds/$path")?.let {
             return play(it)
         }?:let {
             log.warn("找不到jar内音频$path")

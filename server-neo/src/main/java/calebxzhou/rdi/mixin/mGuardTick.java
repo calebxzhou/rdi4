@@ -32,6 +32,7 @@ import java.util.function.BooleanSupplier;
 public class mGuardTick {
 }
 
+/*
 @Mixin(MinecraftServer.class)
 abstract
 class mTickInvertServer {
@@ -54,7 +55,13 @@ class mTickInvertServer {
     }
 
 }
-
+@Mixin(Level.class)
+public class mTickingEntity {
+    @Overwrite
+    public <T extends Entity> void guardEntityTick(Consumer<T> consumerEntity, T entity) {
+        EntityTicker.tick(consumerEntity, entity);
+    }
+}
 
 @Mixin(ServerLevel.class)
 abstract
@@ -176,4 +183,4 @@ class mGuardLevelTick2{
             pendingTicks = new ArrayList<>();
         }
     }
-}
+}*/

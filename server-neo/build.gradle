@@ -154,7 +154,7 @@ dependencies {
     implementation fg.deobf("curse.maven:jei-238222:4712868")
     implementation fg.deobf("curse.maven:curios-309927:4583413")
     implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
-
+    implementation fg.deobf("maven.modrinth:modernfix:MKrkLMqg")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

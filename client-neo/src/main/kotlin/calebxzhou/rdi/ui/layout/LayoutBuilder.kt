@@ -14,9 +14,9 @@ import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.network.chat.MutableComponent
 
 fun gridLayout(
-    maxColumns: Int = 0,
     x: Int = mc.window.guiScaledWidth / 2,
-    y: Int = mc.window.guiScaledHeight - 30,
+    y: Int = mc.window.guiScaledHeight - 20,
+    maxColumns: Int = 0,
     builder: GridLayoutBuilder.() -> Unit,
 ): GridLayoutBuilder {
     return GridLayoutBuilder(maxColumns, x, y).apply(builder)
@@ -47,6 +47,7 @@ class GridLayoutBuilder(val maxColumns: Int, val x: Int, val y: Int) {
         val rowHelper = layout.createRowHelper(if (maxColumns > 0) maxColumns else children.size)
         children.forEach { rowHelper.addChild(it) }
         layout.arrangeElements()
+        layout.x -= layout.width / 2
         layout.visitWidgets(consumer)
     }
 }

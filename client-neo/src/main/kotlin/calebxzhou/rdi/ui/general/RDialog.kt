@@ -36,10 +36,10 @@ fun dialog(
     msgType: RMessageType = RMessageType.INFO,
     yesHandler: () -> Unit = {},
 ) {
-    val screenNow = prevScreen ?: mc.screen
-    if (isMcStarted && screenNow != null) {
-        mc goScreen RDialog(msg, screenNow, diagType, msgType, yesHandler)
+    if (isMcStarted && (mc.level != null || prevScreen != null)) {
+        mc goScreen RDialog(msg, prevScreen, diagType, msgType, yesHandler)
     } else {
+        //游戏未启动 显示操作系统提示框
         when (diagType) {
             RDialogType.ALERT -> {
                 TinyFileDialogs.tinyfd_messageBox("RDI提示", msg, "ok", "info", true)
@@ -60,7 +60,7 @@ enum class RDialogType {
 
 class RDialog(
     val msg: String,
-    val prevScreen: Screen,
+    val prevScreen: Screen?,
     val diagType: RDialogType = RDialogType.ALERT,
     val msgType: RMessageType = RMessageType.INFO,
     val yesHandler: () -> Unit = {},

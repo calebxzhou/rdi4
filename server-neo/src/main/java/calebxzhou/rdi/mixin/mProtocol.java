@@ -17,13 +17,6 @@ import java.util.Optional;
 public class mProtocol {
 }
 
-@Mixin(ServerLoginPacketListenerImpl.class)
-abstract class mLoginProtocol0 {
-
-
-
-}
-
 @Mixin(ServerboundHelloPacket.class)
 abstract class mLoginProtocol1 {
 

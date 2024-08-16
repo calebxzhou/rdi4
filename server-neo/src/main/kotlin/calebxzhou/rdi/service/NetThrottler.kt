@@ -18,7 +18,7 @@ object NetThrottler {
     private val packetTicks = packetTickInterval.mapValues { 0 }.toMutableMap()
     @JvmStatic
     fun allowSendPacket(packet: Packet<*>): Boolean{
-        if(packet is ClientboundCustomPayloadPacket){
+        /*if(packet is ClientboundCustomPayloadPacket){
             if (packet.identifier == ResourceLocation("createutilities","main")) {
                 return false
             }
@@ -36,7 +36,7 @@ object NetThrottler {
                     return false
                 }
             }
-        }
+        }*/
 
         return true
     }

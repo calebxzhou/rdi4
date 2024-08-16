@@ -158,13 +158,17 @@ object ROverlay {
             screenWidth: Int,
             screenHeight: Int
         ) {
+            val armor = mc.player?.armorValue ?: 0
+            //护甲值太低就不显示
+            if(armor<1)
+                return
             val x = screenWidth / 2
             val y = screenHeight - gui.rightHeight
             val stack = guiGraphics.pose()
             stack.pushPose()
             stack.translate((x + 10).toFloat(), (y + 2).toFloat(), 0f)
             //乘5为了显示满100 原版满20
-            val comp = mcText("AP${(mc.player?.armorValue ?: 0)*5}")
+            val comp = mcText("AP${armor *5}")
             guiGraphics.drawString(
                 gui.font,
                 comp,

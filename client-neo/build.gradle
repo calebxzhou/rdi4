@@ -191,7 +191,7 @@ dependencies {
    // implementation fg.deobf("curse.maven:terrafirmacraft-302973:5478226")
     implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
     implementation fg.deobf("maven.modrinth:jade:11.9.4+forge")
-    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
+    //implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
     //implementation fg.deobf("maven.modrinth:immediatelyfast:1.2.18+1.20.4-neoforge")
     implementation fg.deobf("maven.modrinth:modernfix:MKrkLMqg")
 }

@@ -37,16 +37,3 @@ public class mSaveBandwidth {
         }
     }
 }
-@Mixin(ClientboundLightUpdatePacketData.class)
-class mNoSendLightData{
-    //不发送亮度数据给客户端 自己算
-    /*@Overwrite
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBitSet(new BitSet());
-        buffer.writeBitSet(new BitSet());
-        buffer.writeBitSet(new BitSet());
-        buffer.writeBitSet(new BitSet());
-        buffer.writeCollection(new ArrayList<>(), FriendlyByteBuf::writeByteArray);
-        buffer.writeCollection(new ArrayList<>(), FriendlyByteBuf::writeByteArray);
-    }*/
-}

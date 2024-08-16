@@ -4,7 +4,8 @@ package calebxzhou.rdi.util
  * calebxzhou @ 2024-05-31 14:08
  */
 const val WHITE = 0xFF_FFFFFF.toInt()
-const val RED = 0xFF_FFFFFF.toInt()
+const val RED = 0xFF_FF0000.toInt()
+const val GREEN = 0xFF_00FF00.toInt()
 const val LIGHT_RED = 0xFF_e84f38.toInt()
 const val LIGHT_GREEN = 0xFF_28b028.toInt()
 const val LIGHT_YELLOW = 0xff_deb72a.toInt()
