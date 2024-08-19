@@ -4,6 +4,7 @@ import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 
 /*
@@ -43,8 +44,9 @@ class ROptionScreen(
 
     val mcScreen
         get() = object : RScreen(title) {
+            override var showTitle = false
+            var startY = height / 2 - options.size * 10
             override fun init() {
-                var startY = height / 2 - options.size * 10
                 options.onEachIndexed { index, (text, opr) ->
                     val btn = RButton(mcText("${index + 1}. ${text}"), 0, startY) { opr(this@ROptionScreen) }
                     btn.x = width/2-btn.width/2
@@ -54,6 +56,9 @@ class ROptionScreen(
                 super.init()
             }
 
+            override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+                guiGraphics.drawCenteredString(mcFont,this@ROptionScreen.title,width/2,startY-10, WHITE)
+            }
             override fun tick() {
 
                 if (mc pressingKey InputConstants.KEY_1) {

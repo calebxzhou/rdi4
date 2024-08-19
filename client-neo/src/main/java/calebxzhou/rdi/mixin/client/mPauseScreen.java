@@ -1,17 +1,11 @@
 package calebxzhou.rdi.mixin.client;
 
-import calebxzhou.rdi.ui.RPauseScreen;
-import calebxzhou.rdi.ui.RTitleScreen;
-import calebxzhou.rdi.util.McUtils;
+import calebxzhou.rdi.ui.screen.RPauseScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.layouts.GridLayout;
-import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**

@@ -22,21 +22,18 @@ import mezz.jei.api.runtime.IJeiRuntime
 import net.dries007.tfc.client.ClientHelpers
 import net.dries007.tfc.common.recipes.KnappingRecipe
 import net.minecraft.client.resources.language.ClientLanguage
-import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.BlockTags
 import net.minecraftforge.client.event.RecipesUpdatedEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RenderGuiEvent
 import net.minecraftforge.client.event.RenderGuiOverlayEvent
-import net.minecraftforge.client.event.RenderHighlightEvent
 import net.minecraftforge.client.event.RenderLevelStageEvent
 import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.TickEvent.RenderTickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.fml.ModList
@@ -102,12 +99,14 @@ object RDIEvents{
         busL.addListener(::registerOverlays)
 
 
+        bus.addListener(::onLevelTick)
         bus.addListener(::checkGuiOverlays)
         bus.addListener(::onPlayerLogin)
         bus.addListener(::onRecipeUpdated)
         bus.addListener(::pureColorBackground)
+        bus.addListener(::onRenderLevelStage)
         bus.addListener(::leftClickBlock)
-        bus.addListener(::guiRender)
+        bus.addListener(::onRenderGui)
     }
     fun checkGuiOverlays(event: RenderGuiOverlayEvent.Pre){
         val id = event.overlay.id
@@ -117,7 +116,7 @@ object RDIEvents{
     }
     fun load(event: FMLClientSetupEvent){
         log.info("客户端启动")
-        RSoundPlayer.play("info.ogg")
+        RSoundPlayer.info()
         //设置光标类型
         handCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_POINTING_HAND_CURSOR)
         ibeamCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR)
@@ -174,17 +173,17 @@ object RDIEvents{
     fun allLoadComplete(e: TextureStitchEvent.Post){
         //mc.overlay=null
     }
-    fun guiRender(e: RenderGuiEvent){
-        Banner.render(e.guiGraphics)
+    fun onRenderGui(e: RenderGuiEvent){
+        Banner.renderGui(e.guiGraphics)
         BlockNavigator.renderGui(e.guiGraphics)
+        TutorialManager.renderGui(e.guiGraphics)
     }
-    fun gameRender(e: RenderLevelStageEvent){
-
+    fun onRenderLevelStage(e: RenderLevelStageEvent){
+        BlockNavigator.renderLevelStage(e)
     }
-    fun tick(e: TickEvent.ClientTickEvent){
-        if(TutorialManager.isDoingTutorial){
-
-        }
+    fun onLevelTick(e: TickEvent.LevelTickEvent){
+        BlockNavigator.tick()
+        TutorialManager.tick(e)
     }
     fun onRecipeUpdated(e: RecipesUpdatedEvent){
         val recipes = ClientHelpers.getLevelOrThrow().recipeManager.recipes
@@ -205,7 +204,6 @@ object RDIEvents{
     fun leftClickBlock(e: LeftClickBlock){
         val block = e.level.getBlockState(e.pos)
         if(block.`is`(BlockTags.LOGS) && e.entity.mainHandItem.isEmpty){
-            BlockNavigator += BlockPos(-2800,75,-2800)
                 alertErr("砍树必须用斧头\n赤手空拳是不起作用的")
         }
     }

@@ -122,7 +122,7 @@ object ROverlay {
             var overheat = 0f
             val data = player.foodData
             if (data is TFCFoodData) {
-                percentThirst = data.getThirst() / TFCFoodData.MAX_THIRST
+                percentThirst = data.thirst / TFCFoodData.MAX_THIRST
                 overheat = data.getThirstContributionFromTemperature(player)
             }
 

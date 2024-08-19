@@ -29,4 +29,7 @@ object RSoundPlayer {
             e.printStackTrace()
         }
     }
+    fun info(){
+        play("info.ogg")
+    }
 }

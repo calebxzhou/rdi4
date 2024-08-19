@@ -4,6 +4,7 @@ import calebxzhou.rdi.mixin.client.ATutorial
 import calebxzhou.rdi.ui.RMessageType
 import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
+import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -13,6 +14,7 @@ import net.minecraft.client.tutorial.Tutorial
 import net.minecraft.client.tutorial.TutorialStepInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.world.entity.player.Player
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 
@@ -37,7 +39,13 @@ val mcUIHeight
     get() = mc.window.guiScaledHeight
 val mcUIScale
     get() = mc.window.guiScale
-
+val Player.thrist:Float
+    get()  {
+        val d = foodData
+        return if(d is TFCFoodData)
+            d.thirst
+        else 0f
+    }
 fun mcText(str: String?=null): MutableComponent  {
     return str?.let {
         Component.literal(it)

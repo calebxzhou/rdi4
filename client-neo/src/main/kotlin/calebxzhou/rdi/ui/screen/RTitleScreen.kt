@@ -1,4 +1,4 @@
-package calebxzhou.rdi.ui
+package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.IhqClient
@@ -17,6 +17,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.OptionsScreen
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -264,6 +265,9 @@ class RTitleScreen : RScreen("主页") {
         }
         if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
             start()
+        }
+        if(mc pressingKey InputConstants.KEY_0){
+            mc goScreen SelectWorldScreen(this)
         }
     }
 

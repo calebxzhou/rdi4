@@ -1,4 +1,4 @@
-package calebxzhou.rdi.ui
+package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.ChangeClothSPacket
