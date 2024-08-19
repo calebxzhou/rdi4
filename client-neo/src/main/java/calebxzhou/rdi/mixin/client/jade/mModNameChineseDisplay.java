@@ -16,7 +16,7 @@ import java.util.Optional;
 @Mixin(ClientProxy.class)
 public class mModNameChineseDisplay {
     //高亮显示mod的中文名
-    @Inject(method = "getModName",at=@At(value = "RETURN",ordinal = 1), cancellable = true)
+    @Inject(method = "getModName",at=@At(value = "RETURN",ordinal = 1), cancellable = true,remap = false)
     private static void getName(String namespace, CallbackInfoReturnable<Optional<String>> cir) {
         if(RDI.modIdChineseName.containsKey(namespace)){
             cir.setReturnValue(Optional.of(RDI.modIdChineseName.get(namespace)));

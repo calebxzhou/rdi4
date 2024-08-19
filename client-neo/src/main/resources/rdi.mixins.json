@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "rdi.refmap.json",
   "mixins": [
+    "ALivingEntity",
     "mAlwaysOfflineMode",
     "mLoginProtocol1",
     "mNetMetrics",

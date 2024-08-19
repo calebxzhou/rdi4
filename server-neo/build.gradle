@@ -114,6 +114,7 @@ minecraft {
 
         server {
             arg "-mixin.config=rdi.mixins.json"
+            arg "nogui"
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
 

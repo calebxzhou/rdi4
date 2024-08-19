@@ -113,6 +113,8 @@ minecraft {
 
         client {
             arg "-mixin.config=rdi.mixins.json"
+            properties "rdi.debug":'true'
+
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
 
@@ -151,25 +153,12 @@ sourceSets.main.resources {
 processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
-configurations.configureEach {
-    resolutionStrategy   .eachDependency { details ->
-                if (details.requested.group == 'org.jetbrains'
-                        && !details.requested.name.contains('annotations') ) {
-                    details.useVersion "23.0.0"
-                }
-            }
-}
 jarJar.enable()
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-    minecraftLibrary 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
-    implementation(jarJar('org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3')) {
-        jarJar.ranged(it, "[1.6.3,)")
-    }
-    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
 
+    implementation "thedarkcolour:kotlinforforge:$kff_version"
     //implementation "thedarkcolour:kotlinforforge-neoforge:$kff_version"
     minecraftLibrary 'org.mongodb:bson:5.1.0'
     implementation(jarJar("org.mongodb:bson:5.1.0")) {

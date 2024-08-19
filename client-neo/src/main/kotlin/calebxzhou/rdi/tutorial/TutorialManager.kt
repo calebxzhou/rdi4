@@ -3,6 +3,8 @@ package calebxzhou.rdi.tutorial
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blocknav.BlockNavigator
 import calebxzhou.rdi.log
+import calebxzhou.rdi.mixin.client.ALivingEntity
+import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.dries007.tfc.TerraFirmaCraft
@@ -18,6 +20,7 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.tutorial.TutorialSteps
+import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.tags.BlockTags
 import net.minecraft.tags.ItemTags
@@ -42,16 +45,17 @@ object TutorialManager {
         get() = STEPS.getOrNull(stepIndex)
     var waterP = 0f
     private val STEPS = listOf(
-        TutorialStep("按WASD移动") { mc pressingKey InputConstants.KEY_W },
-        TutorialStep("摇晃鼠标观察四周,走到光柱位置",
+        TutorialStep("按空格键跳跃 (键盘下面最长那个键,字母CVBNM底下)") { (it as ALivingEntity).jumping },
+        TutorialStep("按下WASD键,前后左右走路,晃动鼠标观察四周,然后走到光柱位置",
             {
                 BlockNavigator.navigate { blockState ->
                     blockState.block is LooseRockBlock && blockState.getValue(LooseRockBlock.COUNT) > 1
                 }
             }) { BlockNavigator.posNow == null },
-        TutorialStep("按右键捡起石子") { it.inventory.contains(TFCTags.Items.ROCK_KNAPPING) },
-        TutorialStep("拿着石子对天空点右键") { mc.screen is KnappingScreen },
-        TutorialStep("想办法做出石斧头部") { player ->
+        TutorialStep("让画面中央的十字对准石子,按鼠标右键") { it.inventory.contains(TFCTags.Items.ROCK_KNAPPING) },
+        TutorialStep("拿着石子,看天空,按鼠标右键") { mc.screen is KnappingScreen },
+        TutorialStep("依次点击绿框",{RScreenRectTip.byWidgets(0,10,15,20,21,23,24,19,14,4)}){RScreenRectTip.hasNo},
+        TutorialStep("斧头") { player ->
             player.inventory.hasAnyMatching {
                 it.toString().contains("axe_head")
             }

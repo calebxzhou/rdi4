@@ -16,17 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(IngameOverlays.class)
 public class mTfcOverlay {
-    @Inject(method = "renderHealthBar",at=@At("HEAD"),cancellable = true)
+    @Inject(method = "renderHealthBar",at=@At("HEAD"),cancellable = true,remap = false)
     private static void hp(LivingEntity entity, ForgeGui gui, GuiGraphics graphics, int width, int height, CallbackInfo ci){
         ROverlay.renderHealthBar(entity, gui, graphics, width, height);
         ci.cancel();
     }
-    @Inject(method = "renderFood",at=@At("HEAD"),cancellable = true)
+    @Inject(method = "renderFood",at=@At("HEAD"),cancellable = true,remap = false)
     private static void food(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height, CallbackInfo ci){
         ROverlay.renderFood(gui, graphics, partialTicks, width, height);
         ci.cancel();
     }
-    @Inject(method = "renderThirst",at=@At("HEAD"),cancellable = true)
+    @Inject(method = "renderThirst",at=@At("HEAD"),cancellable = true,remap = false)
     private static void thirst(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height, CallbackInfo ci){
         ROverlay.renderThirst(gui, graphics, partialTicks, width, height);
         ci.cancel();

@@ -4,6 +4,7 @@ import calebxzhou.rdi.mixin.client.ATutorial
 import calebxzhou.rdi.ui.RMessageType
 import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
+import com.mojang.blaze3d.vertex.PoseStack
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
@@ -51,7 +52,12 @@ fun mcText(str: String?=null): MutableComponent  {
         Component.literal(it)
     }?:Component.empty()
 }
-
+fun GuiGraphics.matrixOp(handler: (PoseStack)->Unit){
+    val stack = pose()
+    stack.pushPose()
+    handler(stack)
+    stack.popPose()
+}
 infix fun Minecraft.goScreen(screen: Screen?) {
     execute {
         setScreen(screen)

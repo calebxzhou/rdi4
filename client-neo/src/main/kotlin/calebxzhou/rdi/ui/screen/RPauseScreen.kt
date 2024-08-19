@@ -3,6 +3,7 @@ package calebxzhou.rdi.ui.screen
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blocknav.BlockNavigator
 import calebxzhou.rdi.tutorial.TutorialManager
+import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.formScreen
 import calebxzhou.rdi.ui.general.optionScreen
@@ -11,6 +12,7 @@ import calebxzhou.rdi.util.drawTextAtCenter
 import calebxzhou.rdi.util.goScreen
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
+import net.dries007.tfc.common.TFCTags
 import net.dries007.tfc.common.blocks.rock.LooseRockBlock
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
@@ -20,6 +22,15 @@ import net.minecraft.client.gui.screens.OptionsScreen
 class RPauseScreen : RScreen("暂停") {
     override fun init() {
         gridLayout {
+            button("test"){
+                RScreenRectTip .bySlotPredicate {it.item.`is`(TFCTags.Items.ROCK_KNAPPING)}
+            }
+            button("test2"){
+                RScreenRectTip.reset()
+            }
+            button("test3"){
+                RScreenRectTip.byWidgets(4)
+            }
             button("方块导航"){
                 mc goScreen optionScreen(this@RPauseScreen,"选择目标类型"){
                     "方块" to formScreen(this.mcScreen,"输入方块/矿辞ID"){

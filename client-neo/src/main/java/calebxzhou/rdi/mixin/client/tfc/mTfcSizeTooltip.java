@@ -19,11 +19,11 @@ import java.util.List;
 @Mixin(ItemSizeManager.class)
 public class mTfcSizeTooltip {
     //在重量和体积图标后面加上汉字
-    @Redirect(method = "addTooltipInfo", at= @At(value = "INVOKE",ordinal = 0, target = "Lnet/dries007/tfc/util/Helpers;translateEnum(Ljava/lang/Enum;)Lnet/minecraft/network/chat/MutableComponent;"))
+    @Redirect(method = "addTooltipInfo",remap = false, at= @At(value = "INVOKE",ordinal = 0, target = "Lnet/dries007/tfc/util/Helpers;translateEnum(Ljava/lang/Enum;)Lnet/minecraft/network/chat/MutableComponent;"))
     private static MutableComponent tooltip(Enum<?> anEnum){
         return Component.literal("重量").append(Helpers.translateEnum(anEnum));
     }
-    @Redirect(method = "addTooltipInfo", at= @At(value = "INVOKE",ordinal = 1, target = "Lnet/dries007/tfc/util/Helpers;translateEnum(Ljava/lang/Enum;)Lnet/minecraft/network/chat/MutableComponent;"))
+    @Redirect(method = "addTooltipInfo",remap = false, at= @At(value = "INVOKE",ordinal = 1, target = "Lnet/dries007/tfc/util/Helpers;translateEnum(Ljava/lang/Enum;)Lnet/minecraft/network/chat/MutableComponent;"))
     private static MutableComponent tooltip2(Enum<?> anEnum){
         return Component.literal("体积").append(Helpers.translateEnum(anEnum));
     }
