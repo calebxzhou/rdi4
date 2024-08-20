@@ -3,7 +3,7 @@ package calebxzhou.rdi.util
 import calebxzhou.rdi.Const.SERVER_ADDR
 import calebxzhou.rdi.Const.SERVER_PORT
 import calebxzhou.rdi.Const.VERSION_STR
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.multiplayer.ServerData
@@ -25,7 +25,7 @@ object ServerConnector {
         try {
             Connection.connectToServer(InetSocketAddress(SERVER_ADDR, SERVER_PORT),true)
         } catch (e: Exception) {
-            log.warn("无法ping服务器：${e.localizedMessage}")
+            logger.warn("无法ping服务器：${e.localizedMessage}")
         }
     }
 }

@@ -3,6 +3,7 @@ package calebxzhou.rdi.ui.screen
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blocknav.BlockNavigator
 import calebxzhou.rdi.tutorial.TutorialManager
+import calebxzhou.rdi.tutorial.TutorialManager.nextStep
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.formScreen
@@ -23,13 +24,12 @@ class RPauseScreen : RScreen("暂停") {
     override fun init() {
         gridLayout {
             button("test"){
-                RScreenRectTip .bySlotPredicate {it.item.`is`(TFCTags.Items.ROCK_KNAPPING)}
+                TutorialManager.nextStep(mc.player!!)
             }
             button("test2"){
                 RScreenRectTip.reset()
             }
             button("test3"){
-                RScreenRectTip.byWidgets(4)
             }
             button("方块导航"){
                 mc goScreen optionScreen(this@RPauseScreen,"选择目标类型"){

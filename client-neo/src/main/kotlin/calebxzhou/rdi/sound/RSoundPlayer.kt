@@ -1,6 +1,6 @@
 package calebxzhou.rdi.sound
 
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import calebxzhou.rdi.util.getJarResourceStream
 import java.io.InputStream
 
@@ -10,7 +10,7 @@ object RSoundPlayer {
         getJarResourceStream("assets/rdi/sounds/$path")?.let {
             return play(it)
         }?:let {
-            log.warn("找不到jar内音频$path")
+            logger.warn("找不到jar内音频$path")
             return null
         }
     }

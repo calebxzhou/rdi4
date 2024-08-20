@@ -16,15 +16,20 @@ import calebxzhou.rdi.tutorial.TutorialManager
 import calebxzhou.rdi.ui.ROverlay
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.alertErr
+import calebxzhou.rdi.ui.rectTip
 import calebxzhou.rdi.util.*
+import com.mojang.blaze3d.platform.InputConstants
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
 import net.dries007.tfc.client.ClientHelpers
+import net.dries007.tfc.common.TFCTags.Items.FIREPIT_STICKS
 import net.dries007.tfc.common.recipes.KnappingRecipe
+import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.BlockTags
+import net.minecraft.world.inventory.InventoryMenu
 import net.minecraftforge.client.event.RecipesUpdatedEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RenderGuiEvent
@@ -49,7 +54,7 @@ import org.lwjgl.glfw.GLFW
 
 
 const val MOD_ID = "rdi"
-val log = LogManager.getLogger(MOD_ID)
+val logger = LogManager.getLogger(MOD_ID)
 
 @Mod(MOD_ID)
 //@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -65,7 +70,7 @@ class RDI {
 
         @JvmStatic
         fun log(): Logger {
-            return log
+            return logger
         }
 
         @JvmField
@@ -79,12 +84,12 @@ class RDI {
 
 
         fun onInitialize(event: FMLCommonSetupEvent) {
-            log.info("载入RDI")
+            logger.info("载入RDI")
         }
 
         @JvmStatic
         fun onMcStart() {
-            log.info("*********MINECRAFT STARTS*************")
+            logger.info("*********MINECRAFT STARTS*************")
         }
 
 
@@ -123,17 +128,17 @@ object RDIEvents {
     }
 
     fun load(event: FMLClientSetupEvent) {
-        log.info("客户端启动")
+        logger.info("客户端启动")
         RSoundPlayer.info()
         //设置光标类型
         handCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_POINTING_HAND_CURSOR)
         ibeamCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR)
         arrowCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR)
-        log.info("调整窗口大小")
+        logger.info("调整窗口大小")
 
         val monitor = GLFW.glfwGetPrimaryMonitor()
         val vidmode = GLFW.glfwGetVideoMode(monitor) ?: let {
-            log.error("无法获取视频模式 videoMode=null")
+            logger.error("无法获取视频模式 videoMode=null")
             return
         }
 
@@ -145,16 +150,16 @@ object RDIEvents {
         val y = screenH / 2 - h / 2
         GLFW.glfwSetWindowSize(mcWindowHandle, w, h)
         GLFW.glfwSetWindowPos(mcWindowHandle, x, y)
-        log.info("尝试自动登录")
+        logger.info("尝试自动登录")
         LocalStorage["usr"]?.let { usr ->
             LocalStorage["pwd"]?.let { pwd ->
                 IhqClient.send(LoginSPacket(usr, pwd)) { resp ->
                     if (resp.ok) {
                         val account = serdesJson.decodeFromString<Account>(resp.data)
                         Account.now = account
-                        log.info("自动登录成功")
+                        logger.info("自动登录成功")
                     } else {
-                        log.error("自动登录失败")
+                        logger.error("自动登录失败")
                     }
                 }
             }
@@ -193,6 +198,16 @@ object RDIEvents {
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
         Banner.renderScreen(e.guiGraphics)
         RScreenRectTip.render(e.guiGraphics,e.screen)
+        if(mc pressingKey InputConstants.KEY_0 && e.screen is InventoryScreen){
+            rectTip {
+                slot { it.item.`is`(FIREPIT_STICKS) }
+                slot (3)
+                slot { it.item.toString().contains("axe_head")}
+                slot (1)
+                slot (0)
+                slot { !it.hasItem() &&   it.slotIndex in 10..35 }
+            }
+        }
     }
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
@@ -220,7 +235,7 @@ object RDIEvents {
         val tfcRecipes = recipes.filter { it.id.namespace == "tfc" && it is KnappingRecipe }
         RTfcRecipeStorage.rockKnappingRecipes =
             tfcRecipes.filter { it.id.path.startsWith("rock_knapping") } as List<KnappingRecipe>
-        log.info("接收${RTfcRecipeStorage.rockKnappingRecipes.size}")
+        logger.info("接收${RTfcRecipeStorage.rockKnappingRecipes.size}")
     }
 
     fun onPlayerLogin(e: PlayerLoggedInEvent) {
@@ -260,7 +275,7 @@ class RDIJeiPlugin : IModPlugin {
     }
 
     override fun onRuntimeAvailable(jeiRuntime: IJeiRuntime) {
-        log.info("rdi-jei插件可用")
+        logger.info("rdi-jei插件可用")
         Companion.jeiRuntime = jeiRuntime
     }
 

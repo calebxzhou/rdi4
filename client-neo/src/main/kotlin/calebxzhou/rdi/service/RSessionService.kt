@@ -1,12 +1,9 @@
 package calebxzhou.rdi.service
 
-import calebxzhou.rdi.ihq.IhqClient
-import calebxzhou.rdi.log
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
 import com.mojang.authlib.minecraft.MinecraftSessionService
 import com.mojang.authlib.properties.Property
-import kotlinx.coroutines.runBlocking
 import java.net.InetAddress
 
 class RSessionService : MinecraftSessionService{

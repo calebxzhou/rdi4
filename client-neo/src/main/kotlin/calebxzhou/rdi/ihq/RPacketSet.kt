@@ -1,15 +1,9 @@
 package calebxzhou.rdi.ihq
 
-import calebxzhou.rdi.ihq.IhqClient.reqId
-import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.SPacket
 import calebxzhou.rdi.ihq.protocol.account.*
 import calebxzhou.rdi.ihq.protocol.general.GetVersionSPacket
-import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import calebxzhou.rdi.ihq.protocol.team.*
-import calebxzhou.rdi.log
-import calebxzhou.rdi.util.readString
-import io.netty.buffer.ByteBuf
 
 /**
  * Created  on 2023-07-14,8:55.

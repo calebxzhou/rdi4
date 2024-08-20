@@ -1,6 +1,6 @@
 package calebxzhou.rdi.blocknav
 
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.vertex.PoseStack
@@ -88,7 +88,7 @@ object BlockNavigator {
 
             }
         }
-        log.info("找到${found.size}个")
+        logger.info("找到${found.size}个")
         return found
     }
 

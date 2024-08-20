@@ -6,7 +6,7 @@ import calebxzhou.rdi.ihq.protocol.account.ChangeNameSPacket
 import calebxzhou.rdi.ihq.protocol.account.ChangePwdSPacket
 import calebxzhou.rdi.ihq.protocol.account.ChangeQQSPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.*
@@ -135,11 +135,11 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
 
             if (statusCode !in 200..299) {
                 alertErr("获取皮肤失败：$statusCode\n", handler.screen)
-                log.error("$statusCode ${EntityUtils.toString(entity)}")
+                logger.error("$statusCode ${EntityUtils.toString(entity)}")
                 return
             }
 
-            val hash = Json.parseToJsonElement(EntityUtils.toString(entity).also { log.info(it) })
+            val hash = Json.parseToJsonElement(EntityUtils.toString(entity).also { logger.info(it) })
                 .jsonObject["hash"]?.jsonPrimitive?.content
                 ?: let {
                     alertErr("无法获取皮肤hash数据", handler.screen)
@@ -165,12 +165,12 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
 
             if (statusCode !in 200..299) {
                 alertErr("获取披风失败：$statusCode\n", handler.screen)
-                log.error("$statusCode ${EntityUtils.toString(entity)}")
+                logger.error("$statusCode ${EntityUtils.toString(entity)}")
                 return
             }
 
             val hash = Json.parseToJsonElement(
-                EntityUtils.toString(entity).also { log.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content ?: let {
+                EntityUtils.toString(entity).also { logger.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content ?: let {
                 alertErr("无法获取披风hash数据", handler.screen)
                 return
             }
@@ -202,7 +202,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
         val statusCode = response.statusLine.statusCode
 
         if (statusCode in 200..299) {
-            val body1 = EntityUtils.toString(entity).also { log.info(it) }
+            val body1 = EntityUtils.toString(entity).also { logger.info(it) }
             val id = Json.parseToJsonElement(body1)
                 .jsonArray.getOrNull(0)?.jsonObject?.get("id")?.jsonPrimitive?.content
                 ?: let {
@@ -219,12 +219,12 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
 
             if (statusCode2 in 200..299) {
                 toastOk("读取皮肤成功 正在设置")
-                val body2 = EntityUtils.toString(entity2).also { log.info(it) }
+                val body2 = EntityUtils.toString(entity2).also { logger.info(it) }
                 val propValue =
                     Json.parseToJsonElement(body2).jsonObject["properties"]?.jsonArray?.get(0)?.jsonObject?.get("value")?.jsonPrimitive?.content
                         ?: ""
                 val texture =
-                    Json.parseToJsonElement(propValue.decodeBase64().also { log.info(it) }).jsonObject["textures"]
+                    Json.parseToJsonElement(propValue.decodeBase64().also { logger.info(it) }).jsonObject["textures"]
                 val skinURL =
                     texture?.jsonObject?.get("SKIN")?.jsonObject?.get(
                         "url"
@@ -250,11 +250,11 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                 IhqClient.send(packet) { skinResponseHandler(packet, it) }
             } else {
                 alertErr("获取皮肤失败")
-                log.error(response2.statusLine)
+                logger.error(response2.statusLine)
             }
         } else {
             alertErr("找不到对应玩家")
-            log.error(response.statusLine)
+            logger.error(response.statusLine)
         }
     }
 

@@ -2,7 +2,7 @@ package calebxzhou.rdi.ihq
 
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.protocol.SPacket
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandlerContext
@@ -22,7 +22,7 @@ class RPacketEncoder : MessageToMessageEncoder<SPacket>() {
             out += DatagramPacket(msg.retain(), Const.IHQ_INET_ADDR)
             IhqClient.reqId++
 
-        } ?: log.error("找不到包ID" + packet.javaClass)
+        } ?: logger.error("找不到包ID" + packet.javaClass)
     }
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         cause.printStackTrace()

@@ -1,6 +1,6 @@
 package calebxzhou.rdi.util
 
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import java.io.*
 
 /**
@@ -18,8 +18,8 @@ object LocalStorage {
                 kv = ois.readObject() as HashMap<String, String>
                 ois.close()
             } catch (e: Exception) {
-                log.error("读取缓存出错：{}",e.toString())
-                log.error("重新创建缓存")
+                logger.error("读取缓存出错：{}",e.toString())
+                logger.error("重新创建缓存")
             }
         }
     }

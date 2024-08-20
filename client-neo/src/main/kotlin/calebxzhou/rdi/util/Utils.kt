@@ -1,7 +1,7 @@
 package calebxzhou.rdi.util
 
 import calebxzhou.rdi.RDI
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.general.alertErr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ fun bgTask(block: suspend CoroutineScope.() -> Unit){
     scope.launch { try {
         block()
     } catch (e: Exception) {
-        log.error("bgtask error: $e")
+        logger.error("bgtask error: $e")
         alertErr("${e.localizedMessage}")
         e.printStackTrace()
     }

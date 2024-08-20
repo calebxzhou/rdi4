@@ -136,6 +136,7 @@ class RTitleScreen : RScreen("主页") {
 
 
     public override fun init() {
+
         //SplashScreen.hide()
         val account = Account.now ?: Account.DEFAULT
         //关闭音乐

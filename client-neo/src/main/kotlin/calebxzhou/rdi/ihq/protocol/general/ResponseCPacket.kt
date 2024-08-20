@@ -2,10 +2,8 @@ package calebxzhou.rdi.ihq.protocol.general
 
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.CPacket
-import calebxzhou.rdi.log
+import calebxzhou.rdi.logger
 import calebxzhou.rdi.serdes.serdesJson
-import calebxzhou.rdi.util.readString
-import io.netty.buffer.ByteBuf
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 
@@ -20,7 +18,7 @@ data class ResponseCPacket(
     val data: String
 ) : CPacket {
     override fun process() {
-        log.info(serdesJson.encodeToString(this))
+        logger.info(serdesJson.encodeToString(this))
         IhqClient.handleResponse(this)
     }
 }
