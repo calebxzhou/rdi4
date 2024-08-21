@@ -22,7 +22,6 @@ class RPauseScreen : RScreen("暂停") {
     override fun init() {
         gridLayout {
             button("test"){
-                TutorialManager.nextStep(mc.player!!)
             }
             button("test2"){
                 RScreenRectTip.reset()

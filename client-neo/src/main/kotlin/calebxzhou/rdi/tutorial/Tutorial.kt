@@ -2,7 +2,10 @@ package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.logger
+import calebxzhou.rdi.ui.general.alertInfo
+import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.addChatMessage
+import calebxzhou.rdi.util.goScreen
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
 import net.minecraft.client.player.LocalPlayer
@@ -10,7 +13,7 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.item.ItemStack
 
 fun tutorial(id: String,name: String, builder: Tutorial.Builder.()->Unit): Tutorial {
-    return Tutorial.Builder(id,name).apply { builder }.build()
+    return Tutorial.Builder(id,name).apply ( builder ).build()
 }
 data class Tutorial(
     val id: String,
@@ -34,9 +37,7 @@ data class Tutorial(
             Banner.textNow = nextStep.text
             nextStep.beforeOpr(player)
         } else {
-            mc.addChatMessage(mcText("教程已结束 可以退出了"))
-            Banner.reset()
-            reset()
+          quit()
         }
     }
     fun tick(){
@@ -49,6 +50,12 @@ data class Tutorial(
                 }
             }
         }
+    }
+    fun quit(){
+        reset()
+        Banner.reset()
+        mc.clearLevel()
+        alertInfo(("${name}已结束"))
     }
     class Builder(val id: String,val name:String,vararg val initKit: ItemStack){
         val steps = arrayListOf<TutorialStep>()

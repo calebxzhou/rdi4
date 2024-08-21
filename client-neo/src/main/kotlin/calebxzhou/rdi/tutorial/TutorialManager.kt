@@ -32,7 +32,7 @@ object TutorialManager {
     val isDoingTutorial
         get() = now==null
     var now: Tutorial?=null
-    private val noobTutorial = tutorial("noob","新手教程"){
+      val noobTutorial = tutorial("noob","新手教程"){
         step("按空格键跳跃 (键盘下面最长那个键,字母CVBNM底下)") { (it as ALivingEntity).jumping }
         step("按下WASD键,前后左右走路,晃动鼠标观察四周,然后走到光柱位置",
             {
@@ -74,7 +74,7 @@ object TutorialManager {
                 slot { !it.hasItem() &&   it.slotIndex in 10..35 }
             }
         }) {  RScreenRectTip.isCompleted }
-        step("砍树的根部,拿到5个原木") { player -> player.inventory.hasAnyMatching { it.`is`(ItemTags.LOGS) && it.count >= 5 } }
+        step("斧拿手上,对准树的根部长按鼠标左键砍树,拿5个原木") { player -> player.inventory.hasAnyMatching { it.`is`(ItemTags.LOGS) && it.count >= 5 } }
         //todo  找粘土 生火
         /*step("继续走到光柱位置",
             {
@@ -124,9 +124,13 @@ object TutorialManager {
     }
 
     fun tick(e: TickEvent.LevelTickEvent) {
-
+now?.tick()
     }
     fun renderGui(guiGraphics: GuiGraphics) {
 
+    }
+
+    fun reset() {
+        now=null
     }
 }

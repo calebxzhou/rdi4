@@ -193,7 +193,7 @@ class RTitleScreen : RScreen("主页") {
 
     fun start() {
         if (!File("tutorial1_done").exists()) {
-            TutorialManager.startTutorial()
+            TutorialManager.startTutorial(TutorialManager.noobTutorial)
         } else
             if (Account.now == null) {
                 mc goScreen optScreen(this@RTitleScreen)
