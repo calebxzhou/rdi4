@@ -1,4 +1,4 @@
-package calebxzhou.rdi.blocknav
+package calebxzhou.rdi.nav
 
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.sound.RSoundPlayer
@@ -18,7 +18,7 @@ import net.minecraftforge.client.event.RenderLevelStageEvent
 import org.joml.Matrix4f
 
 //方块导航
-object BlockNavigator {
+object OmniNavi {
     var posNow: BlockPos? = null
         private set
     val stateNow

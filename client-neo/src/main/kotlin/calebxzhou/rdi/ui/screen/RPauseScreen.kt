@@ -1,9 +1,8 @@
 package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.banner.Banner
-import calebxzhou.rdi.blocknav.BlockNavigator
+import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.tutorial.TutorialManager
-import calebxzhou.rdi.tutorial.TutorialManager.nextStep
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.formScreen
@@ -13,7 +12,6 @@ import calebxzhou.rdi.util.drawTextAtCenter
 import calebxzhou.rdi.util.goScreen
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
-import net.dries007.tfc.common.TFCTags
 import net.dries007.tfc.common.blocks.rock.LooseRockBlock
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
@@ -37,7 +35,7 @@ class RPauseScreen : RScreen("暂停") {
                         text("id","方块、矿辞ID",50)
                     }
                 }
-                BlockNavigator.navigate   { blockState, -> blockState.block is LooseRockBlock && blockState.getValue(
+                OmniNavi.navigate   { blockState, -> blockState.block is LooseRockBlock && blockState.getValue(
                     LooseRockBlock.COUNT)>1 }
             }
             button("设置"){
@@ -53,7 +51,7 @@ class RPauseScreen : RScreen("暂停") {
                 }
                 TutorialManager.reset()
                 Banner.reset()
-                BlockNavigator.reset()
+                OmniNavi.reset()
                 mc goScreen RTitleScreen()
 
             }

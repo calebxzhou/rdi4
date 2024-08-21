@@ -9,9 +9,9 @@ data class TutorialStep(
     val text: MutableComponent,
     //开始之前干啥
     val beforeOpr: (LocalPlayer) -> Unit = {},
-    //教程中干啥
     //结束之后干啥
     val afterOpr: (LocalPlayer) -> Unit = {},
+    //完成条件 每tick检查一遍
     val completeCondition: (LocalPlayer) -> Boolean
 ){
     constructor( text: String,

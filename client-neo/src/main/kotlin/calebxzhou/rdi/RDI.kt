@@ -5,7 +5,7 @@ import calebxzhou.rdi.RDI.Companion.handCursor
 import calebxzhou.rdi.RDI.Companion.ibeamCursor
 import calebxzhou.rdi.RDI.Companion.modIdChineseName
 import calebxzhou.rdi.banner.Banner
-import calebxzhou.rdi.blocknav.BlockNavigator
+import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.model.Account
@@ -29,7 +29,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.BlockTags
-import net.minecraft.world.inventory.InventoryMenu
 import net.minecraftforge.client.event.RecipesUpdatedEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RenderGuiEvent
@@ -191,7 +190,7 @@ object RDIEvents {
 
     fun onRenderGui(e: RenderGuiEvent) {
         Banner.renderGui(e.guiGraphics)
-        BlockNavigator.renderGui(e.guiGraphics)
+        OmniNavi.renderGui(e.guiGraphics)
         TutorialManager.renderGui(e.guiGraphics)
     }
 
@@ -211,11 +210,11 @@ object RDIEvents {
     }
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
-        BlockNavigator.renderLevelStage(e)
+        OmniNavi.renderLevelStage(e)
     }
 
     fun onLevelTick(e: TickEvent.LevelTickEvent) {
-        BlockNavigator.tick()
+        OmniNavi.tick()
         TutorialManager.tick(e)
     }
 
