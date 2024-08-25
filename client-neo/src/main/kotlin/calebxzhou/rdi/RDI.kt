@@ -12,7 +12,8 @@ import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.tfc.RTfcRecipeStorage
-import calebxzhou.rdi.tutorial.TutorialManager
+import calebxzhou.rdi.tutorial.Tutorial
+import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.ROverlay
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.alertErr
@@ -30,6 +31,7 @@ import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.BlockTags
 import net.minecraftforge.client.event.RecipesUpdatedEvent
+import net.minecraftforge.client.event.RegisterClientCommandsEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RenderGuiEvent
 import net.minecraftforge.client.event.RenderGuiOverlayEvent
@@ -117,6 +119,7 @@ object RDIEvents {
         bus.addListener(::afterScreenRender)
         bus.addListener(::afterScreenMouseClick)
         bus.addListener(::onClientTick)
+        bus.addListener(::registerClientCommand)
     }
 
     fun checkGuiOverlays(event: RenderGuiOverlayEvent.Pre) {
@@ -165,6 +168,10 @@ object RDIEvents {
         }
     }
 
+    fun registerClientCommand(e: RegisterClientCommandsEvent) {
+        e.dispatcher.register(TutorialCommand.cmd)
+    }
+
     fun loadComplete(e: FMLLoadCompleteEvent) {
         //初始化modid to 中文名称
         ModList.get().mods.forEach {
@@ -191,20 +198,19 @@ object RDIEvents {
     fun onRenderGui(e: RenderGuiEvent) {
         Banner.renderGui(e.guiGraphics)
         OmniNavi.renderGui(e.guiGraphics)
-        TutorialManager.renderGui(e.guiGraphics)
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
         Banner.renderScreen(e.guiGraphics)
-        RScreenRectTip.render(e.guiGraphics,e.screen)
-        if(mc pressingKey InputConstants.KEY_0 && e.screen is InventoryScreen){
+        RScreenRectTip.render(e.guiGraphics, e.screen)
+        if (mc pressingKey InputConstants.KEY_0 && e.screen is InventoryScreen) {
             rectTip {
                 slot { it.item.`is`(FIREPIT_STICKS) }
-                slot (3)
-                slot { it.item.toString().contains("axe_head")}
-                slot (1)
-                slot (0)
-                slot { !it.hasItem() &&   it.slotIndex in 10..35 }
+                slot(3)
+                slot { it.item.toString().contains("axe_head") }
+                slot(1)
+                slot(0)
+                slot { !it.hasItem() && it.slotIndex in 10..35 }
             }
         }
     }
@@ -214,8 +220,10 @@ object RDIEvents {
     }
 
     fun onLevelTick(e: TickEvent.LevelTickEvent) {
-        OmniNavi.tick()
-        TutorialManager.tick(e)
+        mc.execute {
+            OmniNavi.tick()
+            Tutorial.tick(e)
+        }
     }
 
     fun onClientTick(e: TickEvent.ClientTickEvent) {
@@ -226,9 +234,11 @@ object RDIEvents {
             }
         }
     }
-    fun afterScreenMouseClick(e: ScreenEvent.MouseButtonPressed.Post){
+
+    fun afterScreenMouseClick(e: ScreenEvent.MouseButtonPressed.Post) {
         RScreenRectTip.onClick(e)
     }
+
     fun onRecipeUpdated(e: RecipesUpdatedEvent) {
         val recipes = ClientHelpers.getLevelOrThrow().recipeManager.recipes
         val tfcRecipes = recipes.filter { it.id.namespace == "tfc" && it is KnappingRecipe }
@@ -238,7 +248,7 @@ object RDIEvents {
     }
 
     fun onPlayerLogin(e: PlayerLoggedInEvent) {
-        if (TutorialManager.isDoingTutorial) {
+        if (Tutorial.isDoingTutorial) {
             mc.addChatMessage(mcText("欢迎来到入门教程\n跟随画面提示进行操作"))
 
         }

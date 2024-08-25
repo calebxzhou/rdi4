@@ -11,13 +11,14 @@ import net.minecraftforge.client.event.ScreenEvent
 import org.lwjgl.glfw.GLFW
 
 typealias RectPoints = IntArray
-fun rectTip(builder: RScreenRectTip.Builder.() -> Unit){
+fun rectTip( builder: RScreenRectTip.Builder.() -> Unit){
     RScreenRectTip.Builder().apply(builder).build()
 }
 //在界面上画一个绿色矩形,告诉玩家要点击的位置(教程用)
 object RScreenRectTip {
     private var allRects = arrayListOf<RectPoints>()
     var rectIndex = -1
+    var color=GREEN
     val rectNow: RectPoints
         get() = allRects.getOrNull(rectIndex)?:RectPoints(4)
     val x1
@@ -34,7 +35,7 @@ object RScreenRectTip {
 
 
         guiGraphics.matrixOp {
-            guiGraphics.renderOutline(x1, y1, width, height, GREEN)
+            guiGraphics.renderOutline(x1, y1, width, height, color)
         }
     }
 
@@ -66,6 +67,7 @@ object RScreenRectTip {
     }
     class Builder(){
         var allRects = arrayListOf<RectPoints>()
+        var color = GREEN
         //按slot条件添加提示点
         fun slot(condition: (Slot) -> Boolean){
             val containerScreen = mc.screen as? AbstractContainerScreen<*> ?: let {
@@ -111,6 +113,7 @@ object RScreenRectTip {
         }
         fun build(){
             RScreenRectTip .allRects = this.allRects
+            RScreenRectTip.color=color
             rectIndex=0
         }
     }

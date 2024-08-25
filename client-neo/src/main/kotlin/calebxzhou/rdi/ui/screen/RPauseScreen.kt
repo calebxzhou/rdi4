@@ -2,7 +2,7 @@ package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.nav.OmniNavi
-import calebxzhou.rdi.tutorial.TutorialManager
+import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.formScreen
@@ -42,13 +42,16 @@ class RPauseScreen : RScreen("暂停") {
             }
             button("退出"){
                 mc.level?.disconnect()
+                if(Tutorial.isDoingTutorial){
+                    Tutorial.now?.quit()
+                    return@button
+                }
                 if(mc.isLocalServer){
 
                     mc.clearLevel(GenericDirtMessageScreen(mcText("存档中，请稍候")))
                 } else{
                     mc.clearLevel()
                 }
-                TutorialManager.reset()
                 Banner.reset()
                 OmniNavi.reset()
                 mc goScreen RTitleScreen()
@@ -60,7 +63,7 @@ class RPauseScreen : RScreen("暂停") {
     }
 
     override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        if(TutorialManager.isDoingTutorial){
+        if(Tutorial.isDoingTutorial){
             drawTextAtCenter(guiGraphics,"入门教程模式")
         }
 

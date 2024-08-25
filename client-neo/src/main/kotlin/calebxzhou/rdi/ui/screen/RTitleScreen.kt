@@ -7,7 +7,7 @@ import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.tutorial.TutorialManager
+import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.gridLayout
@@ -193,7 +193,7 @@ class RTitleScreen : RScreen("主页") {
 
     fun start() {
         if (!File("tutorial1_done").exists()) {
-            TutorialManager.startTutorial(TutorialManager.noobTutorial)
+            Tutorial.stone1.start()
         } else
             if (Account.now == null) {
                 mc goScreen optScreen(this@RTitleScreen)

@@ -16,6 +16,9 @@ import net.minecraft.client.tutorial.TutorialStepInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 
@@ -77,6 +80,15 @@ operator  fun MutableComponent.plus(component:String): MutableComponent {
 }
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
+}
+fun Player.lookingAtBlock(): BlockState?{
+    val hit = pick(20.0,0.0f,false)
+    if(hit.type == HitResult.Type.BLOCK){
+        val bpos = (hit as BlockHitResult).blockPos
+        val bstate = level().getBlockState(bpos)
+        return bstate
+    }
+    return null
 }
 fun Minecraft.addToast(toast: Toast){
     mc.toasts.addToast(toast)

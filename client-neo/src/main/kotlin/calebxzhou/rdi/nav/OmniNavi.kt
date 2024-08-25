@@ -288,7 +288,6 @@ object OmniNavi {
                 if (player.distanceToSqr(posNow.x.toDouble(), posNow.y.toDouble(), posNow.z.toDouble()) < 3) {
                     mc.addChatMessage(mcText("已到达目的地附近，本次导航结束"))
 
-                    RSoundPlayer.info()
                     reset()
                 }
             }

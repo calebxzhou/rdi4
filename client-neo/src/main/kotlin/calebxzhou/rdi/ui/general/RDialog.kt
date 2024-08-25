@@ -13,7 +13,7 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs
  * Created on 2024-06-23,22:05.
  */
 fun confirm(msg: String,
-            prevScreen: Screen,yesHandler: () -> Unit){
+            prevScreen: Screen?=null,yesHandler: () -> Unit){
     dialog(msg, prevScreen,RDialogType.CONFIRM, yesHandler = yesHandler)
 }
 fun alertInfo(msg: String, prevScreen: Screen?=null) {
