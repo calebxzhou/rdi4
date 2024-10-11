@@ -21,22 +21,7 @@ import net.minecraft.client.gui.screens.OptionsScreen
 class RPauseScreen : RScreen("暂停") {
     override fun init() {
         gridLayout {
-            button("test"){
-            }
-            button("test2"){
-                RScreenRectTip.reset()
-            }
-            button("test3"){
-            }
-            button("方块导航"){
-                mc goScreen optionScreen(this@RPauseScreen,"选择目标类型"){
-                    "方块" to formScreen(this.mcScreen,"输入方块/矿辞ID"){
-                        text("id","方块、矿辞ID",50)
-                    }
-                }
-                OmniNavi.navigate   { blockState, -> blockState.block is LooseRockBlock && blockState.getValue(
-                    LooseRockBlock.COUNT)>1 }
-            }
+
             button("设置"){
                 mc goScreen OptionsScreen(this@RPauseScreen,mc.options)
             }

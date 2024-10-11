@@ -1,16 +1,19 @@
 package calebxzhou.rdi.util
 
+import calebxzhou.rdi.logger
 import calebxzhou.rdi.mixin.client.ATutorial
 import calebxzhou.rdi.ui.RMessageType
 import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
+import jdk.internal.foreign.PlatformLayouts.pick
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.server.IntegratedServer
 import net.minecraft.client.tutorial.Tutorial
 import net.minecraft.client.tutorial.TutorialStepInstance
 import net.minecraft.network.chat.Component
@@ -26,6 +29,8 @@ val mc: Minecraft
     get() = Minecraft.getInstance() ?: run {
         throw IllegalStateException("Minecraft Not Start !")
     }
+val mcs: IntegratedServer?
+    get() = mc.singleplayerServer
 val isMcStarted
     get() = Minecraft.getInstance() != null
 
@@ -50,12 +55,22 @@ val Player.thrist:Float
             d.thirst
         else 0f
     }
+fun mcsCommand(cmd: String){
+    mcs?.let{ mcs->
+     mcs.commands.performPrefixedCommand(mcs.createCommandSourceStack(),cmd)
+    }?.let {
+        logger.warn("mcs not run!")
+    }
+}
+fun mcTick(sec: Int) : Int{
+    return sec*20
+}
 fun mcText(str: String?=null): MutableComponent  {
     return str?.let {
         Component.literal(it)
     }?:Component.empty()
 }
-fun GuiGraphics.matrixOp(handler: (PoseStack)->Unit){
+fun GuiGraphics.matrixOp(handler: PoseStack.()->Unit){
     val stack = pose()
     stack.pushPose()
     handler(stack)
@@ -81,7 +96,8 @@ operator  fun MutableComponent.plus(component:String): MutableComponent {
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
 }
-fun Player.lookingAtBlock(): BlockState?{
+val Player.lookingAtBlock: BlockState?
+    get()  {
     val hit = pick(20.0,0.0f,false)
     if(hit.type == HitResult.Type.BLOCK){
         val bpos = (hit as BlockHitResult).blockPos
@@ -93,8 +109,9 @@ fun Player.lookingAtBlock(): BlockState?{
 fun Minecraft.addToast(toast: Toast){
     mc.toasts.addToast(toast)
 }
-fun Tutorial .goStep(value: TutorialStepInstance) = (this as ATutorial).setInstance(value)
-
+fun Minecraft.addChatMessage(msg: String){
+    mc.gui.chat.addMessage(mcText(msg))
+}
 fun Minecraft.addChatMessage(msg: Component){
     mc.gui.chat.addMessage(msg)
 }

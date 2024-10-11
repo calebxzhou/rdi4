@@ -3,9 +3,12 @@ package calebxzhou.rdi.ui.general
 import calebxzhou.rdi.ui.RMessageType
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
+import calebxzhou.rdi.ui.component.RTextButton
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.resources.ResourceLocation
+import org.checkerframework.checker.units.qual.m
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 
 
@@ -71,14 +74,26 @@ class RDialog(
     lateinit var okBtn: RButton
     lateinit var cancelBtn: RButton
     val lines = msg.split("\n")
+    val icon = when (msgType) {
+        RMessageType.INFO -> Icons["info"]
+        RMessageType.ERR -> Icons["error"]
+        RMessageType.OK -> Icons["success"]
+        RMessageType.WARN -> Icons["warning"]
+    }
+    override val title = mcText(when (msgType) {
+        RMessageType.INFO -> "提示"
+        RMessageType.ERR -> "错误"
+        RMessageType.OK -> "成功"
+        RMessageType.WARN -> "警告"
+    })
     var startY = mcUIHeight/2-lines.size*10
     override fun init() {
-        okBtn = RButton(mcText("确定"),width / 2 - 50, mcUIHeight / 2 + 30, 50, ) { onYes() }.also { registerWidget(it) }
-        cancelBtn = RButton( mcText("取消"),width / 2, mcUIHeight / 2 + 30, 50) { onNo() }.also { registerWidget(it) }
+        okBtn = RTextButton(mcText("确定"),width / 2 - 50, mcUIHeight / 2 + 40, ) { onYes() }.also { registerWidget(it) }
+        cancelBtn = RTextButton( mcText("取消"),width / 2, mcUIHeight / 2 + 40,) { onNo() }.also { registerWidget(it) }
         if (diagType == RDialogType.ALERT) {
             cancelBtn.visible = false
-            okBtn.x = width / 2 - 25
-            okBtn.message = mcText("明白")
+            okBtn.x = width / 2 - mcFont.width(">明白<")/2
+            okBtn.message = mcText(">明白<")
         }
 
         super.init()
@@ -102,7 +117,22 @@ class RDialog(
     }
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        guiGraphics.fill(
+        guiGraphics.matrixOp {
+            scale(0.5f,0.5f,1f)
+            translate(mcUIWidth/2f,mcUIHeight/2f,1f)
+            renderDirtBackground(guiGraphics)
+        }
+        guiGraphics.matrixOp {
+            val size = 14
+            val x = mcUIWidth/2-105
+            val y = mcUIHeight/2-58
+            guiGraphics.drawString(mcFont,title,x+size+2, y+3, WHITE)
+            guiGraphics.blit(icon, x, y, 0f, 0f, size,size,size,size)
+        }
+        lines.forEachIndexed { i,line->
+            drawTextAtCenter(guiGraphics, line, startY + i * 10)
+        }
+       /* guiGraphics.fill(
             mcUIWidth / 2 - 100,
             mcUIHeight / 2 - 50,
             mcUIWidth / 2 + 100,
@@ -116,10 +146,8 @@ class RDialog(
                 RMessageType.OK -> LIGHT_GREEN
                 RMessageType.WARN -> LIGHT_YELLOW
             }
-        )
-        lines.forEachIndexed { i,line->
-        drawTextAtCenter(guiGraphics, line, startY + i * 10)
-        }
+        )*/
+
         super.render(guiGraphics, mouseX, mouseY, partialTick)
 
 

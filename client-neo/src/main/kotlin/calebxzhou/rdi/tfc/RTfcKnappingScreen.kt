@@ -33,13 +33,7 @@ object RTfcKnappingScreen {
 
         //guiGraphics.drawCenteredString(mcFont,"制作石斧头子: 点击1a 3a 4a 5a 5b 5d 5e 4e 3e 1e",screen.width/2, 30, WHITE)
         guiGraphics.drawCenteredString(mcFont,"点击灰色箭头,查看更多的敲击石头方法.",screen.width/2, 20, WHITE)
-        if(mc pressingKey InputConstants.KEY_0){
-            rectTip {
-                widgets(0, 10, 15, 20, 21, 23, 24, 19, 14, 4)
-                slot(0)
-                slot { !it.hasItem() && it.slotIndex!=0 }
-            }
-        }
+       
        /* val pose = guiGraphics.pose()
         pose.pushPose()
         pose.translate(0f,0f,1f)

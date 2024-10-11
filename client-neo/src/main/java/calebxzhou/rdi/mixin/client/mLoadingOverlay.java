@@ -23,35 +23,6 @@ import java.util.function.Consumer;
 public abstract class mLoadingOverlay {
     @Shadow public abstract void setOverlay(Overlay loadingGui);
 
-    /*@Shadow public abstract void setOverlay(@Nullable Overlay loadingGui);
-
-        @Shadow @Final private ReloadableResourceManager resourceManager;
-
-        @Shadow @Final private static CompletableFuture<Unit> RESOURCE_RELOAD_INITIAL_TASK;
-
-        @Shadow @Final private PackRepository resourcePackRepository;
-
-        @Redirect(method = "<init>",at= @At(value = "NEW", target = "(Lnet/minecraft/client/Minecraft;Lnet/minecraft/server/packs/resources/ReloadInstance;Ljava/util/function/Consumer;Z)Lnet/minecraft/client/gui/screens/LoadingOverlay;"))
-        private LoadingOverlay goRdiLoadingOverlay(Minecraft minecraft, ReloadInstance reload, Consumer onFinish, boolean fadeIn){
-            return new RLoadingOverlay(minecraft,reload,onFinish);
-        }
-        @Redirect(method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;",at= @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
-        private void goRdiLoadingOverlay2(Minecraft instance, Overlay loadingGui){
-            setOverlay(new RLoadingOverlay(instance,resourceManager.createReload(
-                    Util.backgroundExecutor(),
-                    instance,
-                    RESOURCE_RELOAD_INITIAL_TASK, resourcePackRepository.openAllSelected()),optional -> Util.ifElse(optional, throwable -> {
-                if (err) {
-                    this.abortResourcePackRecovery();
-                } else {
-                    this.rollbackResourcePacks(throwable);
-                }
-            }, () -> {
-                this.levelRenderer.allChanged();
-                this.reloadStateTracker.finishReload();
-                completableFuture.complete(null);
-            }),));
-        }*/
     @Inject(method = "setOverlay",at=@At("HEAD"), cancellable = true)
     private void goRdiLoadingOverlay(Overlay loadingGui, CallbackInfo ci){
         if(loadingGui instanceof LoadingOverlay lo){

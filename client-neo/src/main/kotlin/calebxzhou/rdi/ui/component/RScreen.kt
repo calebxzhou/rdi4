@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.MutableComponent
 
-abstract class RScreen(val title: MutableComponent) : Screen(title) {
+abstract class RScreen(open val title: MutableComponent) : Screen(title) {
     constructor(name: String) : this(mcText(name))
     open var clearColor = true
     open var showTitle = true

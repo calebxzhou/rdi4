@@ -167,17 +167,18 @@ class RTitleScreen : RScreen("主页") {
             else
                 mc goScreen RProfileScreen(account)
         }.apply {
-            x = mcUIWidth / 2 - width / 2
-            y = 2
+            val accountNameWidth = mcFont.width(Account.now?.name?: Account.DEFAULT.name)
+            x = mcUIWidth - (16 + accountNameWidth + 6)
+            y = mcUIHeight- 17
         }.also { registerWidget(it) }
-        gridLayout(mc.window.guiScaledWidth / 2, mcUIHeight - 17) {
+        gridLayout(10, mcUIHeight - 16) {
             imageButton("start.png", "开始") {
                 start()
             }
             imageButton("settings.png", "设置") {
                 mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
             }
-            imageButton("thank.png", "致谢") {
+            imageButton("partner.png", "致谢") {
                 alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe\nMod建议：ForiLuSa", this@RTitleScreen)
             }
             imageButton("qq.png", "QQ群") {
@@ -192,8 +193,21 @@ class RTitleScreen : RScreen("主页") {
     }
 
     fun start() {
-        if (!File("tutorial1_done").exists()) {
-            Tutorial.stone1.start()
+        if (Account.now == null) {
+            mc goScreen optScreen(this@RTitleScreen)
+        } else {
+            RSoundPlayer.stopAll()
+            ConnectScreen.startConnecting(
+                this@RTitleScreen,
+                mc,
+                ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
+                Const.SERVER_DATA,
+                false
+            )
+        }
+        //Tutorial.stoneAge[1].start()
+        /*if (!File("tutorial1_done").exists()) {
+            Tutorial.stoneAge[0].start()
         } else
             if (Account.now == null) {
                 mc goScreen optScreen(this@RTitleScreen)
@@ -206,7 +220,7 @@ class RTitleScreen : RScreen("主页") {
                     Const.SERVER_DATA,
                     false
                 )
-            }
+            }*/
     }
 
     override fun shouldCloseOnEsc(): Boolean {
@@ -219,15 +233,12 @@ class RTitleScreen : RScreen("主页") {
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //guiGraphics.blit(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128)
         guiGraphics.blit(SCREEN_BG, 0, 0, 0f, 0f, mcUIWidth, mcUIHeight, mcUIWidth, mcUIHeight)
-        guiGraphics.blit(LOGO, mcUIWidth / 2 - 100, mcUIHeight / 2 - 20, -0.0625f, 0.0f, 120, 60, 120, 120)
-        guiGraphics.blit(LOGO, mcUIWidth / 2 - 30, mcUIHeight / 2 - 20, 0.0625f, 60.0f, 120, 60, 120, 120)
-
+        guiGraphics.blit(LOGO, mcUIWidth / 2 - 60, mcUIHeight / 2 - 25, -0.0625f, 0.0f, 120, 60, 120, 120)
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //下方的灰条
         guiGraphics.fill(0, height - 20, width, height, 0xAA000000.toInt())
         //drawTextAt(guiGraphics, Const.VERSION_STR, 10, height - 15)
 //上方的灰条（已登录
-        guiGraphics.fill(width / 2 - 80, 0, width / 2 + 80, 20, 0xAA000000.toInt())
         /*RAccount.now?.let {
             PlayerFaceRenderer.draw(guiGraphics, it.skinLocation, width/2-40, 2, 15)
         }*/
@@ -238,7 +249,7 @@ class RTitleScreen : RScreen("主页") {
     override fun tick() {
         shiftMode = mc pressingKey InputConstants.KEY_LSHIFT
         ctrlMode = mc pressingKey InputConstants.KEY_LCONTROL
-        if (mc pressingKey InputConstants.KEY_Z) {
+        /*if (mc pressingKey InputConstants.KEY_Z) {
             mc goScreen object : RScreen("文档测试") {
                 override fun init() {
 
@@ -263,7 +274,7 @@ class RTitleScreen : RScreen("主页") {
                     super.init()
                 }
             }
-        }
+        }*/
         if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
             start()
         }

@@ -19,6 +19,8 @@ import java.util.*
  * calebxzhou @ 2024-06-02 10:03
  */
 val scope = CoroutineScope(Dispatchers.IO)
+val sysTime
+    get() = System.currentTimeMillis()
 fun bgTask(block: suspend CoroutineScope.() -> Unit){
     scope.launch { try {
         block()
@@ -31,6 +33,13 @@ fun bgTask(block: suspend CoroutineScope.() -> Unit){
 }
 fun String.isNumber(): Boolean {
     return this.isNotEmpty() && this.all { it.isDigit() }
+}
+//保留小数点后x位
+fun Float.toFixed(decPlaces: Int): String{
+    return String.format("%.${decPlaces}f",this)
+}
+fun Double.toFixed(decPlaces: Int): String{
+    return this.toFloat().toFixed(decPlaces)
 }
 fun String.isValidUuid() : Boolean{
     val uuidRegex = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex()

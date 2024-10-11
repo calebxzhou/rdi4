@@ -4,6 +4,8 @@ import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RImageButton
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
+import calebxzhou.rdi.util.mcUIHeight
+import calebxzhou.rdi.util.mcUIWidth
 import kotlinx.coroutines.NonCancellable.children
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
@@ -14,8 +16,8 @@ import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.network.chat.MutableComponent
 
 fun gridLayout(
-    x: Int = mc.window.guiScaledWidth / 2,
-    y: Int = mc.window.guiScaledHeight - 20,
+    x: Int = mcUIWidth / 2,
+    y: Int = mcUIHeight - 20,
     maxColumns: Int = 0,
     builder: GridLayoutBuilder.() -> Unit,
 ): GridLayoutBuilder {
@@ -47,7 +49,7 @@ class GridLayoutBuilder(val maxColumns: Int, val x: Int, val y: Int) {
         val rowHelper = layout.createRowHelper(if (maxColumns > 0) maxColumns else children.size)
         children.forEach { rowHelper.addChild(it) }
         layout.arrangeElements()
-        layout.x -= layout.width / 2
+      //  layout.x -= layout.width / 2
         layout.visitWidgets(consumer)
     }
 }

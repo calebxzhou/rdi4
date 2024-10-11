@@ -6,6 +6,7 @@ import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
+import snownee.jade.overlay.DatapackBlockManager.override
 
 /*
 optionScreen{
@@ -45,19 +46,20 @@ class ROptionScreen(
     val mcScreen
         get() = object : RScreen(title) {
             override var showTitle = false
-            var startY = height / 2 - options.size * 10
+            val startY = mcUIHeight / 2 - options.size * 10
+            var nowY = startY
             override fun init() {
                 options.onEachIndexed { index, (text, opr) ->
-                    val btn = RButton(mcText("${index + 1}. ${text}"), 0, startY) { opr(this@ROptionScreen) }
+                    val btn = RButton(mcText("${index + 1}. ${text}"), 0, nowY) { opr(this@ROptionScreen) }
                     btn.x = width/2-btn.width/2
                     registerWidget(btn)
-                    startY += btn.height
+                    nowY += btn.height
                 }
                 super.init()
             }
 
             override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-                guiGraphics.drawCenteredString(mcFont,this@ROptionScreen.title,width/2,startY-10, WHITE)
+                guiGraphics.drawCenteredString(mcFont,this@ROptionScreen.title,width/2,startY-20, WHITE)
             }
             override fun tick() {
 

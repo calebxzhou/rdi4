@@ -1,21 +1,33 @@
 package calebxzhou.rdi.nav
 
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.sound.RSoundPlayer
+import calebxzhou.rdi.rAsync
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
+import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.commands.CommandBuildContext
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands
+import net.minecraft.commands.SharedSuggestionProvider
+import net.minecraft.commands.arguments.ResourceArgument
+import net.minecraft.commands.arguments.blocks.BlockStateArgument
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Holder
 import net.minecraft.core.SectionPos
+import net.minecraft.core.registries.Registries
 import net.minecraft.tags.TagKey
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.client.event.RenderLevelStageEvent
 import org.joml.Matrix4f
+import kotlin.math.sqrt
 
 //方块导航
 object OmniNavi {
@@ -23,14 +35,62 @@ object OmniNavi {
         private set
     val stateNow
         get() = mc.level?.getBlockState(posNow)
-    val found = hashSetOf<BlockPos>()
+    val cmd: (CommandBuildContext) -> LiteralArgumentBuilder<CommandSourceStack> = { ctx: CommandBuildContext ->
+        Commands.literal("omninavi").then(
+            Commands.argument("1", StringArgumentType.string())
+                .suggests { _, build ->
+                    SharedSuggestionProvider.suggest(
+                        arrayOf(
+                            "entity",
+                            "block",
+                            "stop",
+                        ), build
+                    )
+                }
+                .executes {
+                    val act = StringArgumentType.getString(it, "1")
+                    when (act) {
+                        "stop" -> {
+                            reset()
+                            mc.addChatMessage("已停止导航")
+                        }
+                    }
+                    1
+                }
+                .then(
+                    Commands.argument("blk", BlockStateArgument.block(ctx))
+                        .executes {
+                            val block = BlockStateArgument.getBlock(it, "blk").state.block
+                            this += block
+                            1
+                        }
+                )
+                .then(
+                    Commands.argument("ett", ResourceArgument.resource(ctx, Registries.ENTITY_TYPE))
+                        .executes {
+                            val ett = ResourceArgument.getSummonableEntityType(it, "entity")
+                            this += ett
+                            1
+                        }
+                )
+
+        )
+    }
+
     operator fun plusAssign(pos: BlockPos) {
         posNow = pos
     }
 
-    operator fun plusAssign(block: Block) {
+    operator fun plusAssign(block: BlockState) {
+        navigate { blockState -> blockState == block }
+    }
 
-        navigate { blockState, -> blockState.`is`(block) }
+    operator fun plusAssign(entityType: Holder.Reference<EntityType<*>>) {
+        //todo
+    }
+
+    operator fun plusAssign(block: Block) {
+        navigate { blockState -> blockState.`is`(block) }
     }
 
     operator fun plusAssign(tag: TagKey<Block>) {
@@ -40,20 +100,31 @@ object OmniNavi {
     fun navigate(
         condition: (BlockState) -> Boolean,
     ) {
-        mc.executeBlocking {
+        rAsync {
+            val found = find(condition)
+            if (found.isEmpty) {
+                mc.addChatMessage("没找到")
+                return@rAsync
+            }
+            mc.player?.let { player ->
+                val dist = { pos: BlockPos -> player.onPos.distSqr(pos) }
+                val result = found.minBy { dist(it.key) }
+                posNow = result.key
+                mc.addChatMessage(
+                    mcText("开始导航:") + result.value.block.name + "，坐标${result.key.toShortString()}，距离${
+                        sqrt(
+                            dist(result.key)
+                        ).toFixed(1)
+                    }m"
+                )
 
-        val found = find(condition)
-        mc.player?.let { player ->
-            val result = found.minBy { player.onPos.distSqr(it.key) }
-            posNow = result.key
-            mc.addChatMessage(mcText("开始导航:") + result.value.block.name)
-
-        }
+            }
         }
     }
 
     private fun find(
-        condition: (BlockState) -> Boolean
+        condition: (BlockState) -> Boolean,
+        maxAmount: Int = 1
     ): HashMap<BlockPos, BlockState> {
         //遍历区块 寻找合适方块
         val found = hashMapOf<BlockPos, BlockState>()
@@ -66,20 +137,22 @@ object OmniNavi {
                 for (offsetZ in offsets) {
                     val cx = chunkX + offsetX
                     val cz = chunkZ + offsetZ
-                    val cpos = ChunkPos(cx,cz)
+                    val cpos = ChunkPos(cx, cz)
                     val chunk = player.level().getChunk(cx, cz)
-                    for(sy in chunk.minSection until  chunk.maxSection){
+                    for (sy in chunk.minSection until chunk.maxSection) {
                         val section = chunk.getSection(chunk.getSectionIndexFromSectionY(sy))
-                        for(x in 0..15)
-                            for(y in 0..15)
-                                for(z in 0 .. 15){
+                        for (x in 0..15)
+                            for (y in 0..15)
+                                for (z in 0..15) {
 
                                     val state = section.getBlockState(x, y, z)
-                                    if(state !=null&&condition(state)){
+                                    if (state != null && condition(state)) {
                                         val origin = SectionPos.of(chunk.pos, sy).origin()
-                                        val bpos =  origin.mutable().setWithOffset(origin,x,y,z)
+                                        val bpos = origin.mutable().setWithOffset(origin, x, y, z)
                                         found += bpos to state
-                                        this.found += bpos
+                                        if(found.size >= maxAmount){
+                                            return@let
+                                        }
                                     }
                                 }
                     }
@@ -87,21 +160,19 @@ object OmniNavi {
                 }
 
             }
-        }
-        logger.info("找到${found.size}个")
+        } 
         return found
     }
 
     fun reset() {
-        found.clear()
         posNow = null
     }
 
     fun renderGui(guiGraphics: GuiGraphics) {
-        posNow?.let { posNow ->
+        /*posNow?.let { posNow ->
             guiGraphics.fill(0, 64, mcUIWidth, 84, 0x66000000.toInt())
             guiGraphics.drawCenteredString(mcFont, "导航到：${posNow.toShortString()}", mcUIWidth / 2, 70, WHITE)
-        }
+        }*/
     }
 
     fun renderLevelStage(e: RenderLevelStageEvent) {
@@ -109,20 +180,20 @@ object OmniNavi {
         val poseStack = e.poseStack
         val partialTick = e.partialTick
         val camPos = e.camera.position
-        if(e.stage == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS){
+        if (e.stage == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
 
         }
 
         if (e.stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-            posNow?.let {  posNow ->
+            posNow?.let { posNow ->
 
 
-                val x = posNow.x - camPos.x() +0.5
+                val x = posNow.x - camPos.x() + 0.5
                 val y = posNow.y - camPos.y()
-                val z = posNow.z - camPos.z()+0.5
+                val z = posNow.z - camPos.z() + 0.5
 
                 poseStack.pushPose()
-                poseStack.translate(x,y,z)
+                poseStack.translate(x, y, z)
                 renderBeam(bufferSource, poseStack)
                 poseStack.popPose()
             }
@@ -282,7 +353,6 @@ object OmniNavi {
 
     fun tick() {
         posNow?.let { posNow ->
-
             mc.player?.let { player ->
 
                 if (player.distanceToSqr(posNow.x.toDouble(), posNow.y.toDouble(), posNow.z.toDouble()) < 3) {

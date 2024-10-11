@@ -11,22 +11,19 @@ import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.tfc.RTfcRecipeStorage
 import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.ROverlay
 import calebxzhou.rdi.ui.RScreenRectTip
+import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.ui.general.alertErr
-import calebxzhou.rdi.ui.rectTip
 import calebxzhou.rdi.util.*
-import com.mojang.blaze3d.platform.InputConstants
+import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
-import net.dries007.tfc.client.ClientHelpers
-import net.dries007.tfc.common.TFCTags.Items.FIREPIT_STICKS
-import net.dries007.tfc.common.recipes.KnappingRecipe
-import net.minecraft.client.gui.screens.inventory.InventoryScreen
+import net.minecraft.client.gui.components.toasts.AdvancementToast
+import net.minecraft.client.gui.components.toasts.RecipeToast
 import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.BlockTags
@@ -38,6 +35,7 @@ import net.minecraftforge.client.event.RenderGuiOverlayEvent
 import net.minecraftforge.client.event.RenderLevelStageEvent
 import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.client.event.TextureStitchEvent
+import net.minecraftforge.client.event.ToastAddEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
@@ -52,11 +50,25 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
+import java.util.concurrent.Executors
 
 
 const val MOD_ID = "rdi"
 val logger = LogManager.getLogger(MOD_ID)
-
+val numberOfCores = Runtime.getRuntime().availableProcessors()
+val threadPool = Executors.newFixedThreadPool(numberOfCores, DefaultThreadFactory("RDI-ThreadPool"))
+//线程池 异步
+fun rAsync(todo: () -> Unit){
+    threadPool.execute(todo)
+}
+//render thread 同步
+fun rSync(todo: () -> Unit){
+    mc.execute(todo)
+}
+//server thread 同步
+fun risSync(todo: () -> Unit){
+    mcs?.execute(todo)
+}
 @Mod(MOD_ID)
 //@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
@@ -112,8 +124,9 @@ object RDIEvents {
         bus.addListener(::checkGuiOverlays)
         bus.addListener(::onPlayerLogin)
         bus.addListener(::onRecipeUpdated)
-        bus.addListener(::pureColorBackground)
+       // bus.addListener(::pureColorBackground)
         bus.addListener(::onRenderLevelStage)
+        bus.addListener(::onAddToast)
         bus.addListener(::leftClickBlock)
         bus.addListener(::onRenderGui)
         bus.addListener(::afterScreenRender)
@@ -121,7 +134,12 @@ object RDIEvents {
         bus.addListener(::onClientTick)
         bus.addListener(::registerClientCommand)
     }
-
+    fun onAddToast(e: ToastAddEvent){
+        //不显示进度toast
+        if(e.toast is AdvancementToast || e.toast is RecipeToast) {
+            e.isCanceled=true
+        }
+    }
     fun checkGuiOverlays(event: RenderGuiOverlayEvent.Pre) {
         val id = event.overlay.id
         //不绘制原版盔甲值
@@ -169,12 +187,22 @@ object RDIEvents {
     }
 
     fun registerClientCommand(e: RegisterClientCommandsEvent) {
-        e.dispatcher.register(TutorialCommand.cmd)
+        val debugCmds = listOf(
+            TutorialCommand.cmd,
+            Banner.cmd
+        )
+        val cmds = listOf(
+            OmniNavi.cmd(e.buildContext),
+            )
+        if(Const.DEBUG){
+            debugCmds.forEach { e.dispatcher.register(it) }
+        }
+        cmds.forEach{e.dispatcher.register(it)}
     }
 
     fun loadComplete(e: FMLLoadCompleteEvent) {
         //初始化modid to 中文名称
-        ModList.get().mods.forEach {
+       /* ModList.get().mods.forEach {
             val id = it.modId
             val name = it.displayName
             var modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}", name)
@@ -185,8 +213,21 @@ object RDIEvents {
                 modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.${id}", name)
             }
             modIdChineseName += id to modName
-        }
+            logger.info("modid cn name: ${id}=${modName}")
+        }*/
         modIdChineseName += "tfc" to "群峦传说"
+        modIdChineseName += "firmalife" to "群峦人生"
+        modIdChineseName += "ae2" to "应用能源2"
+        modIdChineseName += "create" to "机械动力"
+        modIdChineseName += "create_connected" to "机械动力·创意传动"
+        modIdChineseName += "vinery" to "葡园酒香"
+        modIdChineseName += "aether" to "天境"
+        modIdChineseName += "farmersdelight" to "农夫乐事"
+        modIdChineseName += "chefsdelight" to "厨师乐事"
+        modIdChineseName += "aethersdelight" to "天境乐事"
+        modIdChineseName += "oceansdelight" to "海洋乐事"
+        modIdChineseName += "cuisinedelight" to "料理乐事"
+        modIdChineseName += "computercraft" to "电脑"
         modIdChineseName += "minecraft" to "原版"
 
     }
@@ -201,33 +242,29 @@ object RDIEvents {
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
-        Banner.renderScreen(e.guiGraphics)
+        Banner.renderScreen(e.guiGraphics,e.screen)
+        SlotWidgetDebugRenderer.render(e.guiGraphics,e.screen)
         RScreenRectTip.render(e.guiGraphics, e.screen)
-        if (mc pressingKey InputConstants.KEY_0 && e.screen is InventoryScreen) {
-            rectTip {
-                slot { it.item.`is`(FIREPIT_STICKS) }
-                slot(3)
-                slot { it.item.toString().contains("axe_head") }
-                slot(1)
-                slot(0)
-                slot { !it.hasItem() && it.slotIndex in 10..35 }
-            }
-        }
+
     }
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
         OmniNavi.renderLevelStage(e)
     }
 
-    fun onLevelTick(e: TickEvent.LevelTickEvent) {
-        mc.execute {
-            OmniNavi.tick()
-            Tutorial.tick(e)
-        }
+    fun onLevelTick(e: TickEvent.ServerTickEvent) {
+
+
+            Tutorial.tick()
     }
 
     fun onClientTick(e: TickEvent.ClientTickEvent) {
         if (e.phase == TickEvent.Phase.END) {
+            Banner.tick()
+            if(mc.level!=null){
+                OmniNavi.tick()
+            }
+
             mc.screen?.let {
 
                 RScreenRectTip.tick(it)
@@ -240,11 +277,7 @@ object RDIEvents {
     }
 
     fun onRecipeUpdated(e: RecipesUpdatedEvent) {
-        val recipes = ClientHelpers.getLevelOrThrow().recipeManager.recipes
-        val tfcRecipes = recipes.filter { it.id.namespace == "tfc" && it is KnappingRecipe }
-        RTfcRecipeStorage.rockKnappingRecipes =
-            tfcRecipes.filter { it.id.path.startsWith("rock_knapping") } as List<KnappingRecipe>
-        logger.info("接收${RTfcRecipeStorage.rockKnappingRecipes.size}")
+
     }
 
     fun onPlayerLogin(e: PlayerLoggedInEvent) {

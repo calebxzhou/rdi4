@@ -1,6 +1,7 @@
 package calebxzhou.rdi.ui.component
 
 import calebxzhou.rdi.MOD_ID
+import calebxzhou.rdi.util.matrixOp
 import calebxzhou.rdi.util.mcFont
 import calebxzhou.rdi.util.mcTextWidthOf
 import net.minecraft.ChatFormatting
@@ -18,20 +19,24 @@ class RImageButton(
     height: Int = 20,
     val onClick: (Button) -> Unit
 ) : RButton(text, x, y, width, height, onClick) {
-    val imgRL = ResourceLocation(MOD_ID, "textures/gui/$imgPath")
-    override fun renderWidget(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
-        val pose = pGuiGraphics.pose()
-        pose.pushPose()
-        pose.translate(0f,0f,1f)
-        pose.scale(0.20f,0.20f,1f)
-        pose.translate(x.toFloat()*4,y.toFloat()*4,1f)
-        pGuiGraphics.blit(imgRL, x, y, 0f, 0f, 64, 64,64,64)
-        pose.popPose()
-        pGuiGraphics.drawString(
-            mcFont, text, x+20, y+3, if (isHoveredOrFocused)
-                ChatFormatting.AQUA.color ?: 16777215
-            else
-                16777215
-        )
+    val imgRL = ResourceLocation(MOD_ID, "textures/gui/icons/$imgPath")
+    override fun renderWidget(gg: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
+        gg.matrixOp {
+            translate(0f,0f,1f)
+            scale(0.20f,0.20f,1f)
+            translate(x.toFloat()*4,y.toFloat()*4,1f)
+            gg.blit(imgRL, x, y, 0f, 0f, 64, 64,64,64)
+        }
+        gg.matrixOp {
+            translate(0f,0f,1f)
+            scale(0.90f,0.90f,1f)
+            translate(x.toFloat()/0.9f+18,y.toFloat()/0.9f+2.8f,1f)
+            gg.drawString(
+                mcFont, text,0,0,if (isHoveredOrFocused)
+                    ChatFormatting.AQUA.color ?: 16777215
+                else
+                    16777215
+            )
+        }
     }
 }

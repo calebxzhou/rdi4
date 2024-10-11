@@ -4,8 +4,6 @@ import net.minecraft.client.multiplayer.ServerData
 import java.net.InetSocketAddress
 
 object Const {
-    //mod id
-    const val MODID = "rdi-core"
 
 
     //是否为调试模式,本地用
@@ -21,7 +19,7 @@ object Const {
     const val IHQ_VERSION = 0x460
 
     //显示版本
-    const val VERSION_STR = "RDI Neo 4.6"
+    const val VERSION_STR = "RDI 4R"
     val SERVER_DATA
         get() = ServerData("RDI", VERSION_STR,false)
 }

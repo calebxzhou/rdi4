@@ -25,9 +25,9 @@ class RTextButton(
 
         guiGraphics.drawString(
             mcFont,
-            text,
-            this.x,
-            this.y,
+            message,
+            x,
+            y,
             if (isHoveredOrFocused)
                 ChatFormatting.AQUA.color?:16777215
             else

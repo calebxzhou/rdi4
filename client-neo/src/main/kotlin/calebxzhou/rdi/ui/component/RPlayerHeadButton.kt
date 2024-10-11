@@ -25,9 +25,9 @@ class RPlayerHeadButton(
         mouseY: Int,
         partialTick: Float
     ) {
-        PlayerFaceRenderer.draw(guiGraphics, account.skinLocation, x, y, 16)
+        PlayerFaceRenderer.draw(guiGraphics, account.skinLocation, x, y, 14)
         val component =
             if (this.isHoveredOrFocused) mcText(account.name).withStyle(ChatFormatting.AQUA) else mcText(account.name)
-        guiGraphics.drawString(mcFont, component, x + 20, y + 3, 0xffffff)
+        guiGraphics.drawString(mcFont, component, x + 19, y + 3, 0xffffff)
     }
 }

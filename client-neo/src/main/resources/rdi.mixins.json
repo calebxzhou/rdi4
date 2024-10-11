@@ -17,6 +17,7 @@
     "mSessionService",
     "gameplay.mPlayer",
     "jade.mModNameChineseDisplay",
+    "tfc.mPitKiln",
     "tfc.mTfcOverlay",
     "tfc.mTfcSizeTooltip"
   ],
@@ -28,7 +29,6 @@
     "mChat",
     "mFastCreateMojangService",
     "mFastCreateMojangService2",
-    "mForceAddToast",
     "mGui",
     "mLoadingOverlay",
     "mMcStart",
