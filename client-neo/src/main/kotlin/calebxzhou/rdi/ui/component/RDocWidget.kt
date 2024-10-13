@@ -22,9 +22,16 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 
-fun docWidget(x:Int = 0,y:Int = 20,width: Int = mcUIWidth-5 , height: Int = mcUIHeight-25, builder: RDocWidget.Builder.()->Unit) : RDocWidget.Builder {
-    return RDocWidget.Builder(x, y, width, height).apply(builder)
+fun docWidget(
+    x: Int = 0,
+    y: Int = 20,
+    width: Int = mcUIWidth - 5,
+    height: Int = mcUIHeight - 25,
+    builder: RDocWidget.Builder.() -> Unit
+): RDocWidget {
+    return RDocWidget.Builder(x, y, width, height).apply(builder).build()
 }
+
 class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Content) :
     AbstractScrollWidget(pX, pY, pWidth, pHeight, mcText("")) {
     override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput) {
@@ -53,7 +60,7 @@ class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Conte
 
     data class Content(val container: GridLayout, val narration: Component)
 
-    class Builder(val x: Int,val y:Int,val width: Int,val height: Int) {
+    class Builder(val x: Int, val y: Int, val width: Int, val height: Int) {
         private val grid = GridLayout()
         private val helper: GridLayout.RowHelper
         private val alignHeader: LayoutSettings
@@ -73,7 +80,7 @@ class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Conte
 
         fun build(): RDocWidget {
             grid.arrangeElements()
-            return RDocWidget(x,y,width,height, Content(this.grid, this.narration))
+            return RDocWidget(x, y, width, height, Content(this.grid, this.narration))
         }
 
         //一级标题 居中 绿粗
@@ -96,32 +103,50 @@ class RDocWidget(pX: Int, pY: Int, pWidth: Int, pHeight: Int, val content: Conte
                     mcFont
                 ).setMaxWidth(this.width - 64).setCentered(false),
                 helper.newCellSettings().paddingTop(4).paddingBottom(4)
-               // this.alignHeader
+                // this.alignHeader
             )
             narration.append(content).append("\n")
         }
 
-        //正文
-        fun p(str: String) {
+        //3级标题 居中 白
+        fun h3(str: String) {
             helper.addChild(
-                MultiLineTextWidget(mcText("　　").append(mcText(str)), mcFont).setMaxWidth(this.width),
+                MultiLineTextWidget(
+                    mcText(str),
+                    mcFont
+                ).setMaxWidth(this.width - 64).setCentered(true),
+                this.alignHeader.paddingTop(2).paddingBottom(2)
+                // this.alignHeader
+            )
+            narration.append(content).append("\n")
+        }
+
+        //正文 首行2缩进关
+        fun p(str: String, first2ch: Boolean = false) {
+            helper.addChild(
+                MultiLineTextWidget(
+                    (if (first2ch) mcText("　　") else mcText().append(mcText(str))),
+                    mcFont
+                ).setMaxWidth(this.width),
                 helper.newCellSettings().paddingTop(2).paddingBottom(2)
             )
             narration.append(content).append("\n")
         }
+
         //图片
-        fun img(path: String,width: Int = 128,height: Int = 128){
+        fun img(path: String, width: Int = 128, height: Int = 128) {
             helper.addChild(
-                ImageWidget(width,height, ResourceLocation("rdi","textures/${path}.png")),
+                ImageWidget(width, height, ResourceLocation("rdi", "textures/${path}.png")),
                 this.alignHeader.paddingTop(3).paddingBottom(3)
             )
         }
+
         //物品
-        fun items(vararg items: ItemStack){
-            val row = LinearLayout(items.size*32,0,LinearLayout.Orientation.HORIZONTAL)
+        fun items(vararg items: ItemStack) {
+            val row = LinearLayout(items.size * 32, 0, LinearLayout.Orientation.HORIZONTAL)
             items.forEach {
                 row.addChild(
-                    RItemStackWidget(it,32,32)
+                    RItemStackWidget(it, 32, 32)
                 )
             }
             row.arrangeElements()

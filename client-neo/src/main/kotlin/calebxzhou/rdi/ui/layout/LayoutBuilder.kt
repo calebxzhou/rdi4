@@ -1,12 +1,10 @@
 package calebxzhou.rdi.ui.layout
 
 import calebxzhou.rdi.ui.component.RButton
-import calebxzhou.rdi.ui.component.RImageButton
-import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.ui.component.RIconButton
 import calebxzhou.rdi.util.mcText
 import calebxzhou.rdi.util.mcUIHeight
 import calebxzhou.rdi.util.mcUIWidth
-import kotlinx.coroutines.NonCancellable.children
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.layouts.GridLayout
@@ -14,6 +12,7 @@ import net.minecraft.client.gui.layouts.Layout
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.resources.ResourceLocation
 
 fun gridLayout(
     x: Int = mcUIWidth / 2,
@@ -35,12 +34,12 @@ class GridLayoutBuilder(val maxColumns: Int, val x: Int, val y: Int) {
         children += RButton(text, onClick = onClick)
     }
 
-    fun imageButton(iconPath: String, text: String, onClick: (Button) -> Unit) {
+    fun imageButton(iconPath: ResourceLocation, text: String, onClick: (Button) -> Unit) {
         imageButton(iconPath, mcText(text), onClick)
     }
 
-    fun imageButton(iconPath: String, text: MutableComponent, onClick: (Button) -> Unit) {
-        children += RImageButton(iconPath, text, onClick = onClick)
+    fun imageButton(iconPath: ResourceLocation, text: MutableComponent, onClick: (Button) -> Unit) {
+        children += RIconButton(iconPath, text, onClick = onClick)
     }
 
     fun buildForIteration(consumer: (AbstractWidget) -> Unit) {
@@ -61,7 +60,7 @@ class LayoutBuilder(val layout: Layout) {
 
             children += RButton(text, onClick = onClick)
         } else {
-            children += RImageButton(iconPath, text, onClick = onClick)
+           // children += RIconButton(iconPath, text, onClick = onClick)
         }
     }
 

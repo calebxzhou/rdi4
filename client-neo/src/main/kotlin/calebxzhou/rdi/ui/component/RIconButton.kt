@@ -1,6 +1,5 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.rdi.MOD_ID
 import calebxzhou.rdi.util.matrixOp
 import calebxzhou.rdi.util.mcFont
 import calebxzhou.rdi.util.mcTextWidthOf
@@ -10,8 +9,8 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 
-class RImageButton(
-    val imgPath: String,
+class RIconButton(
+    val img: ResourceLocation,
     val text: MutableComponent,
     x: Int = 0,
     y: Int = 0,
@@ -19,13 +18,12 @@ class RImageButton(
     height: Int = 20,
     val onClick: (Button) -> Unit
 ) : RButton(text, x, y, width, height, onClick) {
-    val imgRL = ResourceLocation(MOD_ID, "textures/gui/icons/$imgPath")
     override fun renderWidget(gg: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
         gg.matrixOp {
             translate(0f,0f,1f)
             scale(0.20f,0.20f,1f)
             translate(x.toFloat()*4,y.toFloat()*4,1f)
-            gg.blit(imgRL, x, y, 0f, 0f, 64, 64,64,64)
+            gg.blit(img, x, y, 0f, 0f, 64, 64,64,64)
         }
         gg.matrixOp {
             translate(0f,0f,1f)

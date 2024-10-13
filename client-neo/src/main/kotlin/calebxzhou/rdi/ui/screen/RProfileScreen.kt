@@ -30,7 +30,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
     val skinResponseHandler: (ChangeClothSPacket, ResponseCPacket) -> Unit =
         { cloth: ChangeClothSPacket, packet: ResponseCPacket ->
             if (!packet.ok) {
-                alertErr(packet.data)
+                 alertOs(packet.data)
             } else {
                 toastOk("换皮成功")
                 Account.now?.cloth = cloth.cloth
@@ -73,7 +73,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
     //验证服饰链接（有效url，并且能够获取png图片）
     private fun validateClothUrl(url: String, handler: RFormScreenSubmitHandler): Boolean {
         if (!url.isValidHttpUrl()) {
-            alertErr("链接必须http开头", handler.screen)
+             alertOs("链接必须http开头",  )
             return false
         }
 
@@ -83,7 +83,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
         val contentType = ContentType.getOrDefault(entity)
 
         if (contentType != ContentType.IMAGE_PNG) {
-            alertErr("不是PNG图片", handler.screen)
+             alertOs("不是PNG图片",  )
             return false
         }
 
@@ -121,11 +121,11 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
         val isSlim = handler.formData["slim"] == "true"
         if (skin.isNotBlank()) {
             if (!skin.isValidHttpUrl()) {
-                alertErr("皮肤链接格式错误", handler.screen)
+                 alertOs("皮肤链接格式错误",  )
                 return
             }
             if (!skin.contains("/skinlib/show/")) {
-                alertErr("仅支持blessing skin架构的皮肤站", handler.screen)
+                 alertOs("仅支持blessing skin架构的皮肤站",  )
                 return
             }
             val url = skin.extractDomain() + "texture/" + skin.substringAfterLast('/')
@@ -134,7 +134,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
             val statusCode = response.statusLine.statusCode
 
             if (statusCode !in 200..299) {
-                alertErr("获取皮肤失败：$statusCode\n", handler.screen)
+                 alertOs("获取皮肤失败：$statusCode\n",  )
                 logger.error("$statusCode ${EntityUtils.toString(entity)}")
                 return
             }
@@ -142,7 +142,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
             val hash = Json.parseToJsonElement(EntityUtils.toString(entity).also { logger.info(it) })
                 .jsonObject["hash"]?.jsonPrimitive?.content
                 ?: let {
-                    alertErr("无法获取皮肤hash数据", handler.screen)
+                     alertOs("无法获取皮肤hash数据",  )
                     return
                 }
 
@@ -151,11 +151,11 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
 
         if (cape.isNotBlank()) {
             if (!cape.isValidHttpUrl()) {
-                alertErr("披风链接格式错误", handler.screen)
+                 alertOs("披风链接格式错误",  )
                 return
             }
             if (!cape.contains("/skinlib/show/")) {
-                alertErr("仅支持blessing skin架构的皮肤站", handler.screen)
+                 alertOs("仅支持blessing skin架构的皮肤站",  )
                 return
             }
             val url = cape.extractDomain() + "texture/" + cape.substringAfterLast('/')
@@ -164,14 +164,14 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
             val statusCode = response.statusLine.statusCode
 
             if (statusCode !in 200..299) {
-                alertErr("获取披风失败：$statusCode\n", handler.screen)
+                 alertOs("获取披风失败：$statusCode\n",  )
                 logger.error("$statusCode ${EntityUtils.toString(entity)}")
                 return
             }
 
             val hash = Json.parseToJsonElement(
                 EntityUtils.toString(entity).also { logger.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content ?: let {
-                alertErr("无法获取披风hash数据", handler.screen)
+                 alertOs("无法获取披风hash数据",  )
                 return
             }
             cape = cape.extractDomain() + "textures/" + hash
@@ -188,7 +188,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
         val importSkin = handler.formData["skin"] == "true"
         val importCape = handler.formData["cape"] == "true"
         if (!importSkin && !importCape) {
-            alertErr("请选择皮肤或披风", handler.screen)
+             alertOs("请选择皮肤或披风",  )
             handler.finish()
             return
         }
@@ -206,7 +206,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
             val id = Json.parseToJsonElement(body1)
                 .jsonArray.getOrNull(0)?.jsonObject?.get("id")?.jsonPrimitive?.content
                 ?: let {
-                    alertErr("找不到对应玩家", it)
+                     alertOs("找不到对应玩家",)
                     handler.finish()
                     return
                 }
@@ -249,11 +249,11 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                 val packet = ChangeClothSPacket(Account.Cloth(isSlim, skinURL ?: "", capeURL ?: ""))
                 IhqClient.send(packet) { skinResponseHandler(packet, it) }
             } else {
-                alertErr("获取皮肤失败")
+                 alertOs("获取皮肤失败")
                 logger.error(response2.statusLine)
             }
         } else {
-            alertErr("找不到对应玩家")
+             alertOs("找不到对应玩家")
             logger.error(response.statusLine)
         }
     }
@@ -272,7 +272,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                                 LocalStorage["usr"] = qq
                                 mc goScreen RProfileScreen(Account.now!!)
                             } else {
-                                dialog(resp.data, it.screen)
+                                 alertOs(resp.data, )
                             }
                         }
                     }
@@ -286,13 +286,13 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                     submit {
                         val opwd = it.formData["opwd"]!!
                         if (account.pwd != opwd) {
-                            alertErr("旧密码错误")
+                             alertOs("旧密码错误")
                             return@submit
                         }
                         val pwd = it.formData["pwd"]!!
                         val cpwd = it.formData["cpwd"]!!
                         if (pwd != cpwd) {
-                            alertErr("确认密码与密码不一致")
+                             alertOs("确认密码与密码不一致")
                             return@submit
                         }
                         IhqClient.send(ChangePwdSPacket(pwd)) { resp ->
@@ -303,7 +303,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                                 LocalStorage["pwd"] = pwd
                                 mc goScreen RProfileScreen(Account.now!!)
                             } else {
-                                dialog(resp.data, it.screen)
+                                 alertOs(resp.data, )
                             }
                         }
                     }
@@ -328,18 +328,18 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                                 Account.now?.name = name
                                 mc goScreen RProfileScreen(Account.now!!)
                             } else {
-                                dialog(resp.data, it.screen)
+                                alertOs(resp.data, )
                             }
                         }
                     }
                 }
             }
             button("登出") {
-                confirm("真的要退出账号${account.name}吗？", this@RProfileScreen) {
+                //confirm("真的要退出账号${account.name}吗？", this@RProfileScreen) {
                     Account.now = null
                     toastOk("成功退出登录！")
                     mc goScreen RTitleScreen()
-                }
+               // }
             }
         }.buildForIteration { registerWidget(it) }
 

@@ -2,8 +2,10 @@ package calebxzhou.rdi.ihq
 
 import calebxzhou.rdi.ihq.protocol.SPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
-import calebxzhou.rdi.ui.general.alertErr
+import calebxzhou.rdi.ui.RMessageLevel
+import calebxzhou.rdi.ui.general.alertOs
 import calebxzhou.rdi.ui.general.dialog
+import calebxzhou.rdi.util.isMcStarted
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.toastOk
 import io.netty.bootstrap.Bootstrap
@@ -34,7 +36,10 @@ object IhqClient {
     //成功->前画面 失败->提示
     val OK_CLOSE_ERR_ALERT_HANDLER: (ResponseCPacket) -> Unit = { packet: ResponseCPacket ->
         if(!packet.ok){
-            alertErr(packet.data)
+            if(isMcStarted)
+                dialog({h3(packet.data)}, msglvl = RMessageLevel.ERR)
+            else
+                alertOs(packet.data)
         }else{
             toastOk(packet.data)
             mc.screen?.onClose()
@@ -51,7 +56,7 @@ object IhqClient {
         try {
             responseHandlerMap[packet.reqId]?.invoke(packet)
         } catch (e: Exception) {
-            dialog("错误："+e.localizedMessage)
+            dialog({p(e.localizedMessage)}, msglvl = RMessageLevel.ERR)
             e.printStackTrace()
         }
     }

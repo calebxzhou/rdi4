@@ -1,5 +1,6 @@
 package calebxzhou.rdi.ui.component
 
+import calebxzhou.rdi.ui.general.Icons
 import calebxzhou.rdi.util.drawTextAtCenter
 import calebxzhou.rdi.util.mcText
 import net.minecraft.client.gui.GuiGraphics
@@ -30,7 +31,7 @@ abstract class RScreen(open val title: MutableComponent) : Screen(title) {
     override fun init() {
         super.init()
         if(closeable){
-            widgets += RTextButton(mcText("←返回/Esc"),5,5){onClose()}
+            widgets += RIconButton(Icons["back"],mcText(),0,0){onClose()}
         }
         widgets.forEach { addRenderableWidget(it) }
     }

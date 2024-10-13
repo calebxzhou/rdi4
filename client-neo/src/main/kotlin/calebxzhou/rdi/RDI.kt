@@ -16,7 +16,6 @@ import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.ROverlay
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
-import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.util.*
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
@@ -295,8 +294,9 @@ object RDIEvents {
     fun leftClickBlock(e: LeftClickBlock) {
         val block = e.level.getBlockState(e.pos)
         if (block.`is`(BlockTags.LOGS) && e.entity.mainHandItem.isEmpty) {
-            alertErr("砍树必须用斧头\n赤手空拳是不起作用的")
+            mc.addHudMessage("砍树必须用斧头")
         }
+
     }
 
     fun pureColorBackground(event: ScreenEvent.BackgroundRendered) {

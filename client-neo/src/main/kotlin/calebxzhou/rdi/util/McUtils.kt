@@ -1,12 +1,10 @@
 package calebxzhou.rdi.util
 
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.mixin.client.ATutorial
-import calebxzhou.rdi.ui.RMessageType
+import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
-import jdk.internal.foreign.PlatformLayouts.pick
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
@@ -14,8 +12,6 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.server.IntegratedServer
-import net.minecraft.client.tutorial.Tutorial
-import net.minecraft.client.tutorial.TutorialStepInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.entity.player.Player
@@ -107,13 +103,16 @@ val Player.lookingAtBlock: BlockState?
     return null
 }
 fun Minecraft.addToast(toast: Toast){
-    mc.toasts.addToast(toast)
+    toasts.addToast(toast)
 }
 fun Minecraft.addChatMessage(msg: String){
-    mc.gui.chat.addMessage(mcText(msg))
+    gui.chat.addMessage(mcText(msg))
 }
 fun Minecraft.addChatMessage(msg: Component){
-    mc.gui.chat.addMessage(msg)
+    gui.chat.addMessage(msg)
+}
+fun Minecraft.addHudMessage(msg: String){
+    gui.setOverlayMessage(mcText(msg), false);
 }
 fun mcButton(text: String, x: Int, y: Int, w: Int, h: Int, onPress: Button.OnPress): Button {
     return mcButton(mcText(text), x, y, w, h, onPress);
@@ -148,7 +147,7 @@ fun popupInfo(msg: String) {
     TinyFileDialogs.tinyfd_notifyPopup(msg, "RDI提示您", "info");
 }
 fun toastOk(msg: String) {
-    mc.toasts.addToast(RToast(RMessageType.OK, msg))
+    mc.toasts.addToast(RToast(RMessageLevel.OK, msg))
 }
 
 fun showYesNoBox(msg: String): Boolean {
@@ -156,7 +155,7 @@ fun showYesNoBox(msg: String): Boolean {
 }
 
 fun showToast(msg: String) {
-    mc.toasts.addToast(RToast(RMessageType.INFO, msg))
+    mc.toasts.addToast(RToast(RMessageLevel.INFO, msg))
 }
 
 fun mcTextWidthOf(text: String): Int {

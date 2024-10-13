@@ -168,7 +168,7 @@ dependencies {
     implementation(jarJar('com.googlecode.soundlibs:jorbis:0.0.17.4')) {
         jarJar.ranged(it, "[0.0.17.4,)")
     }
-
+    //升级mod版本要同时升级src zip
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
    // implementation fg.deobf("curse.maven:jei-238222:4712868")
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))

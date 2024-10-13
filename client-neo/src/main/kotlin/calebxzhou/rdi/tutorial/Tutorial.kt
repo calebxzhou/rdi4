@@ -8,8 +8,7 @@ import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.RScreenRectTip.Mode
-import calebxzhou.rdi.ui.general.alertInfo
-import calebxzhou.rdi.ui.general.confirm
+import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.ui.rectTip
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.RED
@@ -81,7 +80,7 @@ data class Tutorial(
                 step("让画面中央的十字对准石子,按鼠标右键捡起") { it.inventory.contains(TFCTags.Items.ROCK_KNAPPING) }
                 step("四处走走 捡10个一样的石子") { player -> player.inventory.hasAnyMatching { it.`is`(ROCK_KNAPPING) && it.count >= 10 } }
                 step("拿着石子,看天空,按鼠标右键打磨",
-                    { alertInfo("下面咱们来做一把石斧 砍树用") }) { mc.screen is KnappingScreen }
+                    { mc.addChatMessage("下面咱们来做一把石斧 砍树用") }) { mc.screen is KnappingScreen }
                 tip("依次点击绿框,打磨石斧头子",
                     {
                         rectTip {
@@ -115,7 +114,7 @@ data class Tutorial(
                         emptyInvSlot()
                     }
                 }, {
-                    alertInfo("恭喜你做出石斧 可以愉快地砍树了")
+                    mc.addChatMessage("恭喜你做出石斧 可以愉快地砍树了")
                 })
                 esc()
                 step("斧拿手上,对准树的根部 长按鼠标左键砍树,拿5个原木") { player ->
@@ -127,7 +126,7 @@ data class Tutorial(
                 }
                 step("按E键打开背包") { mc.screen is InventoryScreen }
                 tip("鼠标右键点击树枝", {
-                    alertInfo("接下来教你平分背包里的物品\n一格拆成两格")
+                    mc.addChatMessage("接下来教你平分背包里的物品\n一格拆成两格")
                     rectTip {
                         mode = Mode.RMB
                         slot { it.item.`is`(FIREPIT_STICKS) }
@@ -160,7 +159,7 @@ data class Tutorial(
                         slot(0)
 
                     }
-                }, { alertInfo("恭喜你有了照明工具") }) { player ->
+                }, { mc.addChatMessage("恭喜你有了照明工具") }) { player ->
                     player.inventory.hasAnyMatching { it.`is`(TFCItems.TORCH.get()) }
                 }
             },
@@ -355,11 +354,12 @@ data class Tutorial(
     fun quit() {
         now = null
         Banner.reset()
-        confirm("教程\"${name}\"已结束,现在退出教程吗?") {
+        dialog({p("恭喜你完成了教程${name}，即将退出..")}, onYes = {
             mc.clearLevel(RTitleScreen())
             //删掉教程存档
             deleteMap()
-        }
+        })
+
     }
 
     fun deleteMap() {

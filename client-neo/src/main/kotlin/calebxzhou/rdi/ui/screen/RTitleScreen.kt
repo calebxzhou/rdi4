@@ -11,6 +11,7 @@ import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.gridLayout
+import calebxzhou.rdi.ui.screen.RTitleScreen.Companion.optScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
@@ -95,7 +96,7 @@ class RTitleScreen : RScreen("主页") {
             val pwd = it.formData["pwd"]!!
             val cpwd = it.formData["cpwd"]!!
             if (pwd != cpwd) {
-                alertErr("确认密码与密码不一致", it.screen)
+                  alertOs("确认密码与密码不一致")
                 return
             }
             val qq = it.formData["qq"]!!
@@ -109,7 +110,7 @@ class RTitleScreen : RScreen("主页") {
                     LocalStorage += "pwd" to pwd
                     mc goScreen RTitleScreen()
                 } else {
-                    dialog(resp.data, it.screen)
+                    alertOs(resp.data)
                 }
             }
         }
@@ -128,7 +129,7 @@ class RTitleScreen : RScreen("主页") {
                     toastOk("登录成功")
                     mc goScreen RTitleScreen()
                 } else {
-                    dialog("密码错误", it.screen)
+                    alertOs("密码错误" )
                 }
             }
         }
@@ -172,18 +173,27 @@ class RTitleScreen : RScreen("主页") {
             y = mcUIHeight- 17
         }.also { registerWidget(it) }
         gridLayout(10, mcUIHeight - 16) {
-            imageButton("start.png", "开始") {
+            imageButton(Icons["start"], "开始") {
                 start()
             }
-            imageButton("settings.png", "设置") {
+            imageButton(Icons["settings"], "设置") {
                 mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
             }
-            imageButton("partner.png", "致谢") {
-                alertInfo("服务器硬件：wuhudsm66\n任务设计：terryaxe\nMod建议：ForiLuSa", this@RTitleScreen)
+            imageButton(Icons["partner"], "致谢") {
+                dialog({
+                    h3("服务器硬件 wuhudsm66")
+                    h3("任务设计：terryaxe")
+                    h3("Mod建议：ForiLuSa")
+                }
+                )
             }
-            imageButton("qq.png", "QQ群") {
+            imageButton(Icons["qq"], "QQ群") {
                 copyToClipboard("1095925708")
-                alertInfo("已复制QQ群号：1095925708\n欢迎加入RDI玩家交流群！", this@RTitleScreen)
+                dialog({
+                    h3("已复制QQ群号：1095925708")
+                    h3("欢迎加入RDI玩家交流群！")
+                }
+                )
 
             }
         }.buildForIteration { registerWidget(it) }

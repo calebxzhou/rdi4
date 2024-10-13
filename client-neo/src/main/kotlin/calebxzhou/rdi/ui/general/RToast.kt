@@ -1,6 +1,6 @@
 package calebxzhou.rdi.ui.general
 
-import calebxzhou.rdi.ui.RMessageType
+import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.toasts.Toast
@@ -11,7 +11,7 @@ import net.minecraft.util.Mth
 import kotlin.math.max
 
 
-class RToast(val type: RMessageType, val msg: String, val time: Int = 5000) : Toast {
+class RToast(val type: RMessageLevel, val msg: String, val time: Int = 5000) : Toast {
     var progress = 0f
     private var lastProgress = 0f
     private var lastProgressTime = 0L
@@ -22,10 +22,10 @@ class RToast(val type: RMessageType, val msg: String, val time: Int = 5000) : To
     private var timeSinceLastVisible = 0L
     private var visibility = Toast.Visibility.SHOW
     private val bgColor = when(type){
-        RMessageType.ERR -> LIGHT_RED
-        RMessageType.WARN -> LIGHT_YELLOW
-        RMessageType.INFO -> KLEIN_BLUE
-        RMessageType.OK -> LIGHT_GREEN
+        RMessageLevel.ERR -> LIGHT_RED
+        RMessageLevel.WARN -> LIGHT_YELLOW
+        RMessageLevel.INFO -> KLEIN_BLUE
+        RMessageLevel.OK -> LIGHT_GREEN
     }
     override fun render(
         guiGraphics: GuiGraphics,
