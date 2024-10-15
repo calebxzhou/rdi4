@@ -10,20 +10,18 @@
     "ASLoginPacketListener",
     "ASStatusPacketListener",
     "mAutosave",
-    "mProtocolVersion",
     "mChat",
     "mEula",
-    "mLoginProtocol1",
-
     "mFastMojangService",
-
+    "mLoginProtocol1",
     "mNetThrottler",
     "mNoJoinNotify",
     "mNoQuitNotify",
+    "mProtocolVersion",
     "mSaveBandwidth",
     "mServerProps",
     "mServerProps2",
-
+    "ae2.mGenMeteoriteEverywhere"
   ],
   "injectors": {
     "defaultRequire": 1

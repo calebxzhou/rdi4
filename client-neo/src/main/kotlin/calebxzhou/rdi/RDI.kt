@@ -5,6 +5,7 @@ import calebxzhou.rdi.RDI.Companion.handCursor
 import calebxzhou.rdi.RDI.Companion.ibeamCursor
 import calebxzhou.rdi.RDI.Companion.modIdChineseName
 import calebxzhou.rdi.banner.Banner
+import calebxzhou.rdi.chunkstats.ChunkStats
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
@@ -56,18 +57,22 @@ const val MOD_ID = "rdi"
 val logger = LogManager.getLogger(MOD_ID)
 val numberOfCores = Runtime.getRuntime().availableProcessors()
 val threadPool = Executors.newFixedThreadPool(numberOfCores, DefaultThreadFactory("RDI-ThreadPool"))
+
 //线程池 异步
-fun rAsync(todo: () -> Unit){
+fun rAsync(todo: () -> Unit) {
     threadPool.execute(todo)
 }
+
 //render thread 同步
-fun rSync(todo: () -> Unit){
+fun rSync(todo: () -> Unit) {
     mc.execute(todo)
 }
+
 //server thread 同步
-fun risSync(todo: () -> Unit){
+fun risSync(todo: () -> Unit) {
     mcs?.execute(todo)
 }
+
 @Mod(MOD_ID)
 //@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
@@ -123,7 +128,7 @@ object RDIEvents {
         bus.addListener(::checkGuiOverlays)
         bus.addListener(::onPlayerLogin)
         bus.addListener(::onRecipeUpdated)
-       // bus.addListener(::pureColorBackground)
+        // bus.addListener(::pureColorBackground)
         bus.addListener(::onRenderLevelStage)
         bus.addListener(::onAddToast)
         bus.addListener(::leftClickBlock)
@@ -133,12 +138,14 @@ object RDIEvents {
         bus.addListener(::onClientTick)
         bus.addListener(::registerClientCommand)
     }
-    fun onAddToast(e: ToastAddEvent){
+
+    fun onAddToast(e: ToastAddEvent) {
         //不显示进度toast
-        if(e.toast is AdvancementToast || e.toast is RecipeToast) {
-            e.isCanceled=true
+        if (e.toast is AdvancementToast || e.toast is RecipeToast) {
+            e.isCanceled = true
         }
     }
+
     fun checkGuiOverlays(event: RenderGuiOverlayEvent.Pre) {
         val id = event.overlay.id
         //不绘制原版盔甲值
@@ -192,28 +199,29 @@ object RDIEvents {
         )
         val cmds = listOf(
             OmniNavi.cmd(e.buildContext),
-            )
-        if(Const.DEBUG){
+            ChunkStats.cmd,
+        )
+        if (Const.DEBUG) {
             debugCmds.forEach { e.dispatcher.register(it) }
         }
-        cmds.forEach{e.dispatcher.register(it)}
+        cmds.forEach { e.dispatcher.register(it) }
     }
 
     fun loadComplete(e: FMLLoadCompleteEvent) {
         //初始化modid to 中文名称
-       /* ModList.get().mods.forEach {
-            val id = it.modId
-            val name = it.displayName
-            var modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}", name)
-            if (modName == name) {
-                modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.base", name)
-            }
-            if (modName == name) {
-                modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.${id}", name)
-            }
-            modIdChineseName += id to modName
-            logger.info("modid cn name: ${id}=${modName}")
-        }*/
+        /* ModList.get().mods.forEach {
+             val id = it.modId
+             val name = it.displayName
+             var modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}", name)
+             if (modName == name) {
+                 modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.base", name)
+             }
+             if (modName == name) {
+                 modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.${id}", name)
+             }
+             modIdChineseName += id to modName
+             logger.info("modid cn name: ${id}=${modName}")
+         }*/
         modIdChineseName += "tfc" to "群峦传说"
         modIdChineseName += "firmalife" to "群峦人生"
         modIdChineseName += "ae2" to "应用能源2"
@@ -241,8 +249,8 @@ object RDIEvents {
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
-        Banner.renderScreen(e.guiGraphics,e.screen)
-        SlotWidgetDebugRenderer.render(e.guiGraphics,e.screen)
+        Banner.renderScreen(e.guiGraphics, e.screen)
+        SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
         RScreenRectTip.render(e.guiGraphics, e.screen)
 
     }
@@ -254,13 +262,13 @@ object RDIEvents {
     fun onLevelTick(e: TickEvent.ServerTickEvent) {
 
 
-            Tutorial.tick()
+        Tutorial.tick()
     }
 
     fun onClientTick(e: TickEvent.ClientTickEvent) {
         if (e.phase == TickEvent.Phase.END) {
             Banner.tick()
-            if(mc.level!=null){
+            if (mc.level != null) {
                 OmniNavi.tick()
             }
 

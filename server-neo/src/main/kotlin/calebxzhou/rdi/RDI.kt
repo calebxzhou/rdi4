@@ -4,7 +4,7 @@ import calebxzhou.rdi.Const.MODID
 import calebxzhou.rdi.net.RPacketDecoder
 import calebxzhou.rdi.net.RPacketEncoder
 import calebxzhou.rdi.net.RPacketReceiver
-import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.util.mcs
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
@@ -12,7 +12,6 @@ import io.netty.channel.socket.nio.NioDatagramChannel
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.server.ServerStartingEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,6 +22,7 @@ val log: Logger = LoggerFactory.getLogger(MODID)
 @Mod(MODID)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
+    //todo 陨石召唤器
     companion object {
         private var tickTime1 = 0L
 
@@ -44,7 +44,7 @@ class RDI {
         }
         @JvmStatic
         fun serverStart(e: ServerStartingEvent) {
-            mc = e.server
+            mcs = e.server
             //启动UDP服务器
             Bootstrap()
                 .group(NioEventLoopGroup())

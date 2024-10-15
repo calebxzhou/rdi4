@@ -8,14 +8,12 @@ import net.minecraft.network.Connection
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 
@@ -25,11 +23,11 @@ import net.minecraft.world.level.block.Block
 val mcText: (String) -> MutableComponent = {
     Component.literal(it)
 }
-lateinit var mc: MinecraftServer
+lateinit var mcs: MinecraftServer
 fun forEachEntity(todo: (ServerLevel, Entity) -> Unit) {
 
     try {
-        mc.allLevels.forEach { it.allEntities.forEach { ent -> if (ent != null) todo(it, ent) } }
+        mcs.allLevels.forEach { it.allEntities.forEach { ent -> if (ent != null) todo(it, ent) } }
     } catch (e: Exception) {
         log.warn("移除实体出现错误：{}", e.toString())
     }
@@ -68,7 +66,7 @@ fun ServerPlayer.setSpawn(level: ServerLevel, pos: BlockPos) {
 }
 fun ServerPlayer.goServerSpawn() {
     slowfall()
-    teleportTo(mc.overworld(),Const.BASE_POS)
+    teleportTo(mcs.overworld(),Const.BASE_POS)
 }
 fun ServerPlayer.slowfall(){
     addEffect(MobEffectInstance(MobEffects.SLOW_FALLING,200,5))
@@ -76,7 +74,7 @@ fun ServerPlayer.slowfall(){
 fun ServerPlayer.reset() {
     experienceLevel = 0
     inventory.clearContent()
-    setSpawn(mc.overworld(), Const.BASE_POS)
+    setSpawn(mcs.overworld(), Const.BASE_POS)
     kill()
 }
 val ServerPlayer.lookingBlock

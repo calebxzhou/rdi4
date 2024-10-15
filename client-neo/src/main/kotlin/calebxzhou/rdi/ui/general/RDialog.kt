@@ -95,7 +95,7 @@ class RDialog(
             noBtn.visible = false
             yesBtn.x = startX+width/2-15
         }
-        msgWidget = docWidget(startX, startY + 16, width, height-20, msgBuilder)
+        msgWidget = docWidget(startX, startY + 16, width-10, height-20, msgBuilder)
         super.init()
 
     }

@@ -6,7 +6,7 @@ import java.net.InetSocketAddress
 object Const {
     //mod id
     const val MODID = "rdi"
-    const val SEED = 1145141919810
+    const val SEED = 11451400
     val BASE_POS = BlockPos(0,63,0)
     //是否为调试模式,本地用
     val DEBUG = System.getProperty("rdi.debug").toBoolean()

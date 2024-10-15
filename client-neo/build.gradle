@@ -158,7 +158,6 @@ dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
-    implementation "thedarkcolour:kotlinforforge:$kff_version"
     //implementation "thedarkcolour:kotlinforforge-neoforge:$kff_version"
     minecraftLibrary 'org.mongodb:bson:5.1.0'
     implementation(jarJar("org.mongodb:bson:5.1.0")) {
@@ -168,37 +167,49 @@ dependencies {
     implementation(jarJar('com.googlecode.soundlibs:jorbis:0.0.17.4')) {
         jarJar.ranged(it, "[0.0.17.4,)")
     }
-    //升级mod版本要同时升级src zip
+    //重要：升级mod版本要同时升级src zip
+    //前置类
+    implementation "thedarkcolour:kotlinforforge:$kff_version"
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
-   // implementation fg.deobf("curse.maven:jei-238222:4712868")
+    implementation fg.deobf("maven.modrinth:architectury-api:9.2.14+forge")
+    implementation fg.deobf("maven.modrinth:do-api:1.2.15")
+    implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
+    implementation fg.deobf("maven.modrinth:curios:5.10.0+1.20.1")
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
     // at runtime, use the full JEI jar for Forge
     runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
+    //优化类
+    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
+    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
+    implementation fg.deobf("maven.modrinth:entityculling:dlg7nMa6")
+    implementation fg.deobf("maven.modrinth:embeddium:0.3.31+mc1.20.1")
+    implementation fg.deobf("maven.modrinth:canary:mc1.20.1-0.3.3")
+    implementation fg.deobf("maven.modrinth:fps-reducer:1.20-2.5")
+    implementation fg.deobf("maven.modrinth:alternate-current:forge-mc1.20-1.7.0")
+    implementation fg.deobf("maven.modrinth:imblocker-original:4.0.5")
+    //辅助类
+    implementation fg.deobf("maven.modrinth:jade:11.9.4+forge")
+    //图形效果
+    implementation fg.deobf("maven.modrinth:distanthorizons:2.2.1-a-1.20.1")
+    //不兼容 mixin冲突
+    // implementation fg.deobf("maven.modrinth:oculus:1.20.1-1.7.0")
+    //真mod
     implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
     implementation fg.deobf("maven.modrinth:firmalife:2.1.11")
     implementation fg.deobf("maven.modrinth:farmers-delight:1.20.1-1.2.4")
     implementation fg.deobf("maven.modrinth:oceans-delight:1.0.2-1.20")
     implementation fg.deobf("maven.modrinth:chefs-delight:1.0.3-forge-1.20.1")
     implementation fg.deobf("maven.modrinth:lets-do-vinery:1.4.28")
-    implementation fg.deobf("maven.modrinth:architectury-api:9.2.14+forge")
-    implementation fg.deobf("maven.modrinth:do-api:1.2.15")
     implementation fg.deobf("maven.modrinth:aether:1.20.1-1.5.0-neoforge")
     implementation fg.deobf("maven.modrinth:the-aethers-delight:0.1.1")
     implementation fg.deobf("maven.modrinth:create:0.5.1.h")
-    //implementation fg.deobf("maven.modrinth:")
-    implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
-    implementation fg.deobf("maven.modrinth:curios:5.10.0+1.20.1")
     implementation fg.deobf("maven.modrinth:ae2:15.2.13")
     implementation fg.deobf("maven.modrinth:create-connected:0.9.1-mc1.20.1")
     implementation fg.deobf("maven.modrinth:cuisine-delight:1.1.15")
     implementation fg.deobf("maven.modrinth:cc-tweaked:1.113.1")
-    implementation fg.deobf("maven.modrinth:jade:11.9.4+forge")
-    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
-    //implementation fg.deobf("maven.modrinth:immediatelyfast:1.2.18+1.20.4-neoforge")
-    //5.19.4+mc1.20.1
-    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
-    implementation fg.deobf("maven.modrinth:distanthorizons:2.2.1-a-1.20.1")
+
+
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

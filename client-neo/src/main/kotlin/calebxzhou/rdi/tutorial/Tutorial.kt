@@ -332,7 +332,7 @@ data class Tutorial(
             .createFreshLevel(
                 levelName,
                 levelSettings,
-                WorldOptions(11451400, false, false)
+                WorldOptions(Const.SEED, false, false)
             ) {
                 it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
                     .value().createWorldDimensions();

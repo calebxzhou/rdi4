@@ -2,7 +2,7 @@ package calebxzhou.rdi.service
 
 import calebxzhou.rdi.log
 import calebxzhou.rdi.util.chat
-import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.util.mcs
 import calebxzhou.rdi.util.nickname
 import io.netty.channel.ChannelHandlerContext
 import net.minecraft.server.level.ServerPlayer
@@ -12,7 +12,7 @@ object PlayerService {
     fun onChat(player: ServerPlayer, message: String) {
         val msg = "${player.nickname}: $message"
         log.info(msg)
-        mc.playerList.players.forEach { it.chat(msg) }
+        mcs.playerList.players.forEach { it.chat(msg) }
     }
 
     //断开连接后

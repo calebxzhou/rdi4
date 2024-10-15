@@ -149,31 +149,35 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
 
-
+    //重要：升级mod版本要同时升级src zip
+    //前置类
     implementation "thedarkcolour:kotlinforforge:$kff_version"
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
     implementation fg.deobf("curse.maven:jei-238222:4712868")
+    implementation fg.deobf("curse.maven:patchouli-306770:4636277")
+    implementation fg.deobf("maven.modrinth:architectury-api:9.2.14+forge")
+    implementation fg.deobf("maven.modrinth:do-api:1.2.15")
+    implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
+    implementation fg.deobf("maven.modrinth:curios:5.10.0+1.20.1")
+    //优化类
+    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
+    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
+    implementation fg.deobf("maven.modrinth:canary:mc1.20.1-0.3.3")
+    implementation fg.deobf("maven.modrinth:alternate-current:forge-mc1.20-1.7.0")
+    //真mod
     implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
     implementation fg.deobf("maven.modrinth:firmalife:2.1.11")
     implementation fg.deobf("maven.modrinth:farmers-delight:1.20.1-1.2.4")
     implementation fg.deobf("maven.modrinth:oceans-delight:1.0.2-1.20")
     implementation fg.deobf("maven.modrinth:chefs-delight:1.0.3-forge-1.20.1")
     implementation fg.deobf("maven.modrinth:lets-do-vinery:1.4.28")
-    implementation fg.deobf("maven.modrinth:architectury-api:9.2.14+forge")
-    implementation fg.deobf("maven.modrinth:do-api:1.2.15")
     implementation fg.deobf("maven.modrinth:aether:1.20.1-1.5.0-neoforge")
     implementation fg.deobf("maven.modrinth:the-aethers-delight:0.1.1")
     implementation fg.deobf("maven.modrinth:create:0.5.1.h")
-    //implementation fg.deobf("maven.modrinth:")
-    implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
-    implementation fg.deobf("maven.modrinth:curios:5.10.0+1.20.1")
     implementation fg.deobf("maven.modrinth:ae2:15.2.13")
     implementation fg.deobf("maven.modrinth:create-connected:0.9.1-mc1.20.1")
     implementation fg.deobf("maven.modrinth:cuisine-delight:1.1.15")
     implementation fg.deobf("maven.modrinth:cc-tweaked:1.113.1")
-    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
-    //5.19.4+mc1.20.1
-    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
