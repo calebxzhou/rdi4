@@ -6,6 +6,7 @@ import appeng.worldgen.meteorite.CraterType
 import appeng.worldgen.meteorite.MeteoritePlacer
 import appeng.worldgen.meteorite.debug.MeteoriteSpawner
 import calebxzhou.rdi.util.mcText
+import calebxzhou.rdi.util.mcs
 import net.minecraft.core.Holder
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -55,6 +56,7 @@ class MeteoriteSummonerItem() : Item(Item.Properties().stacksTo(1)) {
             return InteractionResult.FAIL
         }
         player.sendSystemMessage(mcText("30秒后 陨石会砸在${pos.toShortString()}"))
+        context.itemInHand.shrink(1)
         Timer().schedule(30000) {
 
             // Since we don't know yet if the meteorite will be underground or not,
@@ -65,24 +67,26 @@ class MeteoriteSummonerItem() : Item(Item.Properties().stacksTo(1)) {
                 pos.x - range, pos.y - 10, pos.z - range,
                 pos.x + range, pos.y + 10, pos.z + range
             )
+            mcs.execute {
 
-            MeteoritePlacer.place(level, spawned, boundingBox, level.random)
+                MeteoritePlacer.place(level, spawned, boundingBox, level.random)
 
-            player.sendSystemMessage(mcText("陨石已降落"))
-            player.connection.send(
-                ClientboundSoundPacket(
-                    Holder.direct(SoundEvents.GENERIC_EXPLODE), SoundSource.PLAYERS, pos.x.toDouble(),
-                    pos.y.toDouble(),
-                    pos.z.toDouble(), 100f, 1f, 0L
+                player.sendSystemMessage(mcText("陨石已降落"))
+                player.connection.send(
+                    ClientboundSoundPacket(
+                        Holder.direct(SoundEvents.GENERIC_EXPLODE), SoundSource.PLAYERS, pos.x.toDouble(),
+                        pos.y.toDouble(),
+                        pos.z.toDouble(), 200f, 1f, 0L
+                    )
                 )
-            )
 
-            // The placer will not send chunks to the player since it's used as part
-            // of world-gen normally, so we'll have to do it ourselves. Since this
-            // is a debug tool, we'll not care about being terribly efficient here
-            ChunkPos.rangeClosed(ChunkPos(spawned.pos), 1).forEach { cp: ChunkPos ->
-                val c = level.getChunk(cp.x, cp.z)
-                player.connection.send(Platform.getFullChunkPacket(c))
+                // The placer will not send chunks to the player since it's used as part
+                // of world-gen normally, so we'll have to do it ourselves. Since this
+                // is a debug tool, we'll not care about being terribly efficient here
+                ChunkPos.rangeClosed(ChunkPos(spawned.pos), 1).forEach { cp: ChunkPos ->
+                    val c = level.getChunk(cp.x, cp.z)
+                    player.connection.send(Platform.getFullChunkPacket(c))
+                }
             }
         }
 

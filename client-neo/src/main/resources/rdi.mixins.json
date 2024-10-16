@@ -16,6 +16,7 @@
     "mProtocolVersion",
     "mSessionService",
     "gameplay.mPlayer",
+    "jade.mDisplayObjectEnglish",
     "jade.mModNameChineseDisplay",
     "tfc.mPitKiln",
     "tfc.mTfcOverlay",

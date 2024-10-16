@@ -9,6 +9,9 @@ import calebxzhou.rdi.chunkstats.ChunkStats
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
+import calebxzhou.rdi.item.RItems
+import calebxzhou.rdi.lang.EnglishStorage
+import calebxzhou.rdi.lang.EnglishStorage.lang
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
@@ -38,6 +41,7 @@ import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.event.ToastAddEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.AddReloadListenerEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
@@ -78,6 +82,8 @@ fun risSync(todo: () -> Unit) {
 class RDI {
     init {
         RDIEvents.init()
+
+        RItems.REGISTER.register(FMLJavaModLoadingContext. get().modEventBus);
     }
 
     companion object {
@@ -123,7 +129,6 @@ object RDIEvents {
         busL.addListener(::allLoadComplete)
         busL.addListener(::registerOverlays)
 
-
         bus.addListener(::onLevelTick)
         bus.addListener(::checkGuiOverlays)
         bus.addListener(::onPlayerLogin)
@@ -137,7 +142,9 @@ object RDIEvents {
         bus.addListener(::afterScreenMouseClick)
         bus.addListener(::onClientTick)
         bus.addListener(::registerClientCommand)
+
     }
+
 
     fun onAddToast(e: ToastAddEvent) {
         //不显示进度toast
@@ -236,7 +243,7 @@ object RDIEvents {
         modIdChineseName += "cuisinedelight" to "料理乐事"
         modIdChineseName += "computercraft" to "电脑"
         modIdChineseName += "minecraft" to "原版"
-
+        lang =ClientLanguage.loadFrom(mc.resourceManager, listOf("en_us"), false)
     }
 
     fun allLoadComplete(e: TextureStitchEvent.Post) {

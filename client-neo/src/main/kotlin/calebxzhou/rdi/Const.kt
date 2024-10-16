@@ -5,7 +5,7 @@ import java.net.InetSocketAddress
 
 object Const {
 
-
+    const val MODID = "rdi"
     //是否为调试模式,本地用
     val DEBUG = System.getProperty("rdi.debug").toBoolean()
 
