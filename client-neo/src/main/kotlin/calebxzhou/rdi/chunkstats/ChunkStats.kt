@@ -8,7 +8,9 @@ import calebxzhou.rdi.util.forEachBlock
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.toFixed
 import net.minecraft.commands.Commands
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.level.block.Block
+import net.minecraftforge.registries.ForgeRegistries
 
 object ChunkStats {
     val cmd = Commands.literal("chunkstats").executes {
@@ -25,7 +27,7 @@ object ChunkStats {
         val totalBlocks = blocks.values.sum()
         val sortedBlocks = blocks.toList().sortedByDescending { (_, v) -> v }
         sortedBlocks.map {
-            "${it.first.name.string}  ${it.second}x  ${
+            "${it.first.name.string} ${ForgeRegistries. ITEMS.getKey( it.first.asItem())}  ${it.second}x  ${
                 ((it.second.toFloat() / totalBlocks) * 100).toFixed(
                     2
                 )+"%"

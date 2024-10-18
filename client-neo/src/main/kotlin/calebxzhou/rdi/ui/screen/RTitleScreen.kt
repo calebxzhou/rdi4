@@ -172,7 +172,7 @@ class RTitleScreen : RScreen("主页") {
             x = mcUIWidth - (16 + accountNameWidth + 6)
             y = mcUIHeight- 17
         }.also { registerWidget(it) }
-        gridLayout(10, mcUIHeight - 16) {
+        gridLayout(this,10, mcUIHeight - 16) {
             imageButton(Icons["start"], "开始") {
                 start()
             }
@@ -196,7 +196,7 @@ class RTitleScreen : RScreen("主页") {
                 )
 
             }
-        }.buildForIteration { registerWidget(it) }
+        }
 
 
         super.init()

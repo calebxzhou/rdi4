@@ -12,5 +12,5 @@ import java.util.concurrent.Executor
 
 object EnglishStorage {
     lateinit var lang : ClientLanguage
-
+    operator fun get(key: String): String = lang.getOrDefault(key)
 }

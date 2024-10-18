@@ -16,9 +16,10 @@
     "mProtocolVersion",
     "mSessionService",
     "gameplay.mPlayer",
-    "jade.mDisplayObjectEnglish",
     "jade.mModNameChineseDisplay",
+    "jade.mNoDisplayModName",
     "tfc.mPitKiln",
+    "tfc.mTfcNoInventoryTabs",
     "tfc.mTfcOverlay",
     "tfc.mTfcSizeTooltip"
   ],

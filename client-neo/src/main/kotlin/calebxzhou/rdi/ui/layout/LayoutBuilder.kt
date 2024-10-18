@@ -2,6 +2,8 @@ package calebxzhou.rdi.ui.layout
 
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RIconButton
+import calebxzhou.rdi.ui.component.RScreen
+import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.util.mcText
 import calebxzhou.rdi.util.mcUIHeight
 import calebxzhou.rdi.util.mcUIWidth
@@ -11,19 +13,22 @@ import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.layouts.Layout
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.layouts.LinearLayout
+import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 
 fun gridLayout(
+    screen: RScreen,
     x: Int = mcUIWidth / 2,
     y: Int = mcUIHeight - 20,
+    hAlign: HAlign = HAlign.LEFT,
     maxColumns: Int = 0,
     builder: GridLayoutBuilder.() -> Unit,
-): GridLayoutBuilder {
-    return GridLayoutBuilder(maxColumns, x, y).apply(builder)
+): GridLayout {
+    return GridLayoutBuilder(screen,maxColumns, x, y,hAlign).apply(builder).build()
 }
 
-class GridLayoutBuilder(val maxColumns: Int, val x: Int, val y: Int) {
+class GridLayoutBuilder(val screen: RScreen, val maxColumns: Int, val x: Int, val y: Int,val hAlign: HAlign) {
     val children = arrayListOf<LayoutElement>()
 
     fun button(text: String, onClick: (Button) -> Unit) {
@@ -41,16 +46,22 @@ class GridLayoutBuilder(val maxColumns: Int, val x: Int, val y: Int) {
     fun imageButton(iconPath: ResourceLocation, text: MutableComponent, onClick: (Button) -> Unit) {
         children += RIconButton(iconPath, text, onClick = onClick)
     }
-
-    fun buildForIteration(consumer: (AbstractWidget) -> Unit) {
+    fun build(): GridLayout{
         val layout = GridLayout(x, y)
 
         val rowHelper = layout.createRowHelper(if (maxColumns > 0) maxColumns else children.size)
         children.forEach { rowHelper.addChild(it) }
         layout.arrangeElements()
-      //  layout.x -= layout.width / 2
-        layout.visitWidgets(consumer)
+        when(hAlign){
+            HAlign.LEFT -> {}
+            HAlign.RIGHT -> layout.x += layout.width / 2
+            HAlign.CENTER -> layout.x -= layout.width / 2
+        }
+
+        layout.visitWidgets { screen.registerWidget(it) }
+        return  layout
     }
+
 }
 
 class LayoutBuilder(val layout: Layout) {

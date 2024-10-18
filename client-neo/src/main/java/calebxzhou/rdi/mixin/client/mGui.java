@@ -2,6 +2,7 @@ package calebxzhou.rdi.mixin.client;
 
 import calebxzhou.rdi.lang.EnglishStorage;
 import calebxzhou.rdi.service.NetMetrics;
+import calebxzhou.rdi.ui.RGui;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -32,7 +33,7 @@ public abstract class mGui {
     @Inject(method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;I)V",locals = LocalCapture.CAPTURE_FAILHARD, at= @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)I"))
     private void RDI_renderSelectedItemEnglishName(GuiGraphics pGuiGraphics, int yShift, CallbackInfo ci, MutableComponent mutablecomponent, Component highlightTip, int i, int j, int k, int l, Font font){
         String id = lastToolHighlight.getDescriptionId();
-        pGuiGraphics.drawString(getFont(), EnglishStorage.lang.getOrDefault(id),(screenWidth- getFont().width(id)/2)/2,k+7,16777215 + (l << 24));
+        RGui.renderSelectedItemEnglishName(pGuiGraphics,id,j,k,l);
     }
     /*@Redirect(method = "renderPlayerHealth",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getArmorValue()I"))
     private int RDI$noDisplayVanillaArmor(Player instance){

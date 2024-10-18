@@ -1,5 +1,6 @@
 package calebxzhou.rdi.util
 
+import calebxzhou.rdi.Const
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.server.IntegratedServer
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunkSection
@@ -53,7 +55,7 @@ val Player.thrist: Float
             d.thirst
         else 0f
     }
-
+fun resLoca(path:String) = ResourceLocation(Const.MODID,path)
 fun mcsCommand(cmd: String) {
     mcs?.let { mcs ->
         mcs.commands.performPrefixedCommand(mcs.createCommandSourceStack(), cmd)
@@ -65,7 +67,7 @@ fun mcsCommand(cmd: String) {
 fun mcTick(sec: Int): Int {
     return sec * 20
 }
-
+fun String.toMcText() = mcText(this)
 fun mcText(str: String? = null): MutableComponent {
     return str?.let {
         Component.literal(it)

@@ -259,7 +259,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
     }
 
     override fun init() {
-        gridLayout {
+        gridLayout (this, hAlign = HAlign.CENTER){
             button("改QQ") {
                 mc goScreen formScreen(this@RProfileScreen, "换QQ") {
                     text("qq", "新QQ", 10, defaultValue = account.qq)
@@ -341,7 +341,7 @@ class RProfileScreen(val account: Account) : RScreen("个人信息管理") {
                     mc goScreen RTitleScreen()
                // }
             }
-        }.buildForIteration { registerWidget(it) }
+        }
 
         super.init()
     }

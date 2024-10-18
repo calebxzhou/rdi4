@@ -1,15 +1,15 @@
 package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.MOD_ID
-import calebxzhou.rdi.launcher.SplashScreen.height
-import calebxzhou.rdi.launcher.SplashScreen.width
+import calebxzhou.rdi.lang.EnglishStorage
 import calebxzhou.rdi.service.NetMetrics
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcText
+import calebxzhou.rdi.util.*
+import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import net.dries007.tfc.client.IngameOverlays
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -20,15 +20,28 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import java.awt.Color
 import kotlin.math.roundToInt
 
-object ROverlay {
+object RGui {
     val MC_ICONS = ResourceLocation("textures/gui/icons.png")
     val THIRST_ICONS = ResourceLocation(MOD_ID, "textures/gui/thirst_icons.png")
     private fun setupForSurvival(gui: ForgeGui, minecraft: Minecraft): Boolean {
         return gui.shouldDrawSurvivalElements() && IngameOverlays.setup(gui, minecraft)
     }
-
+    @JvmStatic
+    fun renderSelectedItemEnglishName(
+        guiGraphics: GuiGraphics,
+        langKey: String,
+        cnX: Int,
+        cnY: Int,
+        alpha: Int
+    ){
+        val color = 0xaaaaaa + (alpha shl 24)
+        val comp = EnglishStorage[langKey].toMcText().withStyle(ChatFormatting.ITALIC)
+        guiGraphics.drawString(mcFont,comp, (mcUIWidth - mcFont.width(comp))/2,cnY+9, color)
+    }
     @JvmStatic
     fun renderHealthBar(entity: LivingEntity, gui: ForgeGui, graphics: GuiGraphics, width: Int, height: Int) {
+
+
         val stack = graphics.pose()
         val maxHealth = entity.maxHealth
 
@@ -78,10 +91,9 @@ object ROverlay {
             -35,
             0,
             Color.WHITE.rgb,
-            false
+            true
         )
         stack.popPose()
-
     }
 
     @JvmStatic
@@ -102,7 +114,7 @@ object ROverlay {
                 -35,
                 0,
                 Color.WHITE.rgb,
-                false
+                true
             )
             graphics.blit(MC_ICONS, -45, 0, 52, 27, 9, 9)
             stack.popPose()
@@ -138,7 +150,7 @@ object ROverlay {
                 -35,
                 0,
                 Color.WHITE.rgb,
-                false
+                true
             )
             graphics.blit(THIRST_ICONS, -45, 0, 16F, 0f, 9, 9, 25, 9)
             stack.popPose()

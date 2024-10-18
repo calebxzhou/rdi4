@@ -9,6 +9,8 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.PacketListener
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
+import net.minecraft.world.item.Items
+import java.awt.SystemColor.text
 import java.io.File
 import java.util.*
 
@@ -90,10 +92,8 @@ init {
         ).withStyle(ChatFormatting.GOLD)
         val rx = mcText("↓ $rxKBpsStr")
             .withStyle(ChatFormatting.GREEN)
-        val text = tx.append(" ").append(rx)
-        guiGraphics.drawString(mcFont,
-            text,
-            mcUIWidth - mcTextWidthOf(text), mcUIHeight-10,0x000000,true)
+        guiGraphics.drawString(mcFont, tx, mcUIWidth - mcFont.width(tx), mcUIHeight-20,0,true)
+        guiGraphics.drawString(mcFont, rx, mcUIWidth - mcFont.width(rx), mcUIHeight-10,0,true)
     }
 
 

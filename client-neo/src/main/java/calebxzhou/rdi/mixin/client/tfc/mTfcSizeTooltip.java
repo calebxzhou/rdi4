@@ -1,11 +1,15 @@
 package calebxzhou.rdi.mixin.client.tfc;
 
+import calebxzhou.rdi.tfc.RTfcItemSizeManager;
+import net.dries007.tfc.common.capabilities.size.IItemSize;
 import net.dries007.tfc.common.capabilities.size.ItemSizeManager;
 import net.dries007.tfc.util.Helpers;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,12 +23,9 @@ import java.util.List;
 @Mixin(ItemSizeManager.class)
 public class mTfcSizeTooltip {
     //在重量和体积图标后面加上汉字
-    @Redirect(method = "addTooltipInfo",remap = false, at= @At(value = "INVOKE",ordinal = 0, target = "Lnet/dries007/tfc/util/Helpers;translateEnum(Ljava/lang/Enum;)Lnet/minecraft/network/chat/MutableComponent;"))
-    private static MutableComponent tooltip(Enum<?> anEnum){
-        return Component.literal("重量").append(Helpers.translateEnum(anEnum));
-    }
-    @Redirect(method = "addTooltipInfo",remap = false, at= @At(value = "INVOKE",ordinal = 1, target = "Lnet/dries007/tfc/util/Helpers;translateEnum(Ljava/lang/Enum;)Lnet/minecraft/network/chat/MutableComponent;"))
-    private static MutableComponent tooltip2(Enum<?> anEnum){
-        return Component.literal("体积").append(Helpers.translateEnum(anEnum));
-    }
+   @Overwrite
+   public static void addTooltipInfo(ItemStack stack, List<Component> text)
+   {
+       RTfcItemSizeManager.addTooltipInfo(stack, text);
+   }
 }

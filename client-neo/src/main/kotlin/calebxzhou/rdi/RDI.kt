@@ -10,14 +10,13 @@ import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.item.RItems
-import calebxzhou.rdi.lang.EnglishStorage
 import calebxzhou.rdi.lang.EnglishStorage.lang
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.tutorial.TutorialCommand
-import calebxzhou.rdi.ui.ROverlay
+import calebxzhou.rdi.ui.RGui
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.util.*
@@ -41,11 +40,9 @@ import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.event.ToastAddEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.AddReloadListenerEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
-import net.minecraftforge.fml.ModList
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
@@ -302,8 +299,8 @@ object RDIEvents {
     }
 
     fun registerOverlays(event: RegisterGuiOverlaysEvent) {
-        event.registerAboveAll(ROverlay.Armor.ID, ROverlay.Armor)
-        event.registerAboveAll(ROverlay.Network.ID, ROverlay.Network)
+        event.registerAboveAll(RGui.Armor.ID, RGui.Armor)
+        event.registerAboveAll(RGui.Network.ID, RGui.Network)
     }
 
     fun leftClickBlock(e: LeftClickBlock) {
