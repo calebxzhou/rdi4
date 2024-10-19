@@ -6,6 +6,7 @@ import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.Icons
+import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.ui.screen.RPauseScreen.DisplayMode.*
 import calebxzhou.rdi.util.*
@@ -38,7 +39,7 @@ class RPauseScreen : RScreen("暂停") {
                 displayMode = BASIC_INFO
             }*/
             imageButton(Icons["settings"],"设置"){
-                mc goScreen OptionsScreen(this@RPauseScreen,mc.options)
+                mc goScreen RSettingsScreen(this@RPauseScreen,mc.options)
             }
             imageButton(Icons["exit"],"退出"){
                 mc.level?.disconnect()

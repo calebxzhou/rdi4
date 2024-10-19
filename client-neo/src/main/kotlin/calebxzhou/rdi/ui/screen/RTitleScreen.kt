@@ -177,7 +177,7 @@ class RTitleScreen : RScreen("主页") {
                 start()
             }
             imageButton(Icons["settings"], "设置") {
-                mc goScreen OptionsScreen(this@RTitleScreen, mc.options)
+                mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
             imageButton(Icons["partner"], "致谢") {
                 dialog({
