@@ -203,7 +203,7 @@ class RTitleScreen : RScreen("主页") {
     }
 
     fun start() {
-        if (Account.now == null) {
+        /*if (Account.now == null) {
             mc goScreen optScreen(this@RTitleScreen)
         } else {
             RSoundPlayer.stopAll()
@@ -214,8 +214,8 @@ class RTitleScreen : RScreen("主页") {
                 Const.SERVER_DATA,
                 false
             )
-        }
-        //Tutorial.stoneAge[1].start()
+        }*/
+        Tutorial.basic.start()
         /*if (!File("tutorial1_done").exists()) {
             Tutorial.stoneAge[0].start()
         } else

@@ -19,6 +19,7 @@ import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.RGui
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
+import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.util.*
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
@@ -266,7 +267,7 @@ object RDIEvents {
     fun onLevelTick(e: TickEvent.ServerTickEvent) {
 
 
-        Tutorial.tick()
+        Tutorial.tick(e.server)
     }
 
     fun onClientTick(e: TickEvent.ClientTickEvent) {
@@ -292,9 +293,11 @@ object RDIEvents {
     }
 
     fun onPlayerLogin(e: PlayerLoggedInEvent) {
-        if (Tutorial.isDoingTutorial) {
-            mc.addChatMessage(mcText("欢迎来到入门教程\n跟随画面提示进行操作"))
-
+        Tutorial.now?.let{
+            dialog({
+                h3("即将开始教程 ${it.name}")
+                h3("注意画面左下角的提示")
+            })
         }
     }
 

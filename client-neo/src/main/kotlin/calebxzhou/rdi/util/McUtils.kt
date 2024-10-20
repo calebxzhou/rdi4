@@ -4,24 +4,32 @@ import calebxzhou.rdi.Const
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
-import com.jcraft.jorbis.Block
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.server.IntegratedServer
+import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.shapes.CollisionContext
+import net.minecraft.world.phys.shapes.VoxelShape
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 
@@ -76,11 +84,13 @@ fun mcText(str: String? = null): MutableComponent {
 
 fun GuiGraphics.matrixOp(handler: PoseStack.() -> Unit) {
     val stack = pose()
-    stack.pushPose()
-    handler(stack)
-    stack.popPose()
+    stack.matrixOp(handler)
 }
-
+fun PoseStack.matrixOp(handler: PoseStack.() -> Unit){
+    pushPose()
+    handler(this)
+    popPose()
+}
 infix fun Minecraft.goScreen(screen: Screen?) {
     execute {
         setScreen(screen)
@@ -106,7 +116,61 @@ operator fun MutableComponent.plus(component: String): MutableComponent {
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
 }
+fun BlockGetter.renderBlockOutline(
+    stack: PoseStack,
+    vConsumer: VertexConsumer,
+    entity: Entity,
+    camX: Double, camY:Double, camZ:Double, pos: BlockPos, state: BlockState
+){
+    renderShape(
+        stack,
+        vConsumer,
+        state.getShape(this, pos, CollisionContext.of(entity)),
+        pos.x.toDouble() - camX,
+        pos.y.toDouble() - camY,
+        pos.z.toDouble() - camZ,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.6f
+    )
 
+}
+fun renderShape(
+    poseStack: PoseStack,
+    consumer: VertexConsumer,
+    shape: VoxelShape,
+    x: Double,
+    y: Double,
+    z: Double,
+    red: Float,
+    green: Float,
+    blue: Float,
+    alpha: Float
+) {
+    val pose = poseStack.last()
+    shape.forAllEdges { x1, y1, z1, x2, y2, z2 ->
+        var dx = (x2 - x1).toFloat()
+        var dy = (y2 - y1).toFloat()
+        var dz = (z2 - z1).toFloat()
+        val f3 = Mth.sqrt(dx * dx + dy * dy + dz * dz)
+        dx /= f3
+        dy /= f3
+        dz /= f3
+        consumer.vertex(
+            pose.pose(),
+            (x1 + x).toFloat(),
+            (y1 + y).toFloat(),
+            (z1 + z).toFloat()
+        ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
+        consumer.vertex(
+            pose.pose(),
+            (x2 + x).toFloat(),
+            (y2 + y).toFloat(),
+            (z2 + z).toFloat()
+        ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
+    }
+}
 val Player.lookingAtBlock: BlockState?
     get() {
         val hit = pick(20.0, 0.0f, false)
@@ -117,7 +181,14 @@ val Player.lookingAtBlock: BlockState?
         }
         return null
     }
-
+val Player.lookingAtEntity: Entity?
+    get() {
+        val hit = pick(20.0, 0.0f, false)
+        if (hit.type == HitResult.Type.ENTITY) {
+            return (hit as EntityHitResult).entity
+        }
+        return null
+    }
 fun Minecraft.addToast(toast: Toast) {
     toasts.addToast(toast)
 }

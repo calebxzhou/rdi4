@@ -18,7 +18,7 @@
     "gameplay.mPlayer",
     "jade.mModNameChineseDisplay",
     "jade.mNoDisplayModName",
-    "tfc.mPitKiln",
+    "tfc.mFastPitKiln",
     "tfc.mTfcNoInventoryTabs",
     "tfc.mTfcOverlay",
     "tfc.mTfcSizeTooltip"

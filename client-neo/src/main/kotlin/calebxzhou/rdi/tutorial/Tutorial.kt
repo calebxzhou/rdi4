@@ -8,17 +8,8 @@ import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.RScreenRectTip.Mode
-import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.ui.rectTip
-import calebxzhou.rdi.ui.screen.RTitleScreen
-import calebxzhou.rdi.util.RED
-import calebxzhou.rdi.util.addChatMessage
-import calebxzhou.rdi.util.lookingAtBlock
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcText
-import calebxzhou.rdi.util.mcs
-import calebxzhou.rdi.util.mcsCommand
-import com.ibm.icu.impl.SimpleFormatterImpl.IterInternal.step
+import calebxzhou.rdi.util.*
 import net.dries007.tfc.TerraFirmaCraft
 import net.dries007.tfc.client.screen.FirepitScreen
 import net.dries007.tfc.client.screen.KnappingScreen
@@ -31,13 +22,17 @@ import net.dries007.tfc.common.blocks.devices.PitKilnBlock
 import net.dries007.tfc.common.blocks.rock.LooseRockBlock
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.items.TFCItems
-import net.dries007.tfc.util.Helpers
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.tutorial.TutorialSteps
+import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
+import net.minecraft.server.MinecraftServer
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.Difficulty
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.animal.Animal
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -46,18 +41,20 @@ import net.minecraft.world.level.GameType
 import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.CropBlock
 import net.minecraft.world.level.levelgen.WorldOptions
-import net.minecraftforge.network.PacketDistributor.TargetPoint.p
+import net.minecraft.world.level.levelgen.presets.WorldPreset
+import net.minecraft.world.level.levelgen.presets.WorldPresets
 import java.io.File
 
-fun tutorial(id: String, name: String, builder: Tutorial.Builder.() -> Unit): Tutorial {
-    return Tutorial.Builder(id, name).apply(builder).build()
+fun tutorial(id: String, name: String, flat: Boolean = true, builder: Tutorial.Builder.() -> Unit): Tutorial {
+    return Tutorial.Builder(id, name, flat).apply(builder).build()
 }
 
 data class Tutorial(
     val id: String,
     val name: String,
-
+    val isFlatLevel: Boolean,
     //开局给的
     val initKit: List<ItemStack>,
     val steps: List<TutorialStep>,
@@ -67,7 +64,36 @@ data class Tutorial(
             get() = now != null
         var now: Tutorial? = null
             private set
+        val basic = tutorial("basic", "基础操作") {
+            jump()
+            step("按WASD键 前后左右走路，晃动鼠标改变视角，走到光柱位置",
+                {
+                    it.teleportTo(0.0, 5.0, 0.0)
+                    val bpos = BlockPos(6, 5, 6)
+                    it.level().setBlock(bpos, Blocks.RED_WOOL.defaultBlockState(), 2)
+                    OmniNavi += bpos
+                }) { !OmniNavi.isOn }
+            step("这是一个自由创造的生存型游戏。通过收集材料，在这个虚拟世界活下去，建造自己的家。" +
+                    "探索你面前的建筑，然后走到屋顶的光柱位置。", {
+                //读取建筑 小型的家
+            }) { !OmniNavi.isOn }
+            step("除此之外，你还可以种植农作物、饲养动物，提高自己的生活品质与营养。走到光柱位置，将画面中心的十字瞄准成熟的水稻，按下鼠标左键收割它。", {
+                //读取建筑 农牧场
+            }) { player ->
+                player.inventory.hasAnyMatching {
+                    it.`is`(Items.WHEAT)
+                }
+            }
+            step("滚动鼠标滚轮，可以切换手持物品。切换到种子，瞄准耕地，按下鼠标右键播种。"){ player->
+                player.lookingAtBlock?.let { block->
+                    block.`is`(Blocks.WHEAT) && block.getValue(CropBlock.AGE)<1
+                } == true
+            }
+            step("手持水稻，走到前方的牧场，瞄准一头牛，按下鼠标右键喂它，用完你所有的水稻"){
+                it.lookingAtEntity?.type == EntityType.COW && it.mainHandItem.`is`(Items.AIR)
+            }
 
+        }
         val stoneAge = listOf(
             tutorial("stone1", "石器时代1 树与火") {
                 jump()
@@ -266,8 +292,8 @@ data class Tutorial(
                 }
             })
 
-        fun tick() {
-            now?.tick()
+        fun tick(server: MinecraftServer) {
+            now?.tick(server)
         }
     }
 
@@ -282,22 +308,22 @@ data class Tutorial(
 
     }
 
-    fun nextStep(player: Player) {
+    fun nextStep(player: ServerPlayer) {
         stepIndex++
         val nextStep = this.stepNow
         if (nextStep != null) {
             logger.info("开始教程${stepIndex}")
             RSoundPlayer.info()
-            mc.addChatMessage("${stepIndex+1}. ${nextStep.text}")
+            mc.addChatMessage("${stepIndex + 1}. ${nextStep.text}")
             nextStep.beforeOpr(player)
         } else {
-            isDone=true
-            quit()
+            isDone = true
+            mc.addChatMessage("恭喜你完成了教程“${name}”，可以退出了")
         }
     }
 
-    fun tick() {
-        mc.player?.let { player ->
+    fun tick(server: MinecraftServer) {
+        server.playerList.players.first()?.let { player ->
             stepNow?.let { stepNow ->
                 if (stepNow.completeCondition(player) && !isPaused) {
                     stepNow.afterOpr(player)
@@ -314,6 +340,7 @@ data class Tutorial(
         mc.tutorial.setStep(TutorialSteps.NONE)
         mc.options.hideBundleTutorial = true
         mc.options.save()
+        deleteMap()
         val levelSettings = LevelSettings(
             levelName,
             GameType.SURVIVAL,
@@ -321,26 +348,32 @@ data class Tutorial(
             Difficulty.NORMAL,
             Const.DEBUG,
             GameRules().apply {
-                getRule(GameRules.RULE_DAYLIGHT).set(false, null)
                 getRule(GameRules.RULE_COMMANDBLOCKOUTPUT).set(false, null)
                 getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null)
+                getRule(GameRules.RULE_DAYLIGHT).set(false, null)
             },
             WorldDataConfiguration.DEFAULT
         )
-        deleteMap()
+
         mc.createWorldOpenFlows()
             .createFreshLevel(
                 levelName,
                 levelSettings,
                 WorldOptions(Const.SEED, false, false)
             ) {
-                it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
-                    .value().createWorldDimensions();
+                if (isFlatLevel) {
+                    it.registryOrThrow<WorldPreset>(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT)
+                        .value().createWorldDimensions();
+                } else {
+                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
+                        .value().createWorldDimensions();
+                }
             }
         now = this
         reset()
-        mc.addChatMessage(  this.steps[0].text)
+        mc.addChatMessage(this.steps[0].text)
     }
+
     var file = File("ttr_${id}")
     var isDone: Boolean
         get() = file.exists()
@@ -354,31 +387,26 @@ data class Tutorial(
     fun quit() {
         now = null
         Banner.reset()
-        dialog({p("恭喜你完成了教程${name}，即将退出..")}, onYes = {
-            mc.clearLevel(RTitleScreen())
-            //删掉教程存档
-            deleteMap()
-        })
-
+        deleteMap()
     }
 
     fun deleteMap() {
         File("saves/${levelName}").deleteRecursively()
     }
 
-    fun prevStep(player: LocalPlayer) {
+    fun prevStep(player: ServerPlayer) {
         stepIndex--
         val prevStep = this.stepNow
         if (prevStep != null) {
             logger.info("开始教程${stepIndex}")
-            mc.addChatMessage( prevStep.text)
+            mc.addChatMessage(prevStep.text)
             prevStep.beforeOpr(player)
         } else {
             mc.addChatMessage(mcText("没有上一步了"))
         }
     }
 
-    class Builder(val id: String, val name: String, vararg val initKit: ItemStack) {
+    class Builder(val id: String, val name: String, val flat: Boolean, vararg val initKit: ItemStack) {
         val steps = arrayListOf<TutorialStep>()
         fun step(
             text: String,
@@ -406,7 +434,7 @@ data class Tutorial(
         }
 
         fun build(): Tutorial {
-            return Tutorial(id, name, initKit.toList(), steps)
+            return Tutorial(id, name, flat, initKit.toList(), steps)
         }
     }
 }

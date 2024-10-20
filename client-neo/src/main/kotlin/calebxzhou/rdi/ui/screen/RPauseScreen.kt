@@ -43,13 +43,9 @@ class RPauseScreen : RScreen("暂停") {
             }
             imageButton(Icons["exit"],"退出"){
                 mc.level?.disconnect()
-                if(Tutorial.isDoingTutorial){
-                    Tutorial.now?.quit()
-                    return@imageButton
-                }
                 if(mc.isLocalServer){
-
                     mc.clearLevel(GenericDirtMessageScreen(mcText("存档中，请稍候")))
+                    Tutorial.now?.quit()
                 } else{
                     mc.clearLevel()
                 }

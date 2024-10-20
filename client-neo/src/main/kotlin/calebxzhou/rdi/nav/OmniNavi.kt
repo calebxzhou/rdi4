@@ -1,15 +1,20 @@
 package calebxzhou.rdi.nav
 
-import calebxzhou.rdi.logger
 import calebxzhou.rdi.rAsync
 import calebxzhou.rdi.util.*
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
+import com.mojang.blaze3d.vertex.VertexFormat
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderStateShard
+import net.minecraft.client.renderer.RenderStateShard.LineStateShard
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderType.CompositeRenderType
 import net.minecraft.commands.CommandBuildContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
@@ -27,12 +32,15 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.client.event.RenderLevelStageEvent
 import org.joml.Matrix4f
+import java.util.*
 import kotlin.math.sqrt
 
 //方块导航
 object OmniNavi {
     var posNow: BlockPos? = null
         private set
+    val isOn
+        get() = posNow!=null
     val stateNow
         get() = mc.level?.getBlockState(posNow)
     val cmd: (CommandBuildContext) -> LiteralArgumentBuilder<CommandSourceStack> = { ctx: CommandBuildContext ->
@@ -102,7 +110,7 @@ object OmniNavi {
     ) {
         rAsync {
             val found = find(condition)
-            if (found.isEmpty) {
+            if (found.isEmpty()) {
                 mc.addChatMessage("没找到")
                 return@rAsync
             }
@@ -150,7 +158,7 @@ object OmniNavi {
                                         val origin = SectionPos.of(chunk.pos, sy).origin()
                                         val bpos = origin.mutable().setWithOffset(origin, x, y, z)
                                         found += bpos to state
-                                        if(found.size >= maxAmount){
+                                        if (found.size >= maxAmount) {
                                             return@let
                                         }
                                     }
@@ -160,7 +168,7 @@ object OmniNavi {
                 }
 
             }
-        } 
+        }
         return found
     }
 
@@ -175,10 +183,15 @@ object OmniNavi {
         }*/
     }
 
+
+
     fun renderLevelStage(e: RenderLevelStageEvent) {
         val bufferSource = mc.renderBuffers().bufferSource()
+        val level = mc.level!!
         val poseStack = e.poseStack
         val partialTick = e.partialTick
+        val entity = e.camera.entity
+
         val camPos = e.camera.position
         if (e.stage == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
 
@@ -191,11 +204,20 @@ object OmniNavi {
                 val x = posNow.x - camPos.x() + 0.5
                 val y = posNow.y - camPos.y()
                 val z = posNow.z - camPos.z() + 0.5
-
-                poseStack.pushPose()
-                poseStack.translate(x, y, z)
-                renderBeam(bufferSource, poseStack)
-                poseStack.popPose()
+                level.renderBlockOutline(
+                    poseStack,
+                    bufferSource.getBuffer(RenderType.lineStrip()),
+                    entity,
+                    camPos.x(),
+                    camPos.y(),
+                    camPos.z(),
+                    posNow,
+                    level.getBlockState(posNow)
+                )
+                poseStack.matrixOp {
+                    translate(x, y, z)
+                    renderBeam(bufferSource, poseStack)
+                }
             }
         }
     }
@@ -229,78 +251,10 @@ object OmniNavi {
 
                     val off2 = 0.1f + j.toFloat() * 0.2f
 
-                    quad(
-                        matrix4f,
-                        vertexconsumer,
-                        x1,
-                        z1,
-                        index,
-                        x1,
-                        z1,
-                        1f,
-                        0f,
-                        1f,
-                        off1,
-                        off2,
-                        false,
-                        false,
-                        true,
-                        false
-                    )
-                    quad(
-                        matrix4f,
-                        vertexconsumer,
-                        x1,
-                        z1,
-                        index,
-                        x1,
-                        z1,
-                        0f,
-                        1f,
-                        0f,
-                        off1,
-                        off2,
-                        true,
-                        false,
-                        true,
-                        true
-                    )
-                    quad(
-                        matrix4f,
-                        vertexconsumer,
-                        x1,
-                        z1,
-                        index,
-                        x1,
-                        z1,
-                        0f,
-                        1f,
-                        1f,
-                        off1,
-                        off2,
-                        true,
-                        true,
-                        false,
-                        true
-                    )
-                    quad(
-                        matrix4f,
-                        vertexconsumer,
-                        x1,
-                        z1,
-                        index,
-                        x1,
-                        z1,
-                        1f,
-                        1f,
-                        0f,
-                        off1,
-                        off2,
-                        false,
-                        true,
-                        false,
-                        false
-                    )
+                    quad(matrix4f, vertexconsumer, x1, z1, index, x1, z1, 1f, 0f, 1f, off1, off2, false, false, true, false)
+                    quad(matrix4f, vertexconsumer, x1, z1, index, x1, z1, 0f, 1f, 0f, off1, off2, true, false, true, true)
+                    quad(matrix4f, vertexconsumer, x1, z1, index, x1, z1, 0f, 1f, 1f, off1, off2, true, true, false, true)
+                    quad(matrix4f, vertexconsumer, x1, z1, index, x1, z1, 1f, 1f, 0f, off1, off2, false, true, false, false)
                 }
             }
         }
@@ -356,7 +310,7 @@ object OmniNavi {
             mc.player?.let { player ->
 
                 if (player.distanceToSqr(posNow.x.toDouble(), posNow.y.toDouble(), posNow.z.toDouble()) < 3) {
-                    mc.addChatMessage(mcText("已到达目的地附近，本次导航结束"))
+                    mc.addChatMessage(mcText("已到达"))
 
                     reset()
                 }

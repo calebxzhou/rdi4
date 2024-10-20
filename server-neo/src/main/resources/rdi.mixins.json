@@ -21,7 +21,8 @@
     "mSaveBandwidth",
     "mServerProps",
     "mServerProps2",
-    "ae2.mGenMeteoriteEverywhere"
+    "ae2.mGenMeteoriteEverywhere",
+    "tfc.mFastPitKiln"
   ],
   "injectors": {
     "defaultRequire": 1
