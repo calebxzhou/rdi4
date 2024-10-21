@@ -23,34 +23,35 @@ object TutorialCommand {
             }
             .executes {
                 val subCmd = StringArgumentType.getString(it, "1")
+                it.source.player?.let { serverPlayer ->
+                    when (subCmd) {
+                        "prev" -> {
+                            Tutorial.now?.prevStep(serverPlayer)
+                            mc.addChatMessage("上一步")
+                        }
 
-                when (subCmd) {
-                    "prev" -> {
-                        Tutorial.now?.prevStep(mc.player!!)
-                        mc.addChatMessage("上一步")
-                    }
+                        "next" -> {
+                            Tutorial.now?.nextStep(serverPlayer)
+                            mc.addChatMessage("下一步")
+                        }
 
-                    "next" -> {
-                        Tutorial.now?.nextStep(mc.player!!)
-                        mc.addChatMessage("下一步")
-                    }
+                        "quit" -> {
+                            Tutorial.now?.quit()
+                            mc.addChatMessage("退出")
+                        }
 
-                    "quit" -> {
-                        Tutorial.now?.quit()
-                        mc.addChatMessage("退出")
-                    }
-
-                    "pause" -> {
-                        Tutorial.now?.isPaused = true
-                        mc.addChatMessage("暂停")
+                        "pause" -> {
+                            Tutorial.now?.isPaused = true
+                            mc.addChatMessage("暂停")
+                        }
                     }
                 }
                 1
             }
             .then(
                 Commands.argument("2", IntegerArgumentType.integer())
-                    .executes{
-                        val idx = IntegerArgumentType.getInteger(it,"2")
+                    .executes {
+                        val idx = IntegerArgumentType.getInteger(it, "2")
                         mc.addChatMessage("去第${idx}步")
                         Tutorial.now?.stepIndex = idx
                         return@executes 1

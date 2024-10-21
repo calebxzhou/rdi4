@@ -25,6 +25,7 @@ import net.minecraft.client.gui.screens.GenericDirtMessageScreen
 import net.minecraft.client.gui.screens.OptionsScreen
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.network.chat.Component
+import xaero.map.WorldMapSession
 import java.awt.SystemColor.text
 
 class RPauseScreen : RScreen("暂停") {
@@ -38,6 +39,9 @@ class RPauseScreen : RScreen("暂停") {
             /*imageButton(Icons["basic_info"],"基本信息"){
                 displayMode = BASIC_INFO
             }*/
+            imageButton(Icons["map"],"地图"){
+                mc goScreen xaero.map.gui.GuiMap(this@RPauseScreen,this@RPauseScreen,WorldMapSession.getCurrentSession().mapProcessor,mc.player!!)
+            }
             imageButton(Icons["settings"],"设置"){
                 mc goScreen RSettingsScreen(this@RPauseScreen,mc.options)
             }

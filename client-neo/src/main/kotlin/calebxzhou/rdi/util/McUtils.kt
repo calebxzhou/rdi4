@@ -23,6 +23,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.BlockGetter
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.phys.BlockHitResult
@@ -194,7 +195,9 @@ fun Minecraft.addToast(toast: Toast) {
 }
 
 fun Minecraft.addChatMessage(msg: String) {
-    gui.chat.addMessage(mcText(msg))
+    msg.split("\n").forEach {
+    gui.chat.addMessage(mcText(it))
+    }
 }
 
 fun Minecraft.addChatMessage(msg: Component) {
@@ -204,7 +207,9 @@ fun Minecraft.addChatMessage(msg: Component) {
 fun Minecraft.addHudMessage(msg: String) {
     gui.setOverlayMessage(mcText(msg), false);
 }
-
+fun Level.setBlock(pos:BlockPos, state: BlockState){
+    setBlock(pos, state,2)
+}
 fun LevelChunkSection.forEachBlock(todo: (BlockState) -> Unit) {
     for (x in 0..15)
         for (y in 0..15)

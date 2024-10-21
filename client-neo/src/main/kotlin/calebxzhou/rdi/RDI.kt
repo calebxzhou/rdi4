@@ -106,6 +106,7 @@ class RDI {
 
         fun onInitialize(event: FMLCommonSetupEvent) {
             logger.info("载入RDI")
+
         }
 
         @JvmStatic
@@ -293,11 +294,15 @@ object RDIEvents {
     }
 
     fun onPlayerLogin(e: PlayerLoggedInEvent) {
+
+        timerDelay(3000){
+
         Tutorial.now?.let{
             dialog({
                 h3("即将开始教程 ${it.name}")
                 h3("注意画面左下角的提示")
             })
+        }
         }
     }
 

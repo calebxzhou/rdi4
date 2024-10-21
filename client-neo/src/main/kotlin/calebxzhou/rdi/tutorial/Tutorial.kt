@@ -3,13 +3,13 @@ package calebxzhou.rdi.tutorial
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.mixin.client.ALivingEntity
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.RScreenRectTip.Mode
 import calebxzhou.rdi.ui.rectTip
 import calebxzhou.rdi.util.*
+import com.mojang.blaze3d.platform.InputConstants
 import net.dries007.tfc.TerraFirmaCraft
 import net.dries007.tfc.client.screen.FirepitScreen
 import net.dries007.tfc.client.screen.KnappingScreen
@@ -20,10 +20,10 @@ import net.dries007.tfc.common.blocks.GroundcoverBlock
 import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.common.blocks.devices.PitKilnBlock
 import net.dries007.tfc.common.blocks.rock.LooseRockBlock
+import net.dries007.tfc.common.blocks.rock.Rock
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
@@ -31,8 +31,6 @@ import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.Difficulty
-import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.animal.Animal
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -41,9 +39,7 @@ import net.minecraft.world.level.GameType
 import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.CropBlock
 import net.minecraft.world.level.levelgen.WorldOptions
-import net.minecraft.world.level.levelgen.presets.WorldPreset
 import net.minecraft.world.level.levelgen.presets.WorldPresets
 import java.io.File
 
@@ -65,33 +61,65 @@ data class Tutorial(
         var now: Tutorial? = null
             private set
         val basic = tutorial("basic", "基础操作") {
+            val startBpos = BlockPos(0, -60, 5)
+            val goHome = {player: Player -> player.teleportTo(0.0, -60.0, 0.0)}
             jump()
-            step("按WASD键 前后左右走路，晃动鼠标改变视角，走到光柱位置",
+            step("这是一个自由创造的生存型游戏。收集材料，在这个虚拟世界活下去，建造自己的家。\n" +
+                    "按WASD键 前后左右走路，晃动鼠标改变视角，走到光柱位置",
                 {
-                    it.teleportTo(0.0, 5.0, 0.0)
-                    val bpos = BlockPos(6, 5, 6)
-                    it.level().setBlock(bpos, Blocks.RED_WOOL.defaultBlockState(), 2)
-                    OmniNavi += bpos
+                    goHome(it)
+                    it.level().setBlock(startBpos, Blocks.RED_WOOL.defaultBlockState(), 2)
+                    OmniNavi += startBpos
                 }) { !OmniNavi.isOn }
-            step("这是一个自由创造的生存型游戏。通过收集材料，在这个虚拟世界活下去，建造自己的家。" +
-                    "探索你面前的建筑，然后走到屋顶的光柱位置。", {
-                //读取建筑 小型的家
-            }) { !OmniNavi.isOn }
-            step("除此之外，你还可以种植农作物、饲养动物，提高自己的生活品质与营养。走到光柱位置，将画面中心的十字瞄准成熟的水稻，按下鼠标左键收割它。", {
-                //读取建筑 农牧场
-            }) { player ->
+            step("将画面中心的十字 对准这块红色羊毛，长按鼠标左键破坏它，收入囊中") { player ->
+                player.inventory.hasAnyMatching {
+                    it.`is`(Items.RED_WOOL)
+                }
+            }
+            step("手持羊毛，对准地面，按下鼠标右键，把它放在地上") { player ->
+                player.lookingAtBlock?.`is`(Blocks.RED_WOOL) == true
+            }
+            step("转动鼠标滚轮，切换手持物品，用打火石对准红色羊毛，按下鼠标右键点燃",{player: Player ->
+                player.inventory.add(9,Items.FLINT_AND_STEEL.defaultInstance)
+            }){
+                it.lookingAtBlock?.`is`(Blocks.FIRE) == true
+            }
+            step("面前出现了几个石头，依次对准它们 按下鼠标右键 全部捡起",{player: Player ->
+                goHome(player)
+                val rock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
+                player.level().setBlock(startBpos,rock )
+                rock.setValue(LooseRockBlock.COUNT,2)
+                player.level().setBlock(startBpos.north(), rock)
+                player.level().setBlock(startBpos.south(), rock)
+                rock.setValue(LooseRockBlock.COUNT,3)
+                player.level().setBlock(startBpos.east(), rock)
+                player.level().setBlock(startBpos.west(), rock)
+            }){
+                 player -> player.inventory.hasAnyMatching { it.`is`(ROCK_KNAPPING) && it.count >= 11 }
+            }
+            //树枝
+            //打磨石头
+            //做斧子
+            //砍树
+            //打火器 篝火 火把
+            //陶器..
+            /*step(
+                "除此之外，你还可以种植农作物、饲养动物，提高自己的生活品质与营养。走到光柱位置，将画面中心的十字瞄准成熟的水稻，按下鼠标左键收割它。",
+                {
+                    //读取建筑 农牧场
+                }) { player ->
                 player.inventory.hasAnyMatching {
                     it.`is`(Items.WHEAT)
                 }
             }
-            step("滚动鼠标滚轮，可以切换手持物品。切换到种子，瞄准耕地，按下鼠标右键播种。"){ player->
-                player.lookingAtBlock?.let { block->
-                    block.`is`(Blocks.WHEAT) && block.getValue(CropBlock.AGE)<1
+            step("滚动鼠标滚轮，可以切换手持物品。切换到种子，瞄准耕地，按下鼠标右键播种。") { player ->
+                player.lookingAtBlock?.let { block ->
+                    block.`is`(Blocks.WHEAT) && block.getValue(CropBlock.AGE) < 1
                 } == true
             }
-            step("手持水稻，走到前方的牧场，瞄准一头牛，按下鼠标右键喂它，用完你所有的水稻"){
+            step("手持水稻，走到前方的牧场，瞄准一头牛，按下鼠标右键喂它，用完你所有的水稻") {
                 it.lookingAtEntity?.type == EntityType.COW && it.mainHandItem.`is`(Items.AIR)
-            }
+            }*/
 
         }
         val stoneAge = listOf(
@@ -308,14 +336,27 @@ data class Tutorial(
 
     }
 
-    fun nextStep(player: ServerPlayer) {
-        stepIndex++
-        val nextStep = this.stepNow
-        if (nextStep != null) {
+    /*fun prevStep(player: ServerPlayer) {
+        stepIndex--
+        val prevStep = this.stepNow
+        if (prevStep != null) {
+            logger.info("开始教程${stepIndex}")
+            mc.addChatMessage(prevStep.text)
+            prevStep.beforeOpr(player)
+        } else {
+            mc.addChatMessage(mcText("没有上一步了"))
+        }
+    }*/
+    fun nextStep(player: ServerPlayer) = changeStep(stepIndex + 1, player)
+    fun prevStep(player: ServerPlayer) = changeStep(stepIndex - 1, player)
+    fun changeStep(newStepIndex: Int, player: ServerPlayer) {
+        stepIndex = newStepIndex
+        val newStep = this.stepNow
+        if (newStep != null) {
             logger.info("开始教程${stepIndex}")
             RSoundPlayer.info()
-            mc.addChatMessage("${stepIndex + 1}. ${nextStep.text}")
-            nextStep.beforeOpr(player)
+            mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
+            newStep.beforeOpr(player)
         } else {
             isDone = true
             mc.addChatMessage("恭喜你完成了教程“${name}”，可以退出了")
@@ -323,12 +364,12 @@ data class Tutorial(
     }
 
     fun tick(server: MinecraftServer) {
-        server.playerList.players.first()?.let { player ->
+        server.playerList.players.forEach { player ->
             stepNow?.let { stepNow ->
                 if (stepNow.completeCondition(player) && !isPaused) {
                     stepNow.afterOpr(player)
                     logger.info("已完成教程${id}/${stepIndex}")
-                    nextStep(player)
+                    changeStep(stepIndex + 1, player)
                 }
             }
         }
@@ -362,7 +403,7 @@ data class Tutorial(
                 WorldOptions(Const.SEED, false, false)
             ) {
                 if (isFlatLevel) {
-                    it.registryOrThrow<WorldPreset>(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT)
+                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT)
                         .value().createWorldDimensions();
                 } else {
                     it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
@@ -371,7 +412,7 @@ data class Tutorial(
             }
         now = this
         reset()
-        mc.addChatMessage(this.steps[0].text)
+        mc.addChatMessage("1. " + this.steps[0].text)
     }
 
     var file = File("ttr_${id}")
@@ -394,17 +435,6 @@ data class Tutorial(
         File("saves/${levelName}").deleteRecursively()
     }
 
-    fun prevStep(player: ServerPlayer) {
-        stepIndex--
-        val prevStep = this.stepNow
-        if (prevStep != null) {
-            logger.info("开始教程${stepIndex}")
-            mc.addChatMessage(prevStep.text)
-            prevStep.beforeOpr(player)
-        } else {
-            mc.addChatMessage(mcText("没有上一步了"))
-        }
-    }
 
     class Builder(val id: String, val name: String, val flat: Boolean, vararg val initKit: ItemStack) {
         val steps = arrayListOf<TutorialStep>()
@@ -426,11 +456,13 @@ data class Tutorial(
         }
 
         fun esc() {
-            step("按ESC键(在键盘左上角)关闭画面") { mc.screen == null }
+            step("按ESC键关闭画面 (在键盘左上角)") { mc.screen == null }
         }
 
-        fun jump(afterOpr: (LocalPlayer) -> Unit = {}) {
-            step("按空格键跳跃 (键盘下面的大长条按钮,字母CVBNM底下)") { (it as ALivingEntity).jumping }
+        fun jump() {
+            step("按空格键跳跃 (键盘下面的大长条按钮,字母CVBNM底下)") {
+                mc pressingKey InputConstants.KEY_SPACE//(it as ALivingEntity).jumping
+            }
         }
 
         fun build(): Tutorial {

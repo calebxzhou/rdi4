@@ -15,6 +15,7 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.concurrent.schedule
 
 /**
  * calebxzhou @ 2024-06-02 10:03
@@ -30,6 +31,11 @@ fun bgTask(block: suspend CoroutineScope.() -> Unit){
         dialog({p(e.localizedMessage)}, msglvl = RMessageLevel.ERR)
         e.printStackTrace()
     }
+    }
+}
+fun timerDelay(delayMs: Long,action: TimerTask.() -> Unit){
+    Timer().schedule(delayMs){
+        action()
     }
 }
 fun String.isNumber(): Boolean {
