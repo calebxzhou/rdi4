@@ -2,6 +2,7 @@ package calebxzhou.rdi.ui.component
 
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
+import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
@@ -62,7 +63,7 @@ class RFormScreen(val prev: Screen, val title: String) {
                             onSubmit()
                         }
                         catch (e: Exception) {
-                            dialog({p(e.localizedMessage)}, msglvl = RMessageLevel.ERR)
+                            alertErr(e.localizedMessage)
                             e.printStackTrace()
                         }
                     }
@@ -92,7 +93,7 @@ class RFormScreen(val prev: Screen, val title: String) {
                     if (widget is REditBox) {
                         val result = widget.validate()
                         if (!result.isSuccess) {
-                            dialog({p(result.reason)}, msglvl = RMessageLevel.ERR)
+                            alertErr(result.reason)
                             return
                         }
                     }

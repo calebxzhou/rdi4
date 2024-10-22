@@ -3,6 +3,7 @@ package calebxzhou.rdi.ihq
 import calebxzhou.rdi.ihq.protocol.SPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import calebxzhou.rdi.ui.RMessageLevel
+import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.alertOs
 import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.util.isMcStarted
@@ -37,7 +38,7 @@ object IhqClient {
     val OK_CLOSE_ERR_ALERT_HANDLER: (ResponseCPacket) -> Unit = { packet: ResponseCPacket ->
         if(!packet.ok){
             if(isMcStarted)
-                dialog({h3(packet.data)}, msglvl = RMessageLevel.ERR)
+                alertErr(packet.data)
             else
                 alertOs(packet.data)
         }else{
@@ -56,7 +57,8 @@ object IhqClient {
         try {
             responseHandlerMap[packet.reqId]?.invoke(packet)
         } catch (e: Exception) {
-            dialog({p(e.localizedMessage)}, msglvl = RMessageLevel.ERR)
+            alertErr(e.localizedMessage)
+
             e.printStackTrace()
         }
     }

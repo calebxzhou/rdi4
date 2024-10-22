@@ -10,6 +10,7 @@ import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.docWidget
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.MultiLineTextWidget
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
@@ -23,10 +24,13 @@ fun alertOs(msg: String){
     TinyFileDialogs.tinyfd_messageBox("RDI提示", msg, "ok", "info", true)
 }
 fun alertErr(msg: String){
-    dialog({p(msg)}, msglvl = RMessageLevel.ERR)
+    dialog(msg.toMcText(), msglvl = RMessageLevel.ERR)
+}
+fun alert(msg: String){
+    dialog(msg.toMcText(),)
 }
 fun dialog(
-    msgBuilder: RDocWidget.Builder.() -> Unit,
+    msgBuilder: MutableComponent,
     diagType: RDialogType = RDialogType.ALERT,
     msglvl: RMessageLevel = RMessageLevel.INFO,
     yesText: String = if (diagType == RDialogType.ALERT) "明白" else "是",
@@ -53,7 +57,7 @@ class RDialog(
     override val title: MutableComponent,
     val diagType: RDialogType,
     val msglvl: RMessageLevel,
-    val msgBuilder: RDocWidget.Builder.() -> Unit,
+    val msg: MutableComponent,
     val yesText: String ,
     val noText: String,
     val onYes: () -> Unit ,
@@ -68,7 +72,7 @@ class RDialog(
     override var showTitle = false
     lateinit var yesBtn: RButton
     lateinit var noBtn: RButton
-    lateinit var msgWidget: RDocWidget
+    lateinit var msgWidget: MultiLineTextWidget
     var startX = mcUIWidth / 2 - 100
     var startY = mcUIHeight / 2 - 50
     var width = 200
@@ -95,7 +99,7 @@ class RDialog(
             noBtn.visible = false
             yesBtn.x = startX+width/2-15
         }
-        msgWidget = docWidget(startX, startY + 16, width-10, height-20, msgBuilder)
+        msgWidget = MultiLineTextWidget(startX, startY + 16,msg, mcFont)
         super.init()
 
     }

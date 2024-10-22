@@ -19,6 +19,7 @@ import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.RGui
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
+import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.util.*
 import io.netty.util.concurrent.DefaultThreadFactory
@@ -251,6 +252,7 @@ object RDIEvents {
 
     fun onRenderGui(e: RenderGuiEvent) {
         Banner.renderGui(e.guiGraphics)
+        Tutorial.now?.renderGui(e.guiGraphics)
         OmniNavi.renderGui(e.guiGraphics)
     }
 
@@ -298,10 +300,7 @@ object RDIEvents {
         timerDelay(3000){
 
         Tutorial.now?.let{
-            dialog({
-                h3("即将开始教程 ${it.name}")
-                h3("注意画面左下角的提示")
-            })
+            alert("即将开始教程“${it.name}”\n注意画面左下角的提示")
         }
         }
     }

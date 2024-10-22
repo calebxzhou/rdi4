@@ -9,15 +9,11 @@ data class TutorialStep(
     val text: MutableComponent,
     //开始之前干啥
     val beforeOpr: (ServerPlayer) -> Unit = {},
-    //结束之后干啥
-    val afterOpr: (ServerPlayer) -> Unit = {},
     //完成条件 每tick检查一遍
     val completeCondition: (ServerPlayer) -> Boolean
 ){
     constructor( text: String,
         //开始之前干啥
                  beforeOpr: (ServerPlayer) -> Unit = {},
-        //结束之后干啥
-                 afterOpr: (ServerPlayer) -> Unit = {},
-                 completeCondition: (ServerPlayer,) -> Boolean):this(mcText(text),beforeOpr, afterOpr, completeCondition)
+                 completeCondition: (ServerPlayer,) -> Boolean):this(mcText(text),beforeOpr, completeCondition)
 }

@@ -23,14 +23,22 @@ import net.dries007.tfc.common.blocks.rock.LooseRockBlock
 import net.dries007.tfc.common.blocks.rock.Rock
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.items.TFCItems
+import net.minecraft.ChatFormatting
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 import net.minecraft.server.MinecraftServer
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.Difficulty
+import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -60,68 +68,7 @@ data class Tutorial(
             get() = now != null
         var now: Tutorial? = null
             private set
-        val basic = tutorial("basic", "基础操作") {
-            val startBpos = BlockPos(0, -60, 5)
-            val goHome = {player: Player -> player.teleportTo(0.0, -60.0, 0.0)}
-            jump()
-            step("这是一个自由创造的生存型游戏。收集材料，在这个虚拟世界活下去，建造自己的家。\n" +
-                    "按WASD键 前后左右走路，晃动鼠标改变视角，走到光柱位置",
-                {
-                    goHome(it)
-                    it.level().setBlock(startBpos, Blocks.RED_WOOL.defaultBlockState(), 2)
-                    OmniNavi += startBpos
-                }) { !OmniNavi.isOn }
-            step("将画面中心的十字 对准这块红色羊毛，长按鼠标左键破坏它，收入囊中") { player ->
-                player.inventory.hasAnyMatching {
-                    it.`is`(Items.RED_WOOL)
-                }
-            }
-            step("手持羊毛，对准地面，按下鼠标右键，把它放在地上") { player ->
-                player.lookingAtBlock?.`is`(Blocks.RED_WOOL) == true
-            }
-            step("转动鼠标滚轮，切换手持物品，用打火石对准红色羊毛，按下鼠标右键点燃",{player: Player ->
-                player.inventory.add(9,Items.FLINT_AND_STEEL.defaultInstance)
-            }){
-                it.lookingAtBlock?.`is`(Blocks.FIRE) == true
-            }
-            step("面前出现了几个石头，依次对准它们 按下鼠标右键 全部捡起",{player: Player ->
-                goHome(player)
-                val rock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
-                player.level().setBlock(startBpos,rock )
-                rock.setValue(LooseRockBlock.COUNT,2)
-                player.level().setBlock(startBpos.north(), rock)
-                player.level().setBlock(startBpos.south(), rock)
-                rock.setValue(LooseRockBlock.COUNT,3)
-                player.level().setBlock(startBpos.east(), rock)
-                player.level().setBlock(startBpos.west(), rock)
-            }){
-                 player -> player.inventory.hasAnyMatching { it.`is`(ROCK_KNAPPING) && it.count >= 11 }
-            }
-            //树枝
-            //打磨石头
-            //做斧子
-            //砍树
-            //打火器 篝火 火把
-            //陶器..
-            /*step(
-                "除此之外，你还可以种植农作物、饲养动物，提高自己的生活品质与营养。走到光柱位置，将画面中心的十字瞄准成熟的水稻，按下鼠标左键收割它。",
-                {
-                    //读取建筑 农牧场
-                }) { player ->
-                player.inventory.hasAnyMatching {
-                    it.`is`(Items.WHEAT)
-                }
-            }
-            step("滚动鼠标滚轮，可以切换手持物品。切换到种子，瞄准耕地，按下鼠标右键播种。") { player ->
-                player.lookingAtBlock?.let { block ->
-                    block.`is`(Blocks.WHEAT) && block.getValue(CropBlock.AGE) < 1
-                } == true
-            }
-            step("手持水稻，走到前方的牧场，瞄准一头牛，按下鼠标右键喂它，用完你所有的水稻") {
-                it.lookingAtEntity?.type == EntityType.COW && it.mainHandItem.`is`(Items.AIR)
-            }*/
 
-        }
         val stoneAge = listOf(
             tutorial("stone1", "石器时代1 树与火") {
                 jump()
@@ -135,14 +82,11 @@ data class Tutorial(
                 step("四处走走 捡10个一样的石子") { player -> player.inventory.hasAnyMatching { it.`is`(ROCK_KNAPPING) && it.count >= 10 } }
                 step("拿着石子,看天空,按鼠标右键打磨",
                     { mc.addChatMessage("下面咱们来做一把石斧 砍树用") }) { mc.screen is KnappingScreen }
-                tip("依次点击绿框,打磨石斧头子",
-                    {
-                        rectTip {
-                            widgets(0, 10, 15, 20, 21, 23, 24, 19, 14, 4)
-                            slot(0)
-                            emptyInvSlotContainer()
-                        }
-                    })
+                tip("依次点击绿框,打磨石斧头子") {
+                    widgets(0, 10, 15, 20, 21, 23, 24, 19, 14, 4)
+                    slot(0)
+                    emptyInvSlotContainer()
+                }
                 esc()
                 step("继续走到光柱位置 捡起树枝",
                     {
@@ -158,8 +102,8 @@ data class Tutorial(
                     }) { OmniNavi.posNow == null }
                 step("在附近树下捡10个一样的树枝") { player -> player.inventory.hasAnyMatching { it.`is`(FIREPIT_STICKS) && it.count >= 10 } }
                 step("按E键打开背包") { mc.screen is InventoryScreen }
-                tip("依次点击绿框,合成石斧", {
-                    rectTip {
+                tip("依次点击绿框,合成石斧",
+                    {
                         slot { it.item.`is`(FIREPIT_STICKS) }
                         slot(3)
                         slot { it.item.toString().contains("axe_head") }
@@ -167,9 +111,7 @@ data class Tutorial(
                         slot(0)
                         emptyInvSlot()
                     }
-                }, {
-                    mc.addChatMessage("恭喜你做出石斧 可以愉快地砍树了")
-                })
+                )
                 esc()
                 step("斧拿手上,对准树的根部 长按鼠标左键砍树,拿5个原木") { player ->
                     player.inventory.hasAnyMatching {
@@ -180,7 +122,6 @@ data class Tutorial(
                 }
                 step("按E键打开背包") { mc.screen is InventoryScreen }
                 tip("鼠标右键点击树枝", {
-                    mc.addChatMessage("接下来教你平分背包里的物品\n一格拆成两格")
                     rectTip {
                         mode = Mode.RMB
                         slot { it.item.`is`(FIREPIT_STICKS) }
@@ -207,15 +148,7 @@ data class Tutorial(
                 step("右键点击篝火") {
                     mc.screen is FirepitScreen
                 }
-                step("放入树枝点燃 做出火把", {
-                    rectTip {
-                        slot { it.item.`is`(FIREPIT_STICKS) }
-                        slot(0)
 
-                    }
-                }, { mc.addChatMessage("恭喜你有了照明工具") }) { player ->
-                    player.inventory.hasAnyMatching { it.`is`(TFCItems.TORCH.get()) }
-                }
             },
             tutorial("stone2", "石器时代2 陶器") {
                 jump()
@@ -225,46 +158,45 @@ data class Tutorial(
                     mcsCommand("give @a tfc:firestarter")
                     mcsCommand("give @a tfc:wood/log/birch 16")
                 }) { mc.screen is KnappingScreen }
-                tip("依次点击绿框,打磨石铲头子",
-                    {
-                        rectTip {
-                            widgets(0, 1, 2, 3, 4, 9, 19, 20, 21, 22, 23, 24)
-                            slot(0)
-                            emptyInvSlotContainer()
-                        }
-                    })
+                tip("依次点击绿框,打磨石铲头子"
+                ) {
+
+                    widgets(0, 1, 2, 3, 4, 9, 19, 20, 21, 22, 23, 24)
+                    slot(0)
+                    emptyInvSlotContainer()
+                }
                 step("按E键打开背包") { mc.screen is InventoryScreen }
-                tip("依次点击绿框,合成石铲", {
-                    rectTip {
-                        slot { it.item.`is`(FIREPIT_STICKS) }
-                        slot(3)
-                        slot { it.item.toString().contains("shovel_head") }
-                        slot(1)
-                        slot(0)
-                        emptyInvSlot()
-                    }
-                })
+                tip("依次点击绿框,合成石铲") {
+
+                    slot { it.item.`is`(FIREPIT_STICKS) }
+                    slot(3)
+                    slot { it.item.toString().contains("shovel_head") }
+                    slot(1)
+                    slot(0)
+                    emptyInvSlot()
+
+                }
                 esc()
                 step("拿着石子,看天空,按鼠标右键打磨") { mc.screen is KnappingScreen }
-                tip("依次点击绿框,打磨石刀刃",
-                    {
-                        rectTip {
-                            widgets(5, 10, 11, 12, 13, 14, 15)
-                            slot(0)
-                            emptyInvSlotContainer()
-                        }
-                    })
+                tip("依次点击绿框,打磨石刀刃"
+                ) {
+
+                    widgets(5, 10, 11, 12, 13, 14, 15)
+                    slot(0)
+                    emptyInvSlotContainer()
+
+                }
                 step("按E键打开背包") { mc.screen is InventoryScreen }
-                tip("依次点击绿框,合成石刀", {
-                    rectTip {
-                        slot { it.item.`is`(FIREPIT_STICKS) }
-                        slot(3)
-                        slot { it.item.toString().contains("knife_head") }
-                        slot(1)
-                        slot(0)
-                        emptyInvSlot()
-                    }
-                })
+                tip("依次点击绿框,合成石刀") {
+
+                    slot { it.item.`is`(FIREPIT_STICKS) }
+                    slot(3)
+                    slot { it.item.toString().contains("knife_head") }
+                    slot(1)
+                    slot(0)
+                    emptyInvSlot()
+
+                }
                 step("石刀拿手上 对准草 鼠标左键割草 割20个干草") { player ->
                     player.inventory.hasAnyMatching {
                         it.`is`(
@@ -283,22 +215,22 @@ data class Tutorial(
                     }) { OmniNavi.posNow == null }
                 step("用铲子铲附近的黏土草块 拿12个黏土球") { player -> player.inventory.hasAnyMatching { it.`is`(Items.CLAY_BALL) && it.count >= 12 } }
                 step("拿着黏土,看天空,按鼠标右键开始捏黏土") { mc.screen is KnappingScreen }
-                tip("依次点击绿框,合成陶罐,可以拿来装水", {
-                    rectTip {
-                        widgets(0, 10, 15, 17, 19, 20, 21, 23, 24)
-                        slot(0)
-                        emptyInvSlotContainer()
-                    }
-                })
+                tip("依次点击绿框,合成陶罐,可以拿来装水") {
+
+                    widgets(0, 10, 15, 17, 19, 20, 21, 23, 24)
+                    slot(0)
+                    emptyInvSlotContainer()
+
+                }
                 esc()
                 step("继续拿着黏土,看天空,按鼠标右键开始捏黏土") { mc.screen is KnappingScreen }
-                tip("依次点击绿框,合成小缸,可以拿来装小物件和吃的", {
-                    rectTip {
-                        widgets(0, 4, 20, 24)
-                        slot(0)
-                        emptyInvSlotContainer()
-                    }
-                })
+                tip("依次点击绿框,合成小缸,可以拿来装小物件和吃的") {
+
+                    widgets(0, 4, 20, 24)
+                    slot(0)
+                    emptyInvSlotContainer()
+
+                }
                 step("挖一个坑 拿着陶器胚 朝着坑里按V键 放入陶器胚") {
                     it.lookingAtBlock?.`is`(TFCBlocks.PLACED_ITEM.get()) == true
                 }
@@ -363,11 +295,23 @@ data class Tutorial(
         }
     }
 
+    fun renderGui(guiGraphics: GuiGraphics) {
+        //只在ui上层渲染
+        if (mc.screen == null)
+            return
+        stepNow?.let { stepNow ->
+            guiGraphics.matrixOp {
+                translate(0.0, 24.0, 100.0)
+                guiGraphics.fill(0, 50, 150, 300, 0x66000000)
+                MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, 0x66000000)
+            }
+        }
+    }
+
     fun tick(server: MinecraftServer) {
         server.playerList.players.forEach { player ->
             stepNow?.let { stepNow ->
                 if (stepNow.completeCondition(player) && !isPaused) {
-                    stepNow.afterOpr(player)
                     logger.info("已完成教程${id}/${stepIndex}")
                     changeStep(stepIndex + 1, player)
                 }
@@ -440,19 +384,27 @@ data class Tutorial(
         val steps = arrayListOf<TutorialStep>()
         fun step(
             text: String,
-            beforeOpr: (Player) -> Unit = {},
-            afterOpr: (Player) -> Unit = {},
-            completeCondition: (Player) -> Boolean
+            beforeOpr: (ServerPlayer) -> Unit = {},
+            completeCondition: (ServerPlayer) -> Boolean
         ) {
-            steps += TutorialStep(text, beforeOpr, afterOpr, completeCondition)
+            steps += TutorialStep(text, beforeOpr,  completeCondition)
         }
-
+        //让玩家自行检查操作是否完成 完成以后 点聊天框的完成按钮 必须手动下一步
+        fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}){
+            val cmp = mcText(text) + mcText(" 完成后按T键，点击")+
+                    mcText("<这里>")
+                        .withStyle(Style.EMPTY
+                            .applyFormat(ChatFormatting.GREEN)
+                            .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
+                            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND,"tutorial next"))
+                        )
+            steps += TutorialStep(cmp, beforeOpr) { false }
+        }
         fun tip(
             text: String,
-            beforeOpr: (Player) -> Unit = {},
-            afterOpr: (Player) -> Unit = {}
+            builder: RScreenRectTip.Builder.() -> Unit,
         ) {
-            step(text, beforeOpr, afterOpr) { RScreenRectTip.isCompleted }
+            step(text, { rectTip { builder() } }) { RScreenRectTip.isCompleted }
         }
 
         fun esc() {

@@ -3,6 +3,7 @@ package calebxzhou.rdi.util
 import calebxzhou.rdi.RDI
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
+import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.dialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ fun bgTask(block: suspend CoroutineScope.() -> Unit){
         block()
     } catch (e: Exception) {
         logger.error("bgtask error: $e")
-        dialog({p(e.localizedMessage)}, msglvl = RMessageLevel.ERR)
+        alertErr(e.localizedMessage)
         e.printStackTrace()
     }
     }

@@ -13,19 +13,22 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.server.IntegratedServer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunkSection
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
@@ -64,7 +67,8 @@ val Player.thrist: Float
             d.thirst
         else 0f
     }
-fun resLoca(path:String) = ResourceLocation(Const.MODID,path)
+
+fun resLoca(path: String) = ResourceLocation(Const.MODID, path)
 fun mcsCommand(cmd: String) {
     mcs?.let { mcs ->
         mcs.commands.performPrefixedCommand(mcs.createCommandSourceStack(), cmd)
@@ -76,6 +80,7 @@ fun mcsCommand(cmd: String) {
 fun mcTick(sec: Int): Int {
     return sec * 20
 }
+
 fun String.toMcText() = mcText(this)
 fun mcText(str: String? = null): MutableComponent {
     return str?.let {
@@ -87,11 +92,13 @@ fun GuiGraphics.matrixOp(handler: PoseStack.() -> Unit) {
     val stack = pose()
     stack.matrixOp(handler)
 }
-fun PoseStack.matrixOp(handler: PoseStack.() -> Unit){
+
+fun PoseStack.matrixOp(handler: PoseStack.() -> Unit) {
     pushPose()
     handler(this)
     popPose()
 }
+
 infix fun Minecraft.goScreen(screen: Screen?) {
     execute {
         setScreen(screen)
@@ -117,12 +124,13 @@ operator fun MutableComponent.plus(component: String): MutableComponent {
 fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
 }
+
 fun BlockGetter.renderBlockOutline(
     stack: PoseStack,
     vConsumer: VertexConsumer,
     entity: Entity,
-    camX: Double, camY:Double, camZ:Double, pos: BlockPos, state: BlockState
-){
+    camX: Double, camY: Double, camZ: Double, pos: BlockPos, state: BlockState
+) {
     renderShape(
         stack,
         vConsumer,
@@ -137,6 +145,7 @@ fun BlockGetter.renderBlockOutline(
     )
 
 }
+
 fun renderShape(
     poseStack: PoseStack,
     consumer: VertexConsumer,
@@ -172,6 +181,7 @@ fun renderShape(
         ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
     }
 }
+
 val Player.lookingAtBlock: BlockState?
     get() {
         val hit = pick(20.0, 0.0f, false)
@@ -182,6 +192,13 @@ val Player.lookingAtBlock: BlockState?
         }
         return null
     }
+val Player.lookingAtItemEntity: ItemEntity?
+    get() {
+        val entity = lookingAtEntity
+        return if (entity != null && entity is ItemEntity) {
+            entity
+        } else null
+    }
 val Player.lookingAtEntity: Entity?
     get() {
         val hit = pick(20.0, 0.0f, false)
@@ -190,13 +207,14 @@ val Player.lookingAtEntity: Entity?
         }
         return null
     }
+
 fun Minecraft.addToast(toast: Toast) {
     toasts.addToast(toast)
 }
 
 fun Minecraft.addChatMessage(msg: String) {
     msg.split("\n").forEach {
-    gui.chat.addMessage(mcText(it))
+        gui.chat.addMessage(mcText(it))
     }
 }
 
@@ -207,9 +225,27 @@ fun Minecraft.addChatMessage(msg: Component) {
 fun Minecraft.addHudMessage(msg: String) {
     gui.setOverlayMessage(mcText(msg), false);
 }
-fun Level.setBlock(pos:BlockPos, state: BlockState){
-    setBlock(pos, state,2)
+
+fun Level.setBlock(pos: BlockPos, state: BlockState) {
+    setBlock(pos, state, 2)
 }
+
+val ServerPlayer.serverLevel
+    get() = level() as ServerLevel
+
+fun ServerLevel.loadStructure(name: String, pos: BlockPos): Boolean {
+    val mgr = structureManager
+    val templateO = mgr.get(resLoca(name))
+    if (templateO.isEmpty) {
+        logger.warn("找不到结构 $name")
+        return false
+    }
+    val template = templateO.get()
+    template.placeInWorld(this, BlockPos.ZERO, pos, StructurePlaceSettings(), random, 2)
+
+    return true
+}
+
 fun LevelChunkSection.forEachBlock(todo: (BlockState) -> Unit) {
     for (x in 0..15)
         for (y in 0..15)

@@ -7,7 +7,9 @@ import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
+import calebxzhou.rdi.tutorial.BASIC_TUTORIAL
 import calebxzhou.rdi.tutorial.Tutorial
+import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.gridLayout
@@ -180,20 +182,13 @@ class RTitleScreen : RScreen("主页") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
             imageButton(Icons["partner"], "致谢") {
-                dialog({
-                    h3("服务器硬件 wuhudsm66")
-                    h3("任务设计：terryaxe")
-                    h3("Mod建议：ForiLuSa")
-                }
-                )
+                alert("服务器硬件 wuhudsm66 \n 任务设计：terryaxe \nMod建议：ForiLuSa")
             }
             imageButton(Icons["qq"], "QQ群") {
                 copyToClipboard("1095925708")
-                dialog({
-                    h3("已复制QQ群号：1095925708")
-                    h3("欢迎加入RDI玩家交流群！")
-                }
-                )
+                alert("已复制QQ群号：1095925708 欢迎加入RDI玩家交流群！")
+
+
 
             }
         }
@@ -215,7 +210,7 @@ class RTitleScreen : RScreen("主页") {
                 false
             )
         }*/
-        Tutorial.basic.start()
+        BASIC_TUTORIAL.start()
         /*if (!File("tutorial1_done").exists()) {
             Tutorial.stoneAge[0].start()
         } else
