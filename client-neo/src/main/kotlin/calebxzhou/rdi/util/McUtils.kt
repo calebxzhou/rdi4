@@ -181,7 +181,9 @@ fun renderShape(
         ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
     }
 }
-
+fun Entity.teleportTo(entity: Entity){
+    teleportTo(entity.x,entity.y,entity.z)
+}
 val Player.lookingAtBlock: BlockState?
     get() {
         val hit = pick(20.0, 0.0f, false)
@@ -241,7 +243,7 @@ fun ServerLevel.loadStructure(name: String, pos: BlockPos): Boolean {
         return false
     }
     val template = templateO.get()
-    template.placeInWorld(this, BlockPos.ZERO, pos, StructurePlaceSettings(), random, 2)
+    template.placeInWorld(this, pos, pos, StructurePlaceSettings(), random, 2)
 
     return true
 }

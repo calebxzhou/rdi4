@@ -99,7 +99,7 @@ class RDialog(
             noBtn.visible = false
             yesBtn.x = startX+width/2-15
         }
-        msgWidget = MultiLineTextWidget(startX, startY + 16,msg, mcFont)
+        msgWidget = MultiLineTextWidget(startX+3, startY + 18,msg, mcFont)
         super.init()
 
     }

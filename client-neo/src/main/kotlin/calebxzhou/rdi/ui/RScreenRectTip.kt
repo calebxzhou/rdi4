@@ -66,9 +66,11 @@ object RScreenRectTip {
         }
     }
     class Builder(){
+        //todo 检测条件放到执行时检测
         var allRects = arrayListOf<RectPoints>()
         var mode = Mode.LMB
         //背包里的空位(任意容器画面)
+        //todo 尽可能放在手上
         fun emptyInvSlotContainer(){
             val screen = mc.screen
             if(screen is AbstractContainerScreen<*>){

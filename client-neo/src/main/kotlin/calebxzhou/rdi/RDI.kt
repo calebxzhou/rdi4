@@ -42,6 +42,7 @@ import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.event.ToastAddEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
@@ -142,6 +143,7 @@ object RDIEvents {
         bus.addListener(::afterScreenMouseClick)
         bus.addListener(::onClientTick)
         bus.addListener(::registerClientCommand)
+        bus.addListener(::registerCommand)
 
     }
 
@@ -198,10 +200,15 @@ object RDIEvents {
             }
         }
     }
+    fun registerCommand(e: RegisterCommandsEvent){
+        val cmds = listOf(
+            TutorialCommand.cmd,
+        )
+        cmds.forEach { e.dispatcher.register(it) }
 
+    }
     fun registerClientCommand(e: RegisterClientCommandsEvent) {
         val debugCmds = listOf(
-            TutorialCommand.cmd,
             Banner.cmd
         )
         val cmds = listOf(
@@ -252,7 +259,7 @@ object RDIEvents {
 
     fun onRenderGui(e: RenderGuiEvent) {
         Banner.renderGui(e.guiGraphics)
-        Tutorial.now?.renderGui(e.guiGraphics)
+
         OmniNavi.renderGui(e.guiGraphics)
     }
 
@@ -260,7 +267,7 @@ object RDIEvents {
         Banner.renderScreen(e.guiGraphics, e.screen)
         SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
         RScreenRectTip.render(e.guiGraphics, e.screen)
-
+        Tutorial.now?.renderGui(e.guiGraphics)
     }
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {

@@ -2,6 +2,7 @@ package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.util.addChatMessage
 import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.util.mcs
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import net.minecraft.commands.Commands
@@ -23,7 +24,7 @@ object TutorialCommand {
             }
             .executes {
                 val subCmd = StringArgumentType.getString(it, "1")
-                it.source.player?.let { serverPlayer ->
+                mcs?.playerList?.players?.firstOrNull()?.let { serverPlayer ->
                     when (subCmd) {
                         "prev" -> {
                             Tutorial.now?.prevStep(serverPlayer)

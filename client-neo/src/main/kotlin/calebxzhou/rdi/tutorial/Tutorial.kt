@@ -8,6 +8,7 @@ import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.RScreenRectTip.Mode
 import calebxzhou.rdi.ui.rectTip
+import calebxzhou.rdi.ui.screen.RPauseScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.dries007.tfc.TerraFirmaCraft
@@ -26,6 +27,9 @@ import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineLabel
+import net.minecraft.client.gui.screens.ChatScreen
+import net.minecraft.client.gui.screens.GenericDirtMessageScreen
+import net.minecraft.client.gui.screens.GenericWaitingScreen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.core.BlockPos
@@ -287,6 +291,7 @@ data class Tutorial(
         if (newStep != null) {
             logger.info("开始教程${stepIndex}")
             RSoundPlayer.info()
+            mc.addChatMessage("")
             mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
             newStep.beforeOpr(player)
         } else {
@@ -297,13 +302,13 @@ data class Tutorial(
 
     fun renderGui(guiGraphics: GuiGraphics) {
         //只在ui上层渲染
-        if (mc.screen == null)
+        if (mc.screen == null || mc.screen is ChatScreen || mc.screen is RPauseScreen)
             return
         stepNow?.let { stepNow ->
             guiGraphics.matrixOp {
                 translate(0.0, 24.0, 100.0)
-                guiGraphics.fill(0, 50, 150, 300, 0x66000000)
-                MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, 0x66000000)
+                guiGraphics.fill(0, 50, 100, 300, 0x66000000)
+                MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
             }
         }
     }
@@ -320,6 +325,7 @@ data class Tutorial(
     }
 
     fun start() {
+        mc.screen = GenericDirtMessageScreen(mcText("请稍候"))
         //关闭mc原版教程
         mc.options.tutorialStep = TutorialSteps.NONE
         mc.tutorial.setStep(TutorialSteps.NONE)
@@ -356,7 +362,7 @@ data class Tutorial(
             }
         now = this
         reset()
-        mc.addChatMessage("1. " + this.steps[0].text)
+        mc.addChatMessage(mcText("1. ") + this.steps[0].text)
     }
 
     var file = File("ttr_${id}")
@@ -396,7 +402,7 @@ data class Tutorial(
                         .withStyle(Style.EMPTY
                             .applyFormat(ChatFormatting.GREEN)
                             .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
-                            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND,"tutorial next"))
+                            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND,"/tutorial next"))
                         )
             steps += TutorialStep(cmp, beforeOpr) { false }
         }
