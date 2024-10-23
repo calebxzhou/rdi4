@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.Mth
@@ -69,12 +70,8 @@ val Player.thrist: Float
     }
 
 fun resLoca(path: String) = ResourceLocation(Const.MODID, path)
-fun mcsCommand(cmd: String) {
-    mcs?.let { mcs ->
-        mcs.commands.performPrefixedCommand(mcs.createCommandSourceStack(), cmd)
-    }?.let {
-        logger.warn("mcs not run!")
-    }
+fun MinecraftServer.executeCommand(cmd: String) {
+    commands.performPrefixedCommand(createCommandSourceStack(), cmd)
 }
 
 fun mcTick(sec: Int): Int {
@@ -203,8 +200,8 @@ val Player.lookingAtItemEntity: ItemEntity?
     }
 val Player.lookingAtEntity: Entity?
     get() {
-        val hit = pick(20.0, 0.0f, false)
-        if (hit.type == HitResult.Type.ENTITY) {
+        val hit = mc.hitResult
+        if (hit?.type == HitResult.Type.ENTITY) {
             return (hit as EntityHitResult).entity
         }
         return null

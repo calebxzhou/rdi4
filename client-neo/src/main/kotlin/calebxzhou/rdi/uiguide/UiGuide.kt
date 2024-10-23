@@ -4,6 +4,7 @@ import calebxzhou.rdi.logger
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcUIHeight
 import calebxzhou.rdi.util.mcUIWidth
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
@@ -22,6 +23,7 @@ fun uiGuide(builder: UiGuide.Builder.() -> Unit) {
 
 class UiGuide(
     val screenClass: Class<Screen>?,
+    val rightClick: Boolean,
     val steps: List<Step>
 ) {
     private var stepIndex = 0
@@ -50,16 +52,22 @@ class UiGuide(
         } ?: stop()
     }
 
-    fun onClick(e: ScreenEvent.MouseButtonPressed.Pre) {
+    fun onClick(e: ScreenEvent.MouseButtonPressed.Pre) : Boolean{
         val mx = (e.mouseX).toInt()
         val my = (e.mouseY).toInt()
+        if (rightClick && e.button == InputConstants.MOUSE_BUTTON_LEFT)
+            return false
         areaNow?.let { area ->
+            //不允许点击绿框以外 的部分
             if ((mx in area.x..area.x + area.width)
                 && (my in area.y..area.y + area.height)
             ) {
                 next()
-            }
-        }
+                return true
+            }else return false
+        }?:
+        //没有区域限制时
+        return true
     }
 
     fun next() {
@@ -90,7 +98,7 @@ class UiGuide(
 
     class Builder(val screenClass: Class<Screen>?) {
         val steps = arrayListOf<Step>()
-
+        var rightClick = false
         fun step(areaSupplier: (Screen) -> Rect2i?) {
             steps += Step(areaSupplier)
         }
@@ -163,7 +171,7 @@ class UiGuide(
 
         fun start() {
 
-            UiGuide(screenClass, steps).start()
+            UiGuide(screenClass, rightClick,steps).start()
         }
 
     }

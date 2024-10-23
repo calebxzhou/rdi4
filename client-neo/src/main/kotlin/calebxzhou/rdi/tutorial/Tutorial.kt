@@ -3,56 +3,32 @@ package calebxzhou.rdi.tutorial
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.ui.RScreenRectTip
-import calebxzhou.rdi.ui.RScreenRectTip.Mode
-import calebxzhou.rdi.ui.rectTip
 import calebxzhou.rdi.ui.screen.RPauseScreen
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.dries007.tfc.TerraFirmaCraft
-import net.dries007.tfc.client.screen.FirepitScreen
-import net.dries007.tfc.client.screen.KnappingScreen
-import net.dries007.tfc.common.TFCTags
-import net.dries007.tfc.common.TFCTags.Items.FIREPIT_STICKS
-import net.dries007.tfc.common.TFCTags.Items.ROCK_KNAPPING
-import net.dries007.tfc.common.blocks.GroundcoverBlock
-import net.dries007.tfc.common.blocks.TFCBlocks
-import net.dries007.tfc.common.blocks.devices.PitKilnBlock
-import net.dries007.tfc.common.blocks.rock.LooseRockBlock
-import net.dries007.tfc.common.blocks.rock.Rock
-import net.dries007.tfc.common.blocks.soil.SoilBlockType
-import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.screens.ChatScreen
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
-import net.minecraft.client.gui.screens.GenericWaitingScreen
-import net.minecraft.client.gui.screens.inventory.InventoryScreen
+import net.minecraft.client.gui.screens.LevelLoadingScreen
 import net.minecraft.client.tutorial.TutorialSteps
-import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import net.minecraft.server.MinecraftServer
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.tags.ItemTags
 import net.minecraft.world.Difficulty
-import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
-import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
 import java.io.File
@@ -120,9 +96,9 @@ data class Tutorial(
         }
     }
 
-    fun renderGui(guiGraphics: GuiGraphics) {
+    fun render(guiGraphics: GuiGraphics) {
         //只在ui上层渲染
-        if (mc.screen == null || mc.screen is ChatScreen || mc.screen is RPauseScreen)
+        if (mc.screen == null || mc.screen is ChatScreen || mc.screen is RPauseScreen || mc.screen is LevelLoadingScreen)
             return
         stepNow?.let { stepNow ->
             guiGraphics.matrixOp {
@@ -161,6 +137,7 @@ data class Tutorial(
             GameRules().apply {
                 getRule(GameRules.RULE_COMMANDBLOCKOUTPUT).set(false, null)
                 getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null)
+                getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(false, null)
                 getRule(GameRules.RULE_DAYLIGHT).set(false, null)
             },
             WorldDataConfiguration.DEFAULT

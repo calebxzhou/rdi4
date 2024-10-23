@@ -1,9 +1,8 @@
 package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.nav.OmniNavi
-import calebxzhou.rdi.ui.RScreenRectTip.Mode
-import calebxzhou.rdi.ui.RScreenRectTip.mode
 import calebxzhou.rdi.util.*
+import com.simibubi.create.content.fluids.PipeConnection.r
 import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.client.screen.FirepitScreen
 import net.dries007.tfc.client.screen.KnappingScreen
@@ -17,6 +16,7 @@ import net.dries007.tfc.common.blocks.rock.Rock
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.entities.TFCEntities
 import net.dries007.tfc.common.items.Food
+import net.dries007.tfc.common.items.HideItemType
 import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.core.BlockPos
@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.Blocks
 val BASIC_TUTORIAL
     get() = tutorial("basic", "基础操作") {
         val originBlock = BlockPos(0, -61, 5)
+        val originBlockAbove = BlockPos(0, -60, 5)
         val goHome = { player: Player -> player.teleportTo(0.0, -60.0, 0.0) }
         jump()
         step("这是一个自由创造的生存型游戏。收集材料，在这个虚拟世界活下去，建造自己的家。\n" +
@@ -50,7 +51,7 @@ val BASIC_TUTORIAL
                 it.`is`(Items.RED_WOOL)
             }
         }
-        step("手持羊毛，对准地面，按下鼠标右键，把它放在地上") { player ->
+        step("手持羊毛，对准刚刚挖的坑，按下鼠标右键，把它放里头") { player ->
             player.lookingAtBlock?.`is`(Blocks.RED_WOOL) == true
         }
         step("转动鼠标滚轮，切换手持物品，用打火石对准红色羊毛，按下鼠标右键点燃", { player: Player ->
@@ -64,23 +65,23 @@ val BASIC_TUTORIAL
         step("按下左Shift键，下蹲/慢走 （在字母Z的左边）") {
             it.isCrouching
         }
-        step("面前出现了几个石头，依次对准它们，按下鼠标右键，将它们全部捡起", { player: Player ->
+        step("面前出现了几个石头，依次对准它们，空手按下鼠标右键，将它们全部捡起", { player: Player ->
             goHome(player)
             val rockBlock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
             val rock = rockBlock.setValue(LooseRockBlock.COUNT,3)
             val level = player.level()
-            level.setBlock(originBlock, rock)
-            level.setBlock(originBlock.north(), rock)
-            level.setBlock(originBlock.south(), rock)
-            level.setBlock(originBlock.east(), rock)
-            level.setBlock(originBlock.west(), rock)
+            level.setBlock(originBlockAbove, rock)
+            level.setBlock(originBlockAbove.north(), rock)
+            level.setBlock(originBlockAbove.south(), rock)
+            level.setBlock(originBlockAbove.east(), rock)
+            level.setBlock(originBlockAbove.west(), rock)
         }) { player ->
             player.inventory.hasAnyMatching { it.`is`(ROCK_KNAPPING) && it.count >= 11 }
         }
         //树枝
         step("面前又出现了2棵树，用同样的方法，捡起树下全部的树枝", {
-            (it.level() as ServerLevel).loadStructure("maple_tree", originBlock)
-            (it.level() as ServerLevel).loadStructure("maple_tree", originBlock.offset(0,0,8))
+            (it.level() as ServerLevel).loadStructure("maple_tree", originBlockAbove)
+            (it.level() as ServerLevel).loadStructure("maple_tree", originBlockAbove.offset(0,0,8))
         }) { player -> player.inventory.hasAnyMatching { it.`is`(FIREPIT_STICKS) && it.count >= 14 } }
         //打磨石头
         //step("",{}){}
@@ -93,7 +94,7 @@ val BASIC_TUTORIAL
         }
         esc()
         step("按E键打开背包") { mc.screen is InventoryScreen }
-        tip("依次点击绿框，合成石斧") {
+        tip("物品栏一共有36个槽位，其中最下面9个是可以用鼠标滚轮快捷切换的。通过点击物品，可以切换槽位。依次点击绿框，合成石斧。") {
             slot { it.item.`is`(FIREPIT_STICKS) }
             slot(3)
             slot { it.item.toString().contains("axe_head") }
@@ -110,7 +111,7 @@ val BASIC_TUTORIAL
         }
         step("按E键打开背包") { mc.screen is InventoryScreen }
         tip("鼠标右键点击树枝，把它平分") {
-            mode = Mode.RMB
+            rightClick=true
             slot { it.item.`is`(FIREPIT_STICKS) }
         }
         tip("鼠标左键点击绿框") {
@@ -155,15 +156,15 @@ val BASIC_TUTORIAL
             val loam =
                 TFCBlocks.SOIL[SoilBlockType.CLAY_GRASS]!![SoilBlockType.Variant.SILTY_LOAM]!!.get().defaultBlockState()
             val level = player.level()
-            level.setBlock(originBlock, loam)
-            level.setBlock(originBlock.north(), loam)
-            level.setBlock(originBlock.north().above(), loam)
-            level.setBlock(originBlock.south(), loam)
-            level.setBlock(originBlock.south().above(), loam)
-            level.setBlock(originBlock.east(), loam)
-            level.setBlock(originBlock.east().above(), loam)
-            level.setBlock(originBlock.west(), loam)
-            level.setBlock(originBlock.west().above(), loam)
+            level.setBlock(originBlockAbove, loam)
+            level.setBlock(originBlockAbove.north(), loam)
+            level.setBlock(originBlockAbove.north().above(), loam)
+            level.setBlock(originBlockAbove.south(), loam)
+            level.setBlock(originBlockAbove.south().above(), loam)
+            level.setBlock(originBlockAbove.east(), loam)
+            level.setBlock(originBlockAbove.east().above(), loam)
+            level.setBlock(originBlockAbove.west(), loam)
+            level.setBlock(originBlockAbove.west().above(), loam)
         })
         { player -> player.inventory.hasAnyMatching { it.`is`(Items.CLAY_BALL) && it.count >= 12 } }
         step("再来，拿着石子,看天空,按鼠标右键打磨") { mc.screen is KnappingScreen }
@@ -191,15 +192,15 @@ val BASIC_TUTORIAL
             goHome(player)
             val grass = TFCBlocks.PLANTS[Plant.BLUEGRASS]!!.get().defaultBlockState()
             val level = player.level()
-            level.setBlock(originBlock, grass)
-            level.setBlock(originBlock.north(), grass)
-            level.setBlock(originBlock.north().north(), grass)
-            level.setBlock(originBlock.south(), grass)
-            level.setBlock(originBlock.south().south(), grass)
-            level.setBlock(originBlock.east(), grass)
-            level.setBlock(originBlock.east().east(), grass)
-            level.setBlock(originBlock.west(), grass)
-            level.setBlock(originBlock.west().west(), grass)
+            level.setBlock(originBlockAbove, grass)
+            level.setBlock(originBlockAbove.north(), grass)
+            level.setBlock(originBlockAbove.north().north(), grass)
+            level.setBlock(originBlockAbove.south(), grass)
+            level.setBlock(originBlockAbove.south().south(), grass)
+            level.setBlock(originBlockAbove.east(), grass)
+            level.setBlock(originBlockAbove.east().east(), grass)
+            level.setBlock(originBlockAbove.west(), grass)
+            level.setBlock(originBlockAbove.west().west(), grass)
         }) { player ->
             player.inventory.hasAnyMatching {
                 it.`is`(
@@ -253,19 +254,14 @@ val BASIC_TUTORIAL
         }
         step("手持石刀，干掉面前这头猪 （对准-鼠标左键狂点）",{ player ->
             repeat(5){
-            //todo 不要幼年猪
-            val animal = TFCEntities.PIG.get().create(player.serverLevel)!!
-            animal.teleportTo(player)
-                player.serverLevel.addFreshEntity(animal)
+                mcs?.executeCommand("summon tfc:pig ${player.blockX} ${player.blockY} ${player.blockZ}")
             }
         }){ player->
             player.inventory.hasAnyMatching { it.`is`(TFCItems.FOOD[Food.PORK]!!.get()) }
         }
-        step("手持树枝，按下3次Q键，向面前的红色羊毛上丢3个树枝。同样的方法，再丢1个原木。",{
-            it.serverLevel.setBlock(it.blockPosition().relative(it.direction,2),Blocks.RED_WOOL.defaultBlockState())
-        }) {
-            it.lookingAtItemEntity?.item?.`is`(ItemTags.LOGS) == true
-        }
+        selfChk("手持树枝，按下3次Q键，向面前的红色羊毛上丢3个树枝。同样的方法，再丢1个原木。",{
+            it.serverLevel.setBlock(it.blockPosition().below().relative(it.direction,2),Blocks.RED_WOOL.defaultBlockState())
+        })
         step("手持刚刚做好的打火器，对准这些树枝和原木，长按鼠标右键点燃") {
             it.lookingAtBlock?.`is`(TFCBlocks.FIREPIT.get()) == true
         }
@@ -303,7 +299,9 @@ val BASIC_TUTORIAL
                 it.`is`(TFCBlocks.THATCH.get().asItem()) && it.count>=2
             }
         }
-        step("将两个干草块呈一字型放在地上，然后手持大块兽皮，右键点击干草块"){
+        step("将两个干草块呈一字型放在地上，然后手持大块兽皮，右键点击干草块",{
+            it.inventory.add(TFCItems.HIDES[HideItemType.RAW]!![HideItemType.Size.LARGE]!!.get().defaultInstance)
+        }){
             it.lookingAtBlock?.`is`(TFCBlocks.THATCH_BED.get())==true
         }
         selfChk("右键点击这个床，可以设置复活点（但是暂时不能睡觉）")

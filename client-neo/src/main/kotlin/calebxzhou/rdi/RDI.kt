@@ -17,7 +17,6 @@ import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.RGui
-import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.uiguide.UiGuide
@@ -266,7 +265,7 @@ object RDIEvents {
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
         UiGuide.now?.render(e.guiGraphics)
         Banner.renderScreen(e.guiGraphics, e.screen)
-        Tutorial.now?.renderGui(e.guiGraphics)
+        Tutorial.now?.render(e.guiGraphics)
         SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
     }
 
@@ -294,7 +293,10 @@ object RDIEvents {
     }
 
     fun screenMouseClick(e: ScreenEvent.MouseButtonPressed.Pre) {
-        UiGuide.now?.onClick(e)
+        UiGuide.now?.let { guide ->
+            if(!guide.onClick(e))
+                e.isCanceled=true
+        }
     }
 
     fun onRecipeUpdated(e: RecipesUpdatedEvent) {

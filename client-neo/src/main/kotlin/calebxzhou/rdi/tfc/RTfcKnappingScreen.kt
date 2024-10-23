@@ -1,14 +1,9 @@
 package calebxzhou.rdi.tfc
 
-import calebxzhou.rdi.ui.RScreenRectTip
-import calebxzhou.rdi.ui.rectTip
-import calebxzhou.rdi.util.*
-import com.mojang.blaze3d.platform.InputConstants
-import net.dries007.tfc.client.ClientHelpers
+import calebxzhou.rdi.util.WHITE
+import calebxzhou.rdi.util.mcFont
 import net.dries007.tfc.client.screen.KnappingScreen
-import net.dries007.tfc.client.screen.button.KnappingButton
 import net.minecraft.client.gui.GuiGraphics
-import java.awt.SystemColor.text
 
 
 object RTfcKnappingScreen {
