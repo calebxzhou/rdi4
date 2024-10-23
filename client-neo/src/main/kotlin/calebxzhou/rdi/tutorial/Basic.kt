@@ -2,6 +2,7 @@ package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ui.RScreenRectTip.Mode
+import calebxzhou.rdi.ui.RScreenRectTip.mode
 import calebxzhou.rdi.util.*
 import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.client.screen.FirepitScreen
@@ -16,7 +17,6 @@ import net.dries007.tfc.common.blocks.rock.Rock
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.entities.TFCEntities
 import net.dries007.tfc.common.items.Food
-import net.dries007.tfc.common.items.JugItem
 import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.core.BlockPos
@@ -89,7 +89,7 @@ val BASIC_TUTORIAL
         tip("依次点击绿框，打磨石斧头部") {
             widgets(0, 10, 15, 20, 21, 23, 24, 19, 14, 4)
             slot(0)
-            emptyInvSlotContainer()
+            airSlotContainer()
         }
         esc()
         step("按E键打开背包") { mc.screen is InventoryScreen }
@@ -99,7 +99,7 @@ val BASIC_TUTORIAL
             slot { it.item.toString().contains("axe_head") }
             slot(1)
             slot(0)
-            emptyInvSlot()
+            airSlotInv()
         }
         step("手持石斧，对准树的根部，第一块树干，长按鼠标左键砍树，然后捡起掉落的木头") { player ->
             player.inventory.hasAnyMatching {
@@ -114,7 +114,7 @@ val BASIC_TUTORIAL
             slot { it.item.`is`(FIREPIT_STICKS) }
         }
         tip("鼠标左键点击绿框") {
-            emptyInvSlot()
+            airSlotInv()
         }
         tip("依次点击绿框 合成打火器") {
             slot { it.item.`is`(FIREPIT_STICKS) }
@@ -122,7 +122,7 @@ val BASIC_TUTORIAL
             slot { it.item.`is`(FIREPIT_STICKS) }
             slot(2)
             slot(0)
-            emptyInvSlot()
+            airSlotInv()
         }
         esc()
         step("下面教你制作工具。手持石头，看天空，按鼠标右键，开始打磨", {
@@ -134,7 +134,7 @@ val BASIC_TUTORIAL
 
             widgets(0, 1, 2, 3, 4, 9, 19, 20, 21, 22, 23, 24)
             slot(0)
-            emptyInvSlotContainer()
+            airSlotContainer()
         }
         esc()
         step("按E键打开背包") { mc.screen is InventoryScreen }
@@ -145,7 +145,7 @@ val BASIC_TUTORIAL
             slot { it.item.toString().contains("shovel_head") }
             slot(1)
             slot(0)
-            emptyInvSlot()
+            airSlotInv()
 
         }
         esc()
@@ -173,7 +173,7 @@ val BASIC_TUTORIAL
 
             widgets(5, 10, 11, 12, 13, 14, 15)
             slot(0)
-            emptyInvSlotContainer()
+            airSlotContainer()
 
         }
         step("按E键打开背包") { mc.screen is InventoryScreen }
@@ -184,7 +184,7 @@ val BASIC_TUTORIAL
             slot { it.item.toString().contains("knife_head") }
             slot(1)
             slot(0)
-            emptyInvSlot()
+            airSlotInv()
 
         }
         step("面前出现了一堆草，手持石刀把他们割下来（对准-鼠标左键点击）", { player: Player ->
@@ -211,14 +211,14 @@ val BASIC_TUTORIAL
         tip("依次点击绿框 合成陶罐（装水用）") {
             widgets(0, 10, 15, 17, 19, 20, 21, 23, 24)
             slot(0)
-            emptyInvSlotContainer()
+            airSlotContainer()
         }
         esc()
         step("再来，手持黏土 看天空 按鼠标右键") { mc.screen is KnappingScreen }
         tip("依次点击绿框，合成小缸（装小物件和食物用）") {
             widgets(0, 4, 20, 24)
             slot(0)
-            emptyInvSlotContainer()
+            airSlotContainer()
         }
         step("手持陶罐，挖掉脚下的方块，对着下面按V键，把它平放进去") {
             it.lookingAtBlock?.`is`(TFCBlocks.PLACED_ITEM.get()) == true

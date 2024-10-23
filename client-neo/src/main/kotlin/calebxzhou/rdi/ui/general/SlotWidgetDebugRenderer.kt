@@ -16,7 +16,7 @@ object SlotWidgetDebugRenderer {
             screen.menu.slots.forEachIndexed { index,slot->
                 val offsetX = screen.guiLeft
                 val offsetY = screen.guiTop
-                guiGraphics.drawString(mcFont,"s${index}",slot.x+offsetX+5,slot.y+offsetY+5,0x00ff00)
+                guiGraphics.drawString(mcFont,"s${slot.index}",slot.x+offsetX+5,slot.y+offsetY+5,0x00ff00)
             }
         }
         screen.renderables.forEachIndexed { index, widget->

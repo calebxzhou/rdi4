@@ -28,12 +28,10 @@ object TutorialCommand {
                     when (subCmd) {
                         "prev" -> {
                             Tutorial.now?.prevStep(serverPlayer)
-                            mc.addChatMessage("上一步")
                         }
 
                         "next" -> {
                             Tutorial.now?.nextStep(serverPlayer)
-                            mc.addChatMessage("下一步")
                         }
 
                         "quit" -> {
@@ -45,6 +43,8 @@ object TutorialCommand {
                             Tutorial.now?.isPaused = true
                             mc.addChatMessage("暂停")
                         }
+
+                        else -> {}
                     }
                 }
                 1

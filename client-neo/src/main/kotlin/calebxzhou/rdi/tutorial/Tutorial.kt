@@ -9,6 +9,8 @@ import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.RScreenRectTip.Mode
 import calebxzhou.rdi.ui.rectTip
 import calebxzhou.rdi.ui.screen.RPauseScreen
+import calebxzhou.rdi.uiguide.UiGuide
+import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.dries007.tfc.TerraFirmaCraft
@@ -73,7 +75,181 @@ data class Tutorial(
         var now: Tutorial? = null
             private set
 
-        val stoneAge = listOf(
+
+        fun tick(server: MinecraftServer) {
+            now?.tick(server)
+        }
+    }
+
+    val levelName = "__rdi_tutorial_${id}"
+    var stepIndex = 0
+    var isPaused = false
+    val stepNow
+        get() = steps.getOrNull(stepIndex)
+
+    fun reset() {
+        stepIndex = 0
+
+    }
+
+    /*fun prevStep(player: ServerPlayer) {
+        stepIndex--
+        val prevStep = this.stepNow
+        if (prevStep != null) {
+            logger.info("开始教程${stepIndex}")
+            mc.addChatMessage(prevStep.text)
+            prevStep.beforeOpr(player)
+        } else {
+            mc.addChatMessage(mcText("没有上一步了"))
+        }
+    }*/
+    fun nextStep(player: ServerPlayer) = changeStep(stepIndex + 1, player)
+    fun prevStep(player: ServerPlayer) = changeStep(stepIndex - 1, player)
+    fun changeStep(newStepIndex: Int, player: ServerPlayer) {
+        stepIndex = newStepIndex
+        val newStep = this.stepNow
+        if (newStep != null) {
+            logger.info("开始教程${stepIndex}")
+            RSoundPlayer.info()
+            mc.addChatMessage("")
+            mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
+            newStep.beforeOpr(player)
+        } else {
+            isDone = true
+            mc.addChatMessage("恭喜你完成了教程“${name}”，可以退出了")
+        }
+    }
+
+    fun renderGui(guiGraphics: GuiGraphics) {
+        //只在ui上层渲染
+        if (mc.screen == null || mc.screen is ChatScreen || mc.screen is RPauseScreen)
+            return
+        stepNow?.let { stepNow ->
+            guiGraphics.matrixOp {
+                translate(0.0, 24.0, 100.0)
+                guiGraphics.fill(0, 50, 100, 300, 0x66000000)
+                MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
+            }
+        }
+    }
+
+    fun tick(server: MinecraftServer) {
+        server.playerList.players.forEach { player ->
+            stepNow?.let { stepNow ->
+                if (stepNow.completeCondition(player) && !isPaused) {
+                    logger.info("已完成教程${id}/${stepIndex}")
+                    changeStep(stepIndex + 1, player)
+                }
+            }
+        }
+    }
+
+    fun start() {
+        mc.screen = GenericDirtMessageScreen(mcText("请稍候"))
+        //关闭mc原版教程
+        mc.options.tutorialStep = TutorialSteps.NONE
+        mc.tutorial.setStep(TutorialSteps.NONE)
+        mc.options.hideBundleTutorial = true
+        mc.options.save()
+        deleteMap()
+        val levelSettings = LevelSettings(
+            levelName,
+            GameType.SURVIVAL,
+            false,
+            Difficulty.NORMAL,
+            Const.DEBUG,
+            GameRules().apply {
+                getRule(GameRules.RULE_COMMANDBLOCKOUTPUT).set(false, null)
+                getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null)
+                getRule(GameRules.RULE_DAYLIGHT).set(false, null)
+            },
+            WorldDataConfiguration.DEFAULT
+        )
+
+        mc.createWorldOpenFlows()
+            .createFreshLevel(
+                levelName,
+                levelSettings,
+                WorldOptions(Const.SEED, false, false)
+            ) {
+                if (isFlatLevel) {
+                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT)
+                        .value().createWorldDimensions();
+                } else {
+                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
+                        .value().createWorldDimensions();
+                }
+            }
+        now = this
+        reset()
+        mc.addChatMessage(mcText("1. ") + this.steps[0].text)
+    }
+
+    var file = File("ttr_${id}")
+    var isDone: Boolean
+        get() = file.exists()
+        set(value) {
+            if (value)
+                file.createNewFile()
+            else
+                file.delete()
+        }
+
+    fun quit() {
+        now = null
+        Banner.reset()
+        deleteMap()
+    }
+
+    fun deleteMap() {
+        File("saves/${levelName}").deleteRecursively()
+    }
+
+
+    class Builder(val id: String, val name: String, val flat: Boolean, vararg val initKit: ItemStack) {
+        val steps = arrayListOf<TutorialStep>()
+        fun step(
+            text: String,
+            beforeOpr: (ServerPlayer) -> Unit = {},
+            completeCondition: (ServerPlayer) -> Boolean
+        ) {
+            steps += TutorialStep(text, beforeOpr,  completeCondition)
+        }
+        //让玩家自行检查操作是否完成 完成以后 点聊天框的完成按钮 必须手动下一步
+        fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}){
+            val cmp = mcText(text) + mcText(" 完成后按T键，点击")+
+                    mcText("<这里>")
+                        .withStyle(Style.EMPTY
+                            .applyFormat(ChatFormatting.GREEN)
+                            .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
+                            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND,"/tutorial next"))
+                        )
+            steps += TutorialStep(cmp, beforeOpr) { false }
+        }
+        fun tip(
+            text: String,
+            builder: UiGuide.Builder.() -> Unit,
+        ) {
+            step(text, { uiGuide(builder)}) { !UiGuide.isOn }
+        }
+
+        fun esc() {
+            step("按ESC键关闭画面 (在键盘左上角)") { mc.screen == null }
+        }
+
+        fun jump() {
+            step("按空格键跳跃 (键盘下面的大长条按钮,字母CVBNM底下)") {
+                mc pressingKey InputConstants.KEY_SPACE//(it as ALivingEntity).jumping
+            }
+        }
+
+        fun build(): Tutorial {
+            return Tutorial(id, name, flat, initKit.toList(), steps)
+        }
+    }
+}
+/*
+val stoneAge = listOf(
             tutorial("stone1", "石器时代1 树与火") {
                 jump()
                 step("按WASD键前后左右走路,晃动鼠标改变视角,然后走到光柱位置",
@@ -256,175 +432,4 @@ data class Tutorial(
                 }
             })
 
-        fun tick(server: MinecraftServer) {
-            now?.tick(server)
-        }
-    }
-
-    val levelName = "__rdi_tutorial_${id}"
-    var stepIndex = 0
-    var isPaused = false
-    val stepNow
-        get() = steps.getOrNull(stepIndex)
-
-    fun reset() {
-        stepIndex = 0
-
-    }
-
-    /*fun prevStep(player: ServerPlayer) {
-        stepIndex--
-        val prevStep = this.stepNow
-        if (prevStep != null) {
-            logger.info("开始教程${stepIndex}")
-            mc.addChatMessage(prevStep.text)
-            prevStep.beforeOpr(player)
-        } else {
-            mc.addChatMessage(mcText("没有上一步了"))
-        }
-    }*/
-    fun nextStep(player: ServerPlayer) = changeStep(stepIndex + 1, player)
-    fun prevStep(player: ServerPlayer) = changeStep(stepIndex - 1, player)
-    fun changeStep(newStepIndex: Int, player: ServerPlayer) {
-        stepIndex = newStepIndex
-        val newStep = this.stepNow
-        if (newStep != null) {
-            logger.info("开始教程${stepIndex}")
-            RSoundPlayer.info()
-            mc.addChatMessage("")
-            mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
-            newStep.beforeOpr(player)
-        } else {
-            isDone = true
-            mc.addChatMessage("恭喜你完成了教程“${name}”，可以退出了")
-        }
-    }
-
-    fun renderGui(guiGraphics: GuiGraphics) {
-        //只在ui上层渲染
-        if (mc.screen == null || mc.screen is ChatScreen || mc.screen is RPauseScreen)
-            return
-        stepNow?.let { stepNow ->
-            guiGraphics.matrixOp {
-                translate(0.0, 24.0, 100.0)
-                guiGraphics.fill(0, 50, 100, 300, 0x66000000)
-                MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
-            }
-        }
-    }
-
-    fun tick(server: MinecraftServer) {
-        server.playerList.players.forEach { player ->
-            stepNow?.let { stepNow ->
-                if (stepNow.completeCondition(player) && !isPaused) {
-                    logger.info("已完成教程${id}/${stepIndex}")
-                    changeStep(stepIndex + 1, player)
-                }
-            }
-        }
-    }
-
-    fun start() {
-        mc.screen = GenericDirtMessageScreen(mcText("请稍候"))
-        //关闭mc原版教程
-        mc.options.tutorialStep = TutorialSteps.NONE
-        mc.tutorial.setStep(TutorialSteps.NONE)
-        mc.options.hideBundleTutorial = true
-        mc.options.save()
-        deleteMap()
-        val levelSettings = LevelSettings(
-            levelName,
-            GameType.SURVIVAL,
-            false,
-            Difficulty.NORMAL,
-            Const.DEBUG,
-            GameRules().apply {
-                getRule(GameRules.RULE_COMMANDBLOCKOUTPUT).set(false, null)
-                getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null)
-                getRule(GameRules.RULE_DAYLIGHT).set(false, null)
-            },
-            WorldDataConfiguration.DEFAULT
-        )
-
-        mc.createWorldOpenFlows()
-            .createFreshLevel(
-                levelName,
-                levelSettings,
-                WorldOptions(Const.SEED, false, false)
-            ) {
-                if (isFlatLevel) {
-                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT)
-                        .value().createWorldDimensions();
-                } else {
-                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
-                        .value().createWorldDimensions();
-                }
-            }
-        now = this
-        reset()
-        mc.addChatMessage(mcText("1. ") + this.steps[0].text)
-    }
-
-    var file = File("ttr_${id}")
-    var isDone: Boolean
-        get() = file.exists()
-        set(value) {
-            if (value)
-                file.createNewFile()
-            else
-                file.delete()
-        }
-
-    fun quit() {
-        now = null
-        Banner.reset()
-        deleteMap()
-    }
-
-    fun deleteMap() {
-        File("saves/${levelName}").deleteRecursively()
-    }
-
-
-    class Builder(val id: String, val name: String, val flat: Boolean, vararg val initKit: ItemStack) {
-        val steps = arrayListOf<TutorialStep>()
-        fun step(
-            text: String,
-            beforeOpr: (ServerPlayer) -> Unit = {},
-            completeCondition: (ServerPlayer) -> Boolean
-        ) {
-            steps += TutorialStep(text, beforeOpr,  completeCondition)
-        }
-        //让玩家自行检查操作是否完成 完成以后 点聊天框的完成按钮 必须手动下一步
-        fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}){
-            val cmp = mcText(text) + mcText(" 完成后按T键，点击")+
-                    mcText("<这里>")
-                        .withStyle(Style.EMPTY
-                            .applyFormat(ChatFormatting.GREEN)
-                            .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
-                            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND,"/tutorial next"))
-                        )
-            steps += TutorialStep(cmp, beforeOpr) { false }
-        }
-        fun tip(
-            text: String,
-            builder: RScreenRectTip.Builder.() -> Unit,
-        ) {
-            step(text, { rectTip { builder() } }) { RScreenRectTip.isCompleted }
-        }
-
-        fun esc() {
-            step("按ESC键关闭画面 (在键盘左上角)") { mc.screen == null }
-        }
-
-        fun jump() {
-            step("按空格键跳跃 (键盘下面的大长条按钮,字母CVBNM底下)") {
-                mc pressingKey InputConstants.KEY_SPACE//(it as ALivingEntity).jumping
-            }
-        }
-
-        fun build(): Tutorial {
-            return Tutorial(id, name, flat, initKit.toList(), steps)
-        }
-    }
-}
+ */

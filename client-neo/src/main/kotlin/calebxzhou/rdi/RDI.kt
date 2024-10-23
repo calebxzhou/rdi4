@@ -20,7 +20,7 @@ import calebxzhou.rdi.ui.RGui
 import calebxzhou.rdi.ui.RScreenRectTip
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.ui.general.alert
-import calebxzhou.rdi.ui.general.dialog
+import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.util.*
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
@@ -140,7 +140,7 @@ object RDIEvents {
         bus.addListener(::leftClickBlock)
         bus.addListener(::onRenderGui)
         bus.addListener(::afterScreenRender)
-        bus.addListener(::afterScreenMouseClick)
+        bus.addListener(::screenMouseClick)
         bus.addListener(::onClientTick)
         bus.addListener(::registerClientCommand)
         bus.addListener(::registerCommand)
@@ -264,10 +264,10 @@ object RDIEvents {
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
+        UiGuide.now?.render(e.guiGraphics)
         Banner.renderScreen(e.guiGraphics, e.screen)
-        SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
-        RScreenRectTip.render(e.guiGraphics, e.screen)
         Tutorial.now?.renderGui(e.guiGraphics)
+        SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
     }
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
@@ -288,14 +288,13 @@ object RDIEvents {
             }
 
             mc.screen?.let {
-
-                RScreenRectTip.tick(it)
+                UiGuide.now?.tick(it)
             }
         }
     }
 
-    fun afterScreenMouseClick(e: ScreenEvent.MouseButtonPressed.Post) {
-        RScreenRectTip.onClick(e)
+    fun screenMouseClick(e: ScreenEvent.MouseButtonPressed.Pre) {
+        UiGuide.now?.onClick(e)
     }
 
     fun onRecipeUpdated(e: RecipesUpdatedEvent) {
