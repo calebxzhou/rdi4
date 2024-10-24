@@ -1,40 +1,30 @@
 package calebxzhou.rdi.ui.screen
 
-import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
-import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.tutorial.BASIC_TUTORIAL
-import calebxzhou.rdi.tutorial.Tutorial
-import calebxzhou.rdi.ui.RLoadingOverlay.Companion.LOGO
+import calebxzhou.rdi.tutorial.TUTORIAL_BASIC
+import calebxzhou.rdi.tutorial.TUTORIAL_PRIMARY
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.gridLayout
-import calebxzhou.rdi.ui.screen.RTitleScreen.Companion.optScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.screens.ConnectScreen
-import net.minecraft.client.gui.screens.OptionsScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
-import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.Difficulty
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
-import java.io.File
 
 class RTitleScreen : RScreen("主页") {
     override var showTitle = false
@@ -210,7 +200,8 @@ class RTitleScreen : RScreen("主页") {
                 false
             )
         }*/
-        BASIC_TUTORIAL.start()
+        TUTORIAL_BASIC.start()
+        //TUTORIAL_PRIMARY.start()
         /*if (!File("tutorial1_done").exists()) {
             Tutorial.stoneAge[0].start()
         } else

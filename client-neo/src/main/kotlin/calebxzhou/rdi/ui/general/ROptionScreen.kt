@@ -22,7 +22,9 @@ optionScreen{
 }
  */
 data class ROption(val text:String,val action: (ROptionScreen) -> Unit)
-
+fun optionScreen(title: String = "请选择", init: ROptionScreen.() -> Unit){
+    mc goScreen ROptionScreen(mc.screen,title).apply(init).mcScreen
+}
 fun optionScreen(
     prev: Screen,
     title: String = "请选择操作", init: ROptionScreen.() -> Unit
@@ -31,7 +33,7 @@ fun optionScreen(
 }
 
 class ROptionScreen(
-    val prev: Screen,
+    val prev: Screen?,
     val title: String,
 ) {
     val options = arrayListOf<ROption>()
@@ -50,7 +52,7 @@ class ROptionScreen(
             var nowY = startY
             override fun init() {
                 options.onEachIndexed { index, (text, opr) ->
-                    val btn = RButton(mcText("${index + 1}. ${text}"), 0, nowY) { opr(this@ROptionScreen) }
+                    val btn = RButton(mcText("${index + 1}. $text"), 0, nowY) { opr(this@ROptionScreen) }
                     btn.x = width/2-btn.width/2
                     registerWidget(btn)
                     nowY += btn.height

@@ -1,6 +1,7 @@
 package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.Const
+import calebxzhou.rdi.STORAGE
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.sound.RSoundPlayer
@@ -9,6 +10,7 @@ import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
+import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.TerraFirmaCraft
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
@@ -16,6 +18,7 @@ import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.screens.ChatScreen
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
 import net.minecraft.client.gui.screens.LevelLoadingScreen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.ClickEvent
@@ -68,17 +71,6 @@ data class Tutorial(
 
     }
 
-    /*fun prevStep(player: ServerPlayer) {
-        stepIndex--
-        val prevStep = this.stepNow
-        if (prevStep != null) {
-            logger.info("开始教程${stepIndex}")
-            mc.addChatMessage(prevStep.text)
-            prevStep.beforeOpr(player)
-        } else {
-            mc.addChatMessage(mcText("没有上一步了"))
-        }
-    }*/
     fun nextStep(player: ServerPlayer) = changeStep(stepIndex + 1, player)
     fun prevStep(player: ServerPlayer) = changeStep(stepIndex - 1, player)
     fun changeStep(newStepIndex: Int, player: ServerPlayer) {
@@ -86,9 +78,9 @@ data class Tutorial(
         val newStep = this.stepNow
         if (newStep != null) {
             logger.info("开始教程${stepIndex}")
-            RSoundPlayer.info()
             mc.addChatMessage("")
             mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
+            player.playNote()
             newStep.beforeOpr(player)
         } else {
             isDone = true
@@ -97,14 +89,15 @@ data class Tutorial(
     }
 
     fun render(guiGraphics: GuiGraphics) {
-        //只在ui上层渲染
-        if (mc.screen == null || mc.screen is ChatScreen || mc.screen is RPauseScreen || mc.screen is LevelLoadingScreen)
-            return
-        stepNow?.let { stepNow ->
-            guiGraphics.matrixOp {
-                translate(0.0, 24.0, 100.0)
-                guiGraphics.fill(0, 50, 100, 300, 0x66000000)
-                MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
+        //只在容器ui上层渲染
+        if (mc.screen is AbstractContainerScreen<*> || mc.screen is IRecipesGui) {
+
+            stepNow?.let { stepNow ->
+                guiGraphics.matrixOp {
+                    translate(0.0, 24.0, 100.0)
+                    guiGraphics.fill(0, 50, 100, 300, 0x66000000)
+                    MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
+                }
             }
         }
     }
@@ -162,10 +155,11 @@ data class Tutorial(
         mc.addChatMessage(mcText("1. ") + this.steps[0].text)
     }
 
-    var file = File("ttr_${id}")
+    var file = File(STORAGE,"tutorial/${id}")
     var isDone: Boolean
         get() = file.exists()
         set(value) {
+            file.mkdirs()
             if (value)
                 file.createNewFile()
             else
@@ -175,6 +169,7 @@ data class Tutorial(
     fun quit() {
         now = null
         Banner.reset()
+        TutorialState.reset()
         deleteMap()
     }
 
@@ -190,27 +185,30 @@ data class Tutorial(
             beforeOpr: (ServerPlayer) -> Unit = {},
             completeCondition: (ServerPlayer) -> Boolean
         ) {
-            steps += TutorialStep(text, beforeOpr,  completeCondition)
+            steps += TutorialStep(text, beforeOpr, completeCondition)
         }
+
         //让玩家自行检查操作是否完成 完成以后 点聊天框的完成按钮 必须手动下一步
-        fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}){
-            val cmp = mcText(text) + mcText(" 完成后按T键，点击")+
+        fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}) {
+            val cmp = mcText(text) + mcText(" 完成后按T键，点击") +
                     mcText("<这里>")
-                        .withStyle(Style.EMPTY
-                            .applyFormat(ChatFormatting.GREEN)
-                            .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
-                            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND,"/tutorial next"))
+                        .withStyle(
+                            Style.EMPTY
+                                .applyFormat(ChatFormatting.GREEN)
+                                .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
+                                .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tutorial next"))
                         )
             steps += TutorialStep(cmp, beforeOpr) { false }
         }
+
         fun tip(
             text: String,
             builder: UiGuide.Builder.() -> Unit,
         ) {
-            step(text, { uiGuide(builder)}) { !UiGuide.isOn }
+            step(text, { uiGuide(builder) }) { !UiGuide.isOn }
         }
 
-        fun esc() {
+        fun esc( ) {
             step("按ESC键关闭画面 (在键盘左上角)") { mc.screen == null }
         }
 

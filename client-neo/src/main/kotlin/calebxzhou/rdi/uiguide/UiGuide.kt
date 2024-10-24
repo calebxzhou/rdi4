@@ -93,7 +93,7 @@ class UiGuide(
     }
 
     data class Step(
-        val areaSupplier: (Screen) -> Rect2i?
+        val areaSupplier: (Screen) -> Rect2i?,
     )
 
     class Builder(val screenClass: Class<Screen>?) {

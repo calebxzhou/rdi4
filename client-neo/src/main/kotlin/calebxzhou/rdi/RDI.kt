@@ -9,6 +9,7 @@ import calebxzhou.rdi.chunkstats.ChunkStats
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
+import calebxzhou.rdi.item.ItemInfo
 import calebxzhou.rdi.item.RItems
 import calebxzhou.rdi.lang.EnglishStorage.lang
 import calebxzhou.rdi.model.Account
@@ -53,6 +54,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
+import java.io.File
 import java.util.concurrent.Executors
 
 
@@ -60,7 +62,7 @@ const val MOD_ID = "rdi"
 val logger = LogManager.getLogger(MOD_ID)
 val numberOfCores = Runtime.getRuntime().availableProcessors()
 val threadPool = Executors.newFixedThreadPool(numberOfCores, DefaultThreadFactory("RDI-ThreadPool"))
-
+val STORAGE = File(MOD_ID)
 //线程池 异步
 fun rAsync(todo: () -> Unit) {
     threadPool.execute(todo)
@@ -81,7 +83,7 @@ fun risSync(todo: () -> Unit) {
 class RDI {
     init {
         RDIEvents.init()
-
+        STORAGE.mkdirs()
         RItems.REGISTER.register(FMLJavaModLoadingContext. get().modEventBus);
     }
 
@@ -212,6 +214,7 @@ object RDIEvents {
         )
         val cmds = listOf(
             OmniNavi.cmd(e.buildContext),
+            ItemInfo.cmd,
             ChunkStats.cmd,
         )
         if (Const.DEBUG) {

@@ -7,7 +7,9 @@ import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
+import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
+import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -21,13 +23,19 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundSource
+import net.minecraft.tags.TagKey
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.phys.BlockHitResult
@@ -37,6 +45,7 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
+import snownee.jade.overlay.RayTracing
 
 val mc: Minecraft
     get() = Minecraft.getInstance() ?: run {
@@ -178,8 +187,9 @@ fun renderShape(
         ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
     }
 }
-fun Entity.teleportTo(entity: Entity){
-    teleportTo(entity.x,entity.y,entity.z)
+
+fun Entity.teleportTo(entity: Entity) {
+    teleportTo(entity.x, entity.y, entity.z)
 }
 val Player.lookingAtBlock: BlockState?
     get() {
@@ -191,6 +201,36 @@ val Player.lookingAtBlock: BlockState?
         }
         return null
     }
+
+fun Player.bagHas(cond: (ItemStack) -> Boolean): Boolean {
+    return inventory.hasAnyMatching(cond)
+}
+fun Player.bagHasRockTool(type:  RockCategory. ItemType): Boolean {
+    return RockCategory.entries.any { category ->
+        bagHas(TFCItems.ROCK_TOOLS[category]!![type]!!.get())
+    }
+}
+fun Player.bagHas(tag: TagKey<Item>, count: Int = 1): Boolean {
+    return bagHas { it.`is`(tag) && it.count >= count }
+}
+infix fun Player.bagHas(item: Item):Boolean{
+    return bagHas(item,1)
+}
+infix fun Player.bagHas(item: ItemStack):Boolean{
+    return bagHas(item.item,item.count)
+}
+ fun Player.bagHas(item: Item, count: Int = 1): Boolean {
+    return bagHas { it.`is`(item) && it.count >= count }
+}
+infix fun Player.feetOn(block: Block) : Boolean{
+    return level().getBlockState(blockPosition().below()).`is`(block)
+}
+infix fun Player.isLooking(block: Block): Boolean {
+    return lookingAtBlock?.`is`(block)==true
+}
+infix fun Item.by(count: Int): ItemStack {
+   return ItemStack(this,count)
+}
 val Player.lookingAtItemEntity: ItemEntity?
     get() {
         val entity = lookingAtEntity
@@ -200,13 +240,18 @@ val Player.lookingAtItemEntity: ItemEntity?
     }
 val Player.lookingAtEntity: Entity?
     get() {
-        val hit = mc.hitResult
+        val hit = RayTracing.INSTANCE.rayTrace(this, mc.gameMode?.pickRange?.toDouble()?:0.0,mc.frameTime)
         if (hit?.type == HitResult.Type.ENTITY) {
             return (hit as EntityHitResult).entity
         }
         return null
     }
-
+infix fun Player.give(item: Item){
+    give(item by 1)
+}
+infix fun Player.give(itemStack: ItemStack){
+    inventory.add(itemStack)
+}
 fun Minecraft.addToast(toast: Toast) {
     toasts.addToast(toast)
 }
@@ -251,7 +296,20 @@ fun LevelChunkSection.forEachBlock(todo: (BlockState) -> Unit) {
             for (z in 0..15)
                 todo(this.getBlockState(x, y, z))
 }
+fun Player.playNote(){
+    level().playSeededSound(
+        null as Player?,
+        x + 0.5,
+        y + 0.5,
+        z + 0.5,
+        NoteBlockInstrument.BELL.soundEvent,
+        SoundSource.RECORDS,
+        3.0f,
+        1f,
+        level().random.nextLong()
+    )
 
+}
 fun mcButton(text: String, x: Int, y: Int, w: Int, h: Int, onPress: Button.OnPress): Button {
     return mcButton(mcText(text), x, y, w, h, onPress);
 }
