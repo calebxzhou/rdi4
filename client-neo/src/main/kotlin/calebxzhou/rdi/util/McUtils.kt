@@ -46,6 +46,7 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import snownee.jade.overlay.RayTracing
+import kotlin.math.roundToInt
 
 val mc: Minecraft
     get() = Minecraft.getInstance() ?: run {
@@ -131,12 +132,15 @@ fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
     drawTextAtCenter(gr, text, height / 2)
 }
 
+val Entity.isJumping
+    get() = deltaMovement.y > 0
+
 fun BlockGetter.renderBlockOutline(
     stack: PoseStack,
     vConsumer: VertexConsumer,
     entity: Entity,
     camX: Double, camY: Double, camZ: Double, pos: BlockPos, state: BlockState,
-    red: Float,green: Float,blue: Float,alpha: Float
+    red: Float, green: Float, blue: Float, alpha: Float
 ) {
     renderShape(
         stack,
@@ -145,7 +149,8 @@ fun BlockGetter.renderBlockOutline(
         pos.x.toDouble() - camX,
         pos.y.toDouble() - camY,
         pos.z.toDouble() - camZ,
-        red,green, blue, alpha)
+        red, green, blue, alpha
+    )
 
 }
 
@@ -188,9 +193,10 @@ fun renderShape(
 fun Entity.teleportTo(entity: Entity) {
     teleportTo(entity.x, entity.y, entity.z)
 }
+
 val Player.lookingAtBlock: BlockState?
     get() {
-        val hit = pick(20.0, 0.0f, false)
+        val hit = pick(20.0, 0.0f, true)
         if (hit.type == HitResult.Type.BLOCK) {
             val bpos = (hit as BlockHitResult).blockPos
             val bstate = level().getBlockState(bpos)
@@ -202,32 +208,54 @@ val Player.lookingAtBlock: BlockState?
 fun Player.bagHas(cond: (ItemStack) -> Boolean): Boolean {
     return inventory.hasAnyMatching(cond)
 }
-fun Player.bagHasRockTool(type:  RockCategory. ItemType): Boolean {
+
+fun Player.bagHas(tag: TagKey<Item>, count: Int = 1): Boolean {
+    return bagHas { it.`is`(tag) && it.count >= count }
+}
+
+fun Player.bagHasRockTool(type: RockCategory.ItemType): Boolean {
     return RockCategory.entries.any { category ->
         bagHas(TFCItems.ROCK_TOOLS[category]!![type]!!.get())
     }
 }
-fun Player.bagHas(tag: TagKey<Item>, count: Int = 1): Boolean {
-    return bagHas { it.`is`(tag) && it.count >= count }
+
+infix fun Player.bagHas(item: Item): Boolean {
+    return bagHas(item, 1)
 }
-infix fun Player.bagHas(item: Item):Boolean{
-    return bagHas(item,1)
+
+infix fun Player.bagHas(item: ItemStack): Boolean {
+    return bagHas(item.item, item.count)
 }
-infix fun Player.bagHas(item: ItemStack):Boolean{
-    return bagHas(item.item,item.count)
-}
- fun Player.bagHas(item: Item, count: Int = 1): Boolean {
+
+fun Player.bagHas(item: Item, count: Int = 1): Boolean {
     return bagHas { it.`is`(item) && it.count >= count }
 }
-infix fun Player.feetOn(block: Block) : Boolean{
+
+infix fun Player.handHas(item: Item): Boolean {
+    return mainHandItem.`is`(item)
+}
+
+infix fun Player.handHas(itemStack: ItemStack): Boolean {
+    return mainHandItem.`is`(itemStack.item) && mainHandItem.count == itemStack.count
+}
+
+infix fun Player.feetOn(block: Block): Boolean {
     return level().getBlockState(blockPosition().below()).`is`(block)
 }
+
 infix fun Player.isLooking(block: Block): Boolean {
-    return lookingAtBlock?.`is`(block)==true
+    return lookingAtBlock?.`is`(block) == true
 }
+
 infix fun Item.by(count: Int): ItemStack {
-   return ItemStack(this,count)
+    return ItemStack(this, count)
 }
+
+infix fun Minecraft.justChatted(text: String): Boolean = mc.gui.chat.recentChat.lastOrNull()?.contains(text)==true
+val Player.waterLevel
+    get() = (foodData as TFCFoodData).thirst
+val Player.waterPercent
+    get() = (waterLevel / TFCFoodData.MAX_THIRST * 100).roundToInt()
 val Player.lookingAtItemEntity: ItemEntity?
     get() {
         val entity = lookingAtEntity
@@ -237,18 +265,21 @@ val Player.lookingAtItemEntity: ItemEntity?
     }
 val Player.lookingAtEntity: Entity?
     get() {
-        val hit = RayTracing.INSTANCE.rayTrace(this, mc.gameMode?.pickRange?.toDouble()?:0.0,mc.frameTime)
+        val hit = RayTracing.INSTANCE.rayTrace(this, mc.gameMode?.pickRange?.toDouble() ?: 0.0, mc.frameTime)
         if (hit?.type == HitResult.Type.ENTITY) {
             return (hit as EntityHitResult).entity
         }
         return null
     }
-infix fun Player.give(item: Item){
+
+infix fun Player.give(item: Item) {
     give(item by 1)
 }
-infix fun Player.give(itemStack: ItemStack){
+
+infix fun Player.give(itemStack: ItemStack) {
     inventory.add(itemStack)
 }
+
 fun Minecraft.addToast(toast: Toast) {
     toasts.addToast(toast)
 }
@@ -293,7 +324,8 @@ fun LevelChunkSection.forEachBlock(todo: (BlockState) -> Unit) {
             for (z in 0..15)
                 todo(this.getBlockState(x, y, z))
 }
-fun Player.playNote(){
+
+fun Player.playNote() {
     level().playSeededSound(
         null as Player?,
         x + 0.5,
@@ -307,15 +339,19 @@ fun Player.playNote(){
     )
 
 }
+
 fun Level.isAir(pos: BlockPos): Boolean {
     return getBlockState(pos).isAir
 }
-fun Level.blockIs(pos: BlockPos,block: Block): Boolean {
+
+fun Level.blockIs(pos: BlockPos, block: Block): Boolean {
     return getBlockState(pos).`is`(block)
 }
-fun Level.blockIs(pos: BlockPos,state: BlockState): Boolean {
-    return getBlockState(pos)==(state)
+
+fun Level.blockIs(pos: BlockPos, state: BlockState): Boolean {
+    return getBlockState(pos) == (state)
 }
+
 fun mcButton(text: String, x: Int, y: Int, w: Int, h: Int, onPress: Button.OnPress): Button {
     return mcButton(mcText(text), x, y, w, h, onPress);
 }

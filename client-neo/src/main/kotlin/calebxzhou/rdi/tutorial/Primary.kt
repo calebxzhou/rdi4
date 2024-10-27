@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.Blocks
 /**
  * calebxzhou @ 2024-10-24 8:14
  */
-val TUTORIAL_PRIMARY_STONE = tutorial("primary_stone","初级生存-石器时代"){
+val T1_STONE = tutorial("1_stone","初级生存·石器"){
     step("捡起树下的树枝10个(空手对准-鼠标右键)", {
         (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition())
         (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(0, 0, 8))
@@ -89,6 +89,11 @@ val TUTORIAL_PRIMARY_STONE = tutorial("primary_stone","初级生存-石器时代
     }
 
 }
+val T1_CERA = tutorial("1_cera","初级生存·陶器"){
+
+}
+val T1_FIRE = tutorial("1_fire","初级生存·火源"){}
+val T1_BUILD = tutorial("1_build","初级生存·盖房子"){}
 val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
     val originBlock = BlockPos(0, -61, 3)
     val originBlockAbove = BlockPos(0, -60, 3)

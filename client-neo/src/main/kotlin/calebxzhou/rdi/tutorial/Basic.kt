@@ -1,6 +1,11 @@
 package calebxzhou.rdi.tutorial
 
+import appeng.server.testplots.PosAndSide.north
+import calebxzhou.rdi.blockguide.BlockGuide
+import calebxzhou.rdi.blockguide.blockGuide
+import calebxzhou.rdi.launcher.SplashScreen.hide
 import calebxzhou.rdi.nav.OmniNavi
+import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.util.*
 import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.client.screen.FirepitScreen
@@ -14,6 +19,7 @@ import net.dries007.tfc.common.blocks.rock.LooseRockBlock
 import net.dries007.tfc.common.blocks.rock.Rock
 import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
+import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.dries007.tfc.common.items.Food
 import net.dries007.tfc.common.items.HideItemType
 import net.dries007.tfc.common.items.TFCItems
@@ -42,13 +48,21 @@ val TUTORIAL_BASIC
             player.blockPosition().distSqr(origin) > 25
         }
         jump()
+        step("test 将两个干草块呈一字型放在地上",{
+            blockGuide {
+                place(it.blockPosition(),TFCBlocks.THATCH.get())
+                place(it.blockPosition().north(),TFCBlocks.THATCH.get())
+            }
+        }){
+            BlockGuide.isOff
+        }
         step("按T键打开聊天框", {
             goHome(it)
         }) {
             mc.screen is ChatScreen
         }
         step("输入123456，按下回车(Enter)键，发送消息") {
-            mc.screen == null
+            mc justChatted "123456"
         }
         step("左右晃动鼠标，将视角转到身后") {
             it.yRot > 170
@@ -74,11 +88,23 @@ val TUTORIAL_BASIC
         step("按住左Shift键（在字母Z的左边）不松开，再按住W键，下蹲/慢走 ", { goHome(it) }) {
             it.isCrouching && isAwayFromOrigin(it)
         }
-        step("破坏方块：对准脚下的草方块，按住鼠标左键，挖掉它，然后按空格键跳出挖开的坑") {
+        step("打开聊天框，发送你现在的水分值",{ alert("画面下方的HP SP WP分别代表生命值 饱食度 水分值\n生命值为0会当场去世\n饱食度过低，干什么都没劲，行动速度减慢\n水分值过低，效果同上") }){
+            mc justChatted it.waterPercent.toString()
+        }
+        step("破坏方块：对准脚下的草方块，按住鼠标左键，挖掉它") {
             it bagHas Items.DIRT
+        }
+        step("按空格键跳出挖开的坑"){
+            it.isJumping
         }
         step("放置方块：对准刚刚挖开的地方，按下鼠标右键，把泥土方块放回去") {
             it isLooking Blocks.DIRT && it.mainHandItem.isEmpty
+        }
+        step("对准面前的水",{it.level().setBlock(it.blockPosition().below().north(),Blocks.WATER.defaultBlockState())}){
+            it isLooking Blocks.WATER
+        }
+        step("按下鼠标右键喝水，直到画面下方的水分值达到100",{ (it.foodData as TFCFoodData).thirst=80f}){
+            (it.foodData as TFCFoodData).thirst>=99f
         }
         step("干掉面前这头几猪（对准-鼠标左键狂点），然后靠近掉落的猪肉，捡起来", {
             repeat(3) { _ ->
@@ -88,8 +114,11 @@ val TUTORIAL_BASIC
         step("转动鼠标滚轮，切换手持物品到第9格") {
             it.inventory.selected == 8
         }
+        step("切换手持物品到第1格") {
+            it.inventory.selected == 1
+        }
         step(
-            "切换回第1格，按Q键丢掉物品。一边滚动鼠标滚轮一边按下Q键，逐个丢掉所有的物品（同时按Ctrl+Q键可以丢掉一整组）",
+            "一边滚动鼠标滚轮一边按下Q键，逐个丢掉所有的物品（同时按Ctrl+Q键可以丢掉一整组）",
             { p ->
                 listOf(
                     Items.STONE_BRICKS,
@@ -120,6 +149,15 @@ val TUTORIAL_BASIC
         step("最后一个石砖也一样") {
             it feetOn Blocks.STONE_BRICKS
         }
+        step("按E键打开背包"){
+            mc.screen is InventoryScreen
+        }
+        step("将鼠标放在猪肉上，按下shift键，查看蛋白质含量，记住数值，按ESC关闭背包"){
+            mc.screen==null
+        }
+        step("在聊天框中发送猪肉的蛋白质含量"){
+            mc justChatted "1.5"
+        }
         step("手持猪肉，长按鼠标右键吃掉", { it.foodData.foodLevel = 16 }) {
             !it.foodData.needsFood()
         }
@@ -138,4 +176,23 @@ val TUTORIAL_BASIC
         step("按照刚刚记住的图案，在画面中间偏右的“合成”区域摆放干草，合成两个干草块"){
             it bagHas (TFCBlocks.THATCH.get().asItem() by 2)
         }
+        step("手持两个干草块"){
+            it handHas (TFCBlocks.THATCH.get().asItem() by 2)
+        }
+        step("将两个干草块呈一字型放在地上",{
+            blockGuide {
+                place(it.blockPosition(),TFCBlocks.THATCH.get())
+                place(it.blockPosition().north(),TFCBlocks.THATCH.get())
+            }
+        }){
+            BlockGuide.isOff
+        }
+        val hide = TFCItems.HIDES[HideItemType.RAW]!![HideItemType.Size.LARGE]!!.get()
+        step("手持大块兽皮",{it.inventory.add(hide.defaultInstance)}){
+            it handHas hide
+        }
+        step("右键点击干草块，得到兽皮床") {
+            it.lookingAtBlock?.`is`(TFCBlocks.THATCH_BED.get()) == true
+        }
+        selfChk("右键点击兽皮床，设置复活点")
     }

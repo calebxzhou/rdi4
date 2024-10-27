@@ -271,9 +271,9 @@ class RTitleScreen : RScreen("主页") {
                 }
             }
         }*/
-        if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
+       /* if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
             start()
-        }
+        }*/
         if(mc pressingKey InputConstants.KEY_0){
             mc goScreen SelectWorldScreen(this)
         }

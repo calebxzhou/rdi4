@@ -140,7 +140,7 @@ object RGui {
 
             stack.pushPose()
             stack.translate((x + 10).toFloat(), (y + 2).toFloat(), 0f)
-            val comp = mcText("WP${(percentThirst * 100).roundToInt()}")
+            val comp = mcText("WP${player.waterPercent}")
             /*  if (overheat > 0) {
                   comp + mcText(" ↓${String.format("%.2f",1+overheat)}x")
               }*/

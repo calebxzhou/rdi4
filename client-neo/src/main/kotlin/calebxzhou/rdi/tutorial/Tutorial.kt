@@ -61,7 +61,7 @@ data class Tutorial(
     }
 
     val levelName = "__rdi_tutorial_${id}"
-    var stepIndex = 0
+    var stepIndex = -1
     var isPaused = false
     val stepNow
         get() = steps.getOrNull(stepIndex)
@@ -150,8 +150,6 @@ data class Tutorial(
                 }
             }
         now = this
-        reset()
-        mc.addChatMessage(mcText("1. ") + this.steps[0].text)
     }
 
     var file = File(STORAGE,"tutorial/${id}")

@@ -28,10 +28,15 @@ import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
+import net.dries007.tfc.config.ClientConfig
+import net.dries007.tfc.config.FoodExpiryTooltipStyle
+import net.dries007.tfc.config.TFCConfig
+import net.dries007.tfc.config.TimeDeltaTooltipStyle
 import net.minecraft.client.gui.components.toasts.AdvancementToast
 import net.minecraft.client.gui.components.toasts.RecipeToast
 import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.BlockTags
 import net.minecraftforge.client.event.RecipesUpdatedEvent
 import net.minecraftforge.client.event.RegisterClientCommandsEvent
@@ -204,6 +209,9 @@ object RDIEvents {
                 }
             }
         }
+
+        TFCConfig.CLIENT.timeDeltaTooltipStyle.set(TimeDeltaTooltipStyle.DAYS)
+        TFCConfig.CLIENT.foodExpiryTooltipStyle.set(FoodExpiryTooltipStyle.TIME_LEFT)
     }
 
     fun registerCommand(e: RegisterCommandsEvent) {
@@ -280,6 +288,10 @@ object RDIEvents {
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
         OmniNavi.renderLevelStage(e)
+        if(e.stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES){
+
+        BlockGuide.now?.render(e)
+        }
     }
 
     fun onLevelTick(e: TickEvent.ServerTickEvent) {
@@ -324,6 +336,7 @@ object RDIEvents {
                 border.setCenter(0.0, 0.0)
                 border.size = 64.0
             }
+            it.changeStep(0,e.entity as ServerPlayer)
         }
         timerDelay(3000) {
 
