@@ -103,7 +103,7 @@ class RPauseScreen : RScreen("暂停") {
     private fun renderNutrition(guiGraphics: GuiGraphics) {
         val startX = 20
         val startY = 42
-        val data = mc.player!!.foodData
+        val data = mc.player?.foodData
         if (data is TFCFoodData) {
             val nutrition: NutritionData = data.nutrition
             for (nutrient in Nutrient.VALUES) {

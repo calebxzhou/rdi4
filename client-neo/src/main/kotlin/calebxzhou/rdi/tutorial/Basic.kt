@@ -48,14 +48,6 @@ val TUTORIAL_BASIC
             player.blockPosition().distSqr(origin) > 25
         }
         jump()
-        step("test 将两个干草块呈一字型放在地上",{
-            blockGuide {
-                place(it.blockPosition(),TFCBlocks.THATCH.get())
-                place(it.blockPosition().north(),TFCBlocks.THATCH.get())
-            }
-        }){
-            BlockGuide.isOff
-        }
         step("按T键打开聊天框", {
             goHome(it)
         }) {
