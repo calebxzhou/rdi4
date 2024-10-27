@@ -135,7 +135,8 @@ fun BlockGetter.renderBlockOutline(
     stack: PoseStack,
     vConsumer: VertexConsumer,
     entity: Entity,
-    camX: Double, camY: Double, camZ: Double, pos: BlockPos, state: BlockState
+    camX: Double, camY: Double, camZ: Double, pos: BlockPos, state: BlockState,
+    red: Float,green: Float,blue: Float,alpha: Float
 ) {
     renderShape(
         stack,
@@ -144,11 +145,7 @@ fun BlockGetter.renderBlockOutline(
         pos.x.toDouble() - camX,
         pos.y.toDouble() - camY,
         pos.z.toDouble() - camZ,
-        0.0f,
-        1.0f,
-        0.0f,
-        0.6f
-    )
+        red,green, blue, alpha)
 
 }
 
@@ -309,6 +306,15 @@ fun Player.playNote(){
         level().random.nextLong()
     )
 
+}
+fun Level.isAir(pos: BlockPos): Boolean {
+    return getBlockState(pos).isAir
+}
+fun Level.blockIs(pos: BlockPos,block: Block): Boolean {
+    return getBlockState(pos).`is`(block)
+}
+fun Level.blockIs(pos: BlockPos,state: BlockState): Boolean {
+    return getBlockState(pos)==(state)
 }
 fun mcButton(text: String, x: Int, y: Int, w: Int, h: Int, onPress: Button.OnPress): Button {
     return mcButton(mcText(text), x, y, w, h, onPress);

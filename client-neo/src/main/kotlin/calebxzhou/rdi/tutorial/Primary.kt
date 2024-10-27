@@ -28,6 +28,67 @@ import net.minecraft.world.level.block.Blocks
 /**
  * calebxzhou @ 2024-10-24 8:14
  */
+val TUTORIAL_PRIMARY_STONE = tutorial("primary_stone","初级生存-石器时代"){
+    step("捡起树下的树枝10个(空手对准-鼠标右键)", {
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition())
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(0, 0, 8))
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(8, 0, 0))
+    }) { it.bagHas(FIREPIT_STICKS,10)}
+    step("捡起面前出现的石头10个", { player: Player ->
+        val rockBlock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
+        val rock = rockBlock.setValue(LooseRockBlock.COUNT, 3)
+        val level = player.level()
+        level.setBlock(player.blockPosition(), rock)
+        level.setBlock(player.blockPosition().north(), rock)
+        level.setBlock(player.blockPosition().south(), rock)
+        level.setBlock(player.blockPosition().east(), rock)
+        level.setBlock(player.blockPosition().west(), rock)
+    }) { it.bagHas(ROCK_KNAPPING,10) }
+
+    step("手持石头，看天空，按鼠标右键开始打磨") { mc.screen is KnappingScreen }
+    step("在画面右下角的文本框中，输入汉字 石斧头，查看它的合成方式") {
+        mc.screen is IRecipesGui
+    }
+    step("记住这个图案，按esc返回"){mc.screen is KnappingScreen }
+    //做斧子
+    tip("依次点击绿框，打磨石斧头部") {
+        widgets(0, 10, 15, 20, 21, 23, 24, 19, 14, 4)
+        slot(0)
+        airSlotContainer()
+    }
+    step("用前面学习到的知识，去搜索 石斧 的合成方法，尝试做一个出来"){
+        it.bagHasRockTool(RockCategory.ItemType.AXE)
+    }
+    step("手持石斧，对准树的根部，长按鼠标左键给它砍断") {
+        it.bagHas(ItemTags.LOGS,1)
+    }
+    step("拿着石子,看天空,按鼠标右键打磨") { mc.screen is KnappingScreen }
+    step("在画面右下角的文本框中，输入汉字 石刀刃，查看它的合成方式") {
+        mc.screen is IRecipesGui
+    }
+    step("记住这个图案，按esc返回"){mc.screen is KnappingScreen }
+    tip(
+        "依次点击绿框,打磨石刀刃"
+    ) {
+
+        widgets(5, 10, 11, 12, 13, 14, 15)
+        slot(0)
+        airSlotContainer()
+
+    }
+    step("用前面学习到的知识，去搜索 石刀 的合成方法，尝试做一个出来") { it.bagHasRockTool(RockCategory.ItemType.KNIFE) }
+    step("同样，做一个石标枪" ) {
+        it.bagHasRockTool(RockCategory.ItemType.JAVELIN)
+    }
+    step("干掉面前这几头猪 （手持石刀-对准-鼠标左键狂点 或 手持石标枪-对准-鼠标右键蓄力投掷）", { player ->
+        repeat(5) {
+            mcs?.executeCommand("summon tfc:pig ${player.blockX} ${player.blockY} ${player.blockZ}")
+        }
+    }) {
+        it bagHas (TFCItems.FOOD[Food.PORK]!!.get() by 3)
+    }
+
+}
 val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
     val originBlock = BlockPos(0, -61, 3)
     val originBlockAbove = BlockPos(0, -60, 3)
@@ -63,63 +124,7 @@ val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
         airSlotInv()
     }
     esc()
-    step("面前又出现了几个石头，全部捡起", { player: Player ->
-        goHome(player)
-        val rockBlock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
-        val rock = rockBlock.setValue(LooseRockBlock.COUNT, 3)
-        val level = player.level()
-        level.setBlock(originBlockAbove, rock)
-        level.setBlock(originBlockAbove.north(), rock)
-        level.setBlock(originBlockAbove.south(), rock)
-        level.setBlock(originBlockAbove.east(), rock)
-        level.setBlock(originBlockAbove.west(), rock)
-    }) { it.bagHas(ROCK_KNAPPING,10) }
 
-    step("手持石头，看天空，按鼠标右键开始打磨") { mc.screen is KnappingScreen }
-    step("在画面右下角的文本框中，输入汉字 石斧头，查看它的合成方式") {
-        mc.screen is IRecipesGui
-    }
-    step("记住这个图案，按esc返回"){mc.screen is KnappingScreen }
-    //做斧子
-    tip("依次点击绿框，打磨石斧头部") {
-        widgets(0, 10, 15, 20, 21, 23, 24, 19, 14, 4)
-        slot(0)
-        airSlotContainer()
-    }
-    step("用刚刚学习到的知识，去搜索 石斧 的合成方法，尝试做一个出来"){
-        it.bagHasRockTool(RockCategory.ItemType.AXE)
-    }
-    step("手持石斧，对准树的根部，长按鼠标左键给它砍断") {
-        it.bagHas(ItemTags.LOGS,4)
-    }
-    step("拿着石子,看天空,按鼠标右键打磨") { mc.screen is KnappingScreen }
-    step("在画面右下角的文本框中，输入汉字 石刀刃，查看它的合成方式") {
-        mc.screen is IRecipesGui
-    }
-    step("记住这个图案，按esc返回"){mc.screen is KnappingScreen }
-    tip(
-        "依次点击绿框,打磨石刀刃"
-    ) {
-
-        widgets(5, 10, 11, 12, 13, 14, 15)
-        slot(0)
-        airSlotContainer()
-
-    }
-    step("按E键打开背包") { mc.screen is InventoryScreen }
-    tip("依次点击绿框,合成石刀") {
-
-        slot { it.item.`is`(FIREPIT_STICKS) }
-        slot(3)
-        slot { it.item.toString().contains("knife_head") }
-        slot(1)
-        slot(0)
-        airSlotInv()
-
-    }
-    step("用刚刚学习到的知识，去搜索 石铲 的合成方法，尝试做一个出来" ) {
-        it.bagHasRockTool(RockCategory.ItemType.SHOVEL)
-    }
     step("面前出现了几个黏土草块，手持石铲把他们挖下来 （对准-鼠标左键长按）", { player: Player ->
         goHome(player)
         val loam =
@@ -195,13 +200,7 @@ val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
     step("手持陶罐，对准淡水按下鼠标右键，把水装进罐子里，这样你就能随时随地喝水了") { player ->
         player.mainHandItem.tag?.getCompound("fluid")?.getString("FluidName") == "minecraft:water"
     }
-    step("手持石刀，干掉面前这头猪 （对准-鼠标左键狂点）", { player ->
-        repeat(5) {
-            mcs?.executeCommand("summon tfc:pig ${player.blockX} ${player.blockY} ${player.blockZ}")
-        }
-    }) { player ->
-        player.inventory.hasAnyMatching { it.`is`(TFCItems.FOOD[Food.PORK]!!.get()) }
-    }
+
     selfChk("手持树枝，按下3次Q键，向面前的红色羊毛上丢3个树枝。同样的方法，再丢1个原木。", {
         it.serverLevel.setBlock(
             it.blockPosition().below().relative(it.direction, 2),

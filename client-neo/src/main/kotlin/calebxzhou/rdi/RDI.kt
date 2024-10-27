@@ -5,6 +5,7 @@ import calebxzhou.rdi.RDI.Companion.handCursor
 import calebxzhou.rdi.RDI.Companion.ibeamCursor
 import calebxzhou.rdi.RDI.Companion.modIdChineseName
 import calebxzhou.rdi.banner.Banner
+import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.chunkstats.ChunkStats
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
@@ -22,6 +23,7 @@ import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.util.*
+import com.simibubi.create.infrastructure.ponder.scenes.fluid.HosePulleyScenes.level
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
@@ -63,6 +65,7 @@ val logger = LogManager.getLogger(MOD_ID)
 val numberOfCores = Runtime.getRuntime().availableProcessors()
 val threadPool = Executors.newFixedThreadPool(numberOfCores, DefaultThreadFactory("RDI-ThreadPool"))
 val STORAGE = File(MOD_ID)
+
 //线程池 异步
 fun rAsync(todo: () -> Unit) {
     threadPool.execute(todo)
@@ -84,7 +87,7 @@ class RDI {
     init {
         RDIEvents.init()
         STORAGE.mkdirs()
-        RItems.REGISTER.register(FMLJavaModLoadingContext. get().modEventBus);
+        RItems.REGISTER.register(FMLJavaModLoadingContext.get().modEventBus);
     }
 
     companion object {
@@ -143,6 +146,7 @@ object RDIEvents {
         bus.addListener(::afterScreenRender)
         bus.addListener(::screenMouseClick)
         bus.addListener(::onClientTick)
+        bus.addListener(::onClientLevelTick)
         bus.addListener(::registerClientCommand)
         bus.addListener(::registerCommand)
 
@@ -201,13 +205,15 @@ object RDIEvents {
             }
         }
     }
-    fun registerCommand(e: RegisterCommandsEvent){
+
+    fun registerCommand(e: RegisterCommandsEvent) {
         val cmds = listOf(
             TutorialCommand.cmd,
         )
         cmds.forEach { e.dispatcher.register(it) }
 
     }
+
     fun registerClientCommand(e: RegisterClientCommandsEvent) {
         val debugCmds = listOf(
             Banner.cmd
@@ -252,7 +258,7 @@ object RDIEvents {
         modIdChineseName += "cuisinedelight" to "料理乐事"
         modIdChineseName += "computercraft" to "电脑"
         modIdChineseName += "minecraft" to "原版"
-        lang =ClientLanguage.loadFrom(mc.resourceManager, listOf("en_us"), false)
+        lang = ClientLanguage.loadFrom(mc.resourceManager, listOf("en_us"), false)
     }
 
     fun allLoadComplete(e: TextureStitchEvent.Post) {
@@ -261,7 +267,7 @@ object RDIEvents {
 
     fun onRenderGui(e: RenderGuiEvent) {
         Banner.renderGui(e.guiGraphics)
-
+        BlockGuide.now?.renderGui(e.guiGraphics)
         OmniNavi.renderGui(e.guiGraphics)
     }
 
@@ -281,24 +287,28 @@ object RDIEvents {
 
         Tutorial.tick(e.server)
     }
-
-    fun onClientTick(e: TickEvent.ClientTickEvent) {
-        if (e.phase == TickEvent.Phase.END) {
-            Banner.tick()
-            if (mc.level != null) {
-                OmniNavi.tick()
-            }
-
+    fun onClientLevelTick(e: TickEvent.LevelTickEvent){
+        if(e.side.isClient){
+            OmniNavi.tick()
+            BlockGuide.now?.tick(e.level)
             mc.screen?.let {
                 UiGuide.now?.tick(it)
             }
         }
     }
+    fun onClientTick(e: TickEvent.ClientTickEvent) {
+        if (e.phase == TickEvent.Phase.END) {
+            Banner.tick()
+
+
+
+        }
+    }
 
     fun screenMouseClick(e: ScreenEvent.MouseButtonPressed.Pre) {
         UiGuide.now?.let { guide ->
-            if(!guide.onClick(e))
-                e.isCanceled=true
+            if (!guide.onClick(e))
+                e.isCanceled = true
         }
     }
 
@@ -307,12 +317,19 @@ object RDIEvents {
     }
 
     fun onPlayerLogin(e: PlayerLoggedInEvent) {
-
-        timerDelay(3000){
-
-        Tutorial.now?.let{
-            alert("即将开始教程“${it.name}”\n注意画面左下角的提示")
+        Tutorial.now?.let {
+            //超平坦地图设置边界
+            if (it.isFlatLevel) {
+                val border = e.entity.level().worldBorder
+                border.setCenter(0.0, 0.0)
+                border.size = 64.0
+            }
         }
+        timerDelay(3000) {
+
+            Tutorial.now?.let {
+                alert("即将开始教程“${it.name}”\n注意画面左下角的提示")
+            }
         }
     }
 

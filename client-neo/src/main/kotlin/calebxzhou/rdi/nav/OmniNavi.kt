@@ -212,7 +212,7 @@ object OmniNavi {
                     camPos.y(),
                     camPos.z(),
                     posNow,
-                    level.getBlockState(posNow)
+                    level.getBlockState(posNow),0f,1f,0f,0.6f
                 )
                 poseStack.matrixOp {
                     translate(x, y, z)

@@ -44,9 +44,6 @@ val TUTORIAL_BASIC
         jump()
         step("按T键打开聊天框", {
             goHome(it)
-            val border = it.level().worldBorder
-            border.setCenter(0.0, 0.0)
-            border.size = 64.0
         }) {
             mc.screen is ChatScreen
         }

@@ -91,7 +91,6 @@ data class Tutorial(
     fun render(guiGraphics: GuiGraphics) {
         //只在容器ui上层渲染
         if (mc.screen is AbstractContainerScreen<*> || mc.screen is IRecipesGui) {
-
             stepNow?.let { stepNow ->
                 guiGraphics.matrixOp {
                     translate(0.0, 24.0, 100.0)
@@ -114,7 +113,7 @@ data class Tutorial(
     }
 
     fun start() {
-        mc.screen = GenericDirtMessageScreen(mcText("请稍候"))
+        mc goScreen GenericDirtMessageScreen(mcText("请稍候"))
         //关闭mc原版教程
         mc.options.tutorialStep = TutorialSteps.NONE
         mc.tutorial.setStep(TutorialSteps.NONE)
