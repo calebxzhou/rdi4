@@ -34,6 +34,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument
 import net.minecraft.world.level.chunk.LevelChunkSection
@@ -204,6 +205,16 @@ val Player.lookingAtBlock: BlockState?
         }
         return null
     }
+val Player.lookingAtBlockEntity: BlockEntity?
+    get() {
+        val hit = pick(20.0, 0.0f, true)
+        if (hit.type == HitResult.Type.BLOCK) {
+            val bpos = (hit as BlockHitResult).blockPos
+            val bstate = level().getBlockEntity(bpos)
+            return bstate
+        }
+        return null
+    }
 
 fun Player.bagHas(cond: (ItemStack) -> Boolean): Boolean {
     return inventory.hasAnyMatching(cond)
@@ -224,7 +235,7 @@ infix fun Player.bagHas(item: Item): Boolean {
 }
 
 infix fun Player.bagHas(item: ItemStack): Boolean {
-    return bagHas(item.item, item.count)
+    return bagHas { it == item }
 }
 
 fun Player.bagHas(item: Item, count: Int = 1): Boolean {
@@ -247,11 +258,13 @@ infix fun Player.isLooking(block: Block): Boolean {
     return lookingAtBlock?.`is`(block) == true
 }
 
+infix fun Player.isLooking(item: Item): Boolean = lookingAtItemEntity?.item?.`is`(item) == true
+
 infix fun Item.by(count: Int): ItemStack {
     return ItemStack(this, count)
 }
 
-infix fun Minecraft.justChatted(text: String): Boolean = mc.gui.chat.recentChat.lastOrNull()?.contains(text)==true
+infix fun Minecraft.justChatted(text: String): Boolean = mc.gui.chat.recentChat.lastOrNull()?.contains(text) == true
 val Player.waterLevel
     get() = (foodData as TFCFoodData).thirst
 val Player.waterPercent
@@ -300,6 +313,10 @@ fun Minecraft.addHudMessage(msg: String) {
 
 fun Level.setBlock(pos: BlockPos, state: BlockState) {
     setBlock(pos, state, 2)
+}
+
+fun Level.setBlock(pos: BlockPos, block: Block) {
+    setBlock(pos, block.defaultBlockState())
 }
 
 val ServerPlayer.serverLevel

@@ -5,10 +5,12 @@ import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
-import calebxzhou.rdi.tutorial.TUTORIAL_BASIC
-import calebxzhou.rdi.tutorial.TUTORIAL_PRIMARY
+import calebxzhou.rdi.tutorial.T1_CERA
 import calebxzhou.rdi.ui.component.*
-import calebxzhou.rdi.ui.general.*
+import calebxzhou.rdi.ui.general.Icons
+import calebxzhou.rdi.ui.general.alert
+import calebxzhou.rdi.ui.general.alertOs
+import calebxzhou.rdi.ui.general.optionScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -200,7 +202,7 @@ class RTitleScreen : RScreen("主页") {
                 false
             )
         }*/
-        TUTORIAL_BASIC.start()
+        T1_CERA.start()
         //TUTORIAL_PRIMARY.start()
         /*if (!File("tutorial1_done").exists()) {
             Tutorial.stoneAge[0].start()

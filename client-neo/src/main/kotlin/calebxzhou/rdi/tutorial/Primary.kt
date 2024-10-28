@@ -1,11 +1,16 @@
 package calebxzhou.rdi.tutorial
 
+import calebxzhou.rdi.mixin.client.tfc.AInventoryBlockEntity
+import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.util.*
 import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.client.screen.FirepitScreen
 import net.dries007.tfc.client.screen.KnappingScreen
+import net.dries007.tfc.client.screen.LargeVesselScreen
+import net.dries007.tfc.client.screen.SmallVesselInventoryScreen
 import net.dries007.tfc.common.TFCTags.Items.FIREPIT_STICKS
 import net.dries007.tfc.common.TFCTags.Items.ROCK_KNAPPING
+import net.dries007.tfc.common.blockentities.PlacedItemBlockEntity
 import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.common.blocks.devices.PitKilnBlock
 import net.dries007.tfc.common.blocks.plant.Plant
@@ -13,15 +18,15 @@ import net.dries007.tfc.common.blocks.rock.LooseRockBlock
 import net.dries007.tfc.common.blocks.rock.Rock
 import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
+import net.dries007.tfc.common.blocks.wood.Wood
 import net.dries007.tfc.common.items.Food
-import net.dries007.tfc.common.items.HideItemType
 import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 
@@ -29,12 +34,11 @@ import net.minecraft.world.level.block.Blocks
  * calebxzhou @ 2024-10-24 8:14
  */
 val T1_STONE = tutorial("1_stone","初级生存·石器"){
-    step("捡起树下的树枝10个(空手对准-鼠标右键)", {
+    step("对准树下面散落的树枝", {
         (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition())
-        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(0, 0, 8))
-        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(8, 0, 0))
-    }) { it.bagHas(FIREPIT_STICKS,10)}
-    step("捡起面前出现的石头10个", { player: Player ->
+    }) { it isLooking TFCBlocks.WOODS[Wood.OAK]!![Wood.BlockType.TWIG]!!.get()}
+    step("空手对准，按鼠标右键捡起来5个") { it.bagHas(FIREPIT_STICKS,5)}
+    step("同样，捡起脚下石头10个",{ player: Player ->
         val rockBlock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
         val rock = rockBlock.setValue(LooseRockBlock.COUNT, 3)
         val level = player.level()
@@ -44,8 +48,7 @@ val T1_STONE = tutorial("1_stone","初级生存·石器"){
         level.setBlock(player.blockPosition().east(), rock)
         level.setBlock(player.blockPosition().west(), rock)
     }) { it.bagHas(ROCK_KNAPPING,10) }
-
-    step("手持石头，看天空，按鼠标右键开始打磨") { mc.screen is KnappingScreen }
+    step("手持石头，看天空，按鼠标右键进入打磨画面") { mc.screen is KnappingScreen }
     step("在画面右下角的文本框中，输入汉字 石斧头，查看它的合成方式") {
         mc.screen is IRecipesGui
     }
@@ -85,34 +88,35 @@ val T1_STONE = tutorial("1_stone","初级生存·石器"){
             mcs?.executeCommand("summon tfc:pig ${player.blockX} ${player.blockY} ${player.blockZ}")
         }
     }) {
-        it bagHas (TFCItems.FOOD[Food.PORK]!!.get() by 3)
+        it bagHas (TFCItems.FOOD[Food.PORK]!!.get())
     }
 
 }
-val T1_CERA = tutorial("1_cera","初级生存·陶器"){
-
-}
-val T1_FIRE = tutorial("1_fire","初级生存·火源"){}
-val T1_BUILD = tutorial("1_build","初级生存·盖房子"){}
-val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
-    val originBlock = BlockPos(0, -61, 3)
-    val originBlockAbove = BlockPos(0, -60, 3)
-    val goHome = { player: Player ->
-        player.teleportTo(0.0, -60.0, 0.0)
-        player.xRot = 0f
-        player.yRot = 0f
-    }
-//树枝
-    step("空手对准，通过鼠标右键，捡起前面树下的树枝，10个", {
-        (it.level() as ServerLevel).loadStructure("maple_tree", originBlockAbove)
-        (it.level() as ServerLevel).loadStructure("maple_tree", originBlockAbove.offset(0, 0, 8))
-        (it.level() as ServerLevel).loadStructure("maple_tree", originBlockAbove.offset(8, 0, 0))
+val T1_CERA = tutorial("1_cera","初级生存·火与陶器"){
+    step("捡起脚下石头10个",{ player: Player ->
+        val rockBlock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
+        val rock = rockBlock.setValue(LooseRockBlock.COUNT, 3)
+        val level = player.level()
+        level.setBlock(player.blockPosition(), rock)
+        level.setBlock(player.blockPosition().north(), rock)
+        level.setBlock(player.blockPosition().south(), rock)
+        level.setBlock(player.blockPosition().east(), rock)
+        level.setBlock(player.blockPosition().west(), rock)
+    }) { it.bagHas(ROCK_KNAPPING,10) }
+    step("捡起树枝10个", {
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition())
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(0, 0, 8))
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(8, 0, 0))
+        (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition().offset(8, 0, 8))
     }) { it.bagHas(FIREPIT_STICKS,10)}
+    step("做石斧砍树，拿10个原木"){
+        it.bagHas(ItemTags.LOGS,10)
+    }
     step("按E键打开背包") { mc.screen is InventoryScreen }
-    step("在画面右下角的文本框中，输入汉字 起火器，点击画面上出现的起火器，查看它的合成方式") {
+    step("搜索起火器的合成方式") {
         mc.screen is IRecipesGui
     }
-    step("由此得知起火器的合成方式，是树枝斜对角放置。按ESC键回到背包") { mc.screen is InventoryScreen }
+    step("记住这个图案，按ESC键回到背包") { mc.screen is InventoryScreen }
     tip("鼠标右键点击树枝，把它平分") {
         rightClick = true
         slot { it.item.`is`(FIREPIT_STICKS) }
@@ -129,93 +133,13 @@ val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
         airSlotInv()
     }
     esc()
-
-    step("面前出现了几个黏土草块，手持石铲把他们挖下来 （对准-鼠标左键长按）", { player: Player ->
-        goHome(player)
-        val loam =
-            TFCBlocks.SOIL[SoilBlockType.CLAY_GRASS]!![SoilBlockType.Variant.SILTY_LOAM]!!.get().defaultBlockState()
-        val level = player.level()
-        level.setBlock(originBlockAbove, loam)
-        level.setBlock(originBlockAbove.north(), loam)
-        level.setBlock(originBlockAbove.north().above(), loam)
-        level.setBlock(originBlockAbove.south(), loam)
-        level.setBlock(originBlockAbove.south().above(), loam)
-        level.setBlock(originBlockAbove.east(), loam)
-        level.setBlock(originBlockAbove.east().above(), loam)
-        level.setBlock(originBlockAbove.west(), loam)
-        level.setBlock(originBlockAbove.west().above(), loam)
-    })
-    { player -> player.inventory.hasAnyMatching { it.`is`(Items.CLAY_BALL) && it.count >= 12 } }
-
-    step("面前出现了一堆草，手持石刀把他们割下来（对准-鼠标左键点击）", { player: Player ->
-        goHome(player)
-        val grass = TFCBlocks.PLANTS[Plant.BLUEGRASS]!!.get().defaultBlockState()
-        val level = player.level()
-        level.setBlock(originBlockAbove, grass)
-        level.setBlock(originBlockAbove.north(), grass)
-        level.setBlock(originBlockAbove.north().north(), grass)
-        level.setBlock(originBlockAbove.south(), grass)
-        level.setBlock(originBlockAbove.south().south(), grass)
-        level.setBlock(originBlockAbove.east(), grass)
-        level.setBlock(originBlockAbove.east().east(), grass)
-        level.setBlock(originBlockAbove.west(), grass)
-        level.setBlock(originBlockAbove.west().west(), grass)
-    }) { it.bagHas(TFCItems.STRAW.get(), 9) }
-    step("制作陶器：手持黏土 看天空 按鼠标右键") { mc.screen is KnappingScreen }
-    tip("依次点击绿框 合成陶罐（装水用）") {
-        widgets(0, 10, 15, 17, 19, 20, 21, 23, 24)
-        slot(0)
-        airSlotContainer()
+    step("去空旷地带，往地上丢3个树枝+1个原木") {
+        it.lookingAtItemEntity?.item?.`is`(ItemTags.LOGS) == true
     }
-    esc()
-    step("再来，手持黏土 看天空 按鼠标右键") { mc.screen is KnappingScreen }
-    tip("依次点击绿框，合成小缸（装小物件和食物用）") {
-        widgets(0, 4, 20, 24)
-        slot(0)
-        airSlotContainer()
-    }
-    step("手持陶罐，挖掉脚下的方块，对着下面按V键，把它平放进去") {
-        it.lookingAtBlock?.`is`(TFCBlocks.PLACED_ITEM.get()) == true
-    }
-    selfChk("手持小缸，对着坑里按V键，放进去")
-    step("手持干草，放进坑里8个 （对准-连点鼠标右键）") {
-        it.lookingAtBlock?.`is`(TFCBlocks.PIT_KILN.get()) == true
-                &&
-                it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.STRAW_END
-    }
-    step("手持原木，放进坑里8个（对准-连点鼠标右键）") {
-        it.lookingAtBlock?.`is`(TFCBlocks.PIT_KILN.get()) == true
-                &&
-                it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.LIT - 1
-    }
-    step("手持起火器，对准坑窑 长按右键") {
-        it.lookingAtBlock?.`is`(Blocks.FIRE) == true
-    }
-    step("等待30秒，然后按鼠标右键，取出烧制完成的熟陶器") { player ->
-        player.inventory.hasAnyMatching { it.`is`(TFCItems.VESSEL.get()) }
-                && player.inventory.hasAnyMatching {
-            it.`is`(TFCItems.JUG.get())
-        }
-    }
-    selfChk("我猜你已经渴了，面前的地面上有水，对准按下鼠标右键可以喝水。\n其中一滩水是淡水，另一滩是咸水，饮用咸水会导致口渴debuff（负面效果），因此你应该尽可能喝淡水") {
-        goHome(it)
-        it.serverLevel.setBlock(originBlock, Blocks.WATER.defaultBlockState())
-        it.serverLevel.setBlock(originBlock.north(), TFCBlocks.SALT_WATER.get().defaultBlockState())
-    }
-    step("手持陶罐，对准淡水按下鼠标右键，把水装进罐子里，这样你就能随时随地喝水了") { player ->
-        player.mainHandItem.tag?.getCompound("fluid")?.getString("FluidName") == "minecraft:water"
-    }
-
-    selfChk("手持树枝，按下3次Q键，向面前的红色羊毛上丢3个树枝。同样的方法，再丢1个原木。", {
-        it.serverLevel.setBlock(
-            it.blockPosition().below().relative(it.direction, 2),
-            Blocks.RED_WOOL.defaultBlockState()
-        )
-    })
-    step("手持刚刚做好的打火器，对准这些树枝和原木，长按鼠标右键点燃") {
+    step("手持起火器，对准这些树枝和原木，长按鼠标右键点燃（不成功就多试几次）") {
         it.lookingAtBlock?.`is`(TFCBlocks.FIREPIT.get()) == true
     }
-    step("鼠标右键 点击刚刚点燃的篝火") {
+    step("鼠标右键点击 刚刚点燃的篝火",{it.give(TFCItems.FOOD[Food.PORK]!!.get())}) {
         mc.screen is FirepitScreen
     }
     tip("放入猪肉 开始烹饪") {
@@ -227,31 +151,130 @@ val TUTORIAL_PRIMARY = tutorial("primary","初级生存"){
             it.`is`(TFCItems.FOOD[Food.COOKED_PORK]!!.get())
         }
     }
-    step("吃饱喝足了，最重要的事当然是睡一觉，下面学习如何制作一张床。按下E键打开背包", { player ->
-        player.inventory.add(ItemStack(TFCItems.STRAW.get(), 8))
-    }) {
-        mc.screen is InventoryScreen
+    step("手持猪肉，长按鼠标右键吃掉", {
+        alert("把食物搞熟，可以延长保质期\n也会带来更强的饱腹感")
+        it.foodData.foodLevel = 16 }
+    ) {
+        !it.foodData.needsFood()
     }
-    step("在画面右下角的文本框中，输入汉字 干草块，然后点击画面上出现的干草块，查看它的合成方式") {
-        mc.screen is IRecipesGui
+    step("四处转转，寻找植物“蹄盖蕨”",{
+        var originBlock = BlockPos(8,-60,8)
+        val loam =
+            TFCBlocks.SOIL[SoilBlockType.CLAY_GRASS]!![SoilBlockType.Variant.SILTY_LOAM]!!.get().defaultBlockState()
+        val athyrium = TFCBlocks.PLANTS[Plant.ATHYRIUM_FERN]!!.get().defaultBlockState()
+        val level = it.level()
+        level.setBlock(originBlock, athyrium)
+        originBlock = originBlock.below()
+        level.setBlock(originBlock, loam)
+        level.setBlock(originBlock.north(), loam)
+        level.setBlock(originBlock.south(), loam)
+        level.setBlock(originBlock.east(), loam)
+        level.setBlock(originBlock.west(), loam)
+        originBlock = originBlock.below()
+        level.setBlock(originBlock, loam)
+        level.setBlock(originBlock.north(), loam)
+        level.setBlock(originBlock.south(), loam)
+        level.setBlock(originBlock.east(), loam)
+        level.setBlock(originBlock.west(), loam)
+
+    }){
+        it isLooking  TFCBlocks.PLANTS[Plant.ATHYRIUM_FERN]!!.get()
     }
-    step("按下ESC键返回到背包画面") {
-        mc.screen is InventoryScreen
+    step("手持石铲，挖掉蹄盖蕨下面的黏土草块（对准-鼠标左键长按）",{it give TFCItems.ROCK_TOOLS[RockCategory.METAMORPHIC]!![RockCategory.ItemType.SHOVEL]!!.get()})
+    { it.bagHas(Items.CLAY_BALL ,12 ) }
+
+    step("手持石刀，割9个干草（对准-鼠标左键点击）", { it give TFCItems.ROCK_TOOLS[RockCategory.METAMORPHIC]!![RockCategory.ItemType.KNIFE]!!.get()})
+    { it.bagHas(TFCItems.STRAW.get(), 9) }
+    step("手持黏土，看天空，按鼠标右键，进入塑形画面") { mc.screen is KnappingScreen }
+    tip("依次点击绿框 合成陶罐") {
+        widgets(0, 10, 15, 17, 19, 20, 21, 23, 24)
+        slot(0)
+        airSlotContainer()
     }
-    tip("点击干草") {
-        slot { it.item.`is`(TFCItems.STRAW.get()) }
+    esc()
+    step("手持黏土 看天空 按鼠标右键") { mc.screen is KnappingScreen }
+    tip("依次点击绿框，合成小缸（装小物件和食物用）") {
+        widgets(0, 4, 20, 24)
+        slot(0)
+        airSlotContainer()
     }
-    step("将鼠标放在“合成”二字下面的框上，按住鼠标左键，在4个合成框上滑动，让干草充满4个框。按下左Shift键，点击右侧合成完成的干草块") { player ->
-        player.inventory.hasAnyMatching {
-            it.`is`(TFCBlocks.THATCH.get().asItem()) && it.count >= 2
+    step("自行搜索大缸的合成方法，做一个大缸"){
+        it bagHas TFCItems.UNFIRED_LARGE_VESSEL.get()
+    }
+    //坑里第几格是不是啥
+    fun lookingPitKlinHas(player: Player, item: Item): Boolean {
+        val looking = player.lookingAtBlockEntity
+        if(looking is PlacedItemBlockEntity){
+            for(i in 0..3){
+                if((looking as AInventoryBlockEntity<*>).getInventory().getStackInSlot(i).`is`(item))
+                    return true
+            }
         }
+            return false
+
     }
-    step("将两个干草块呈一字型放在地上，然后手持大块兽皮，右键点击干草块", {
-        it.inventory.add(TFCItems.HIDES[HideItemType.RAW]!![HideItemType.Size.LARGE]!!.get().defaultInstance)
-    }) {
-        it.lookingAtBlock?.`is`(TFCBlocks.THATCH_BED.get()) == true
+    step("手持陶罐，挖掉脚下的方块，对着下面按V键，把它平放进去") {
+        lookingPitKlinHas(it,TFCItems.UNFIRED_JUG.get())
     }
-    selfChk("右键点击这个床，可以设置复活点（但是暂时不能睡觉）")
+    step("手持小缸，对着坑里按V键，放进去"){
+        lookingPitKlinHas(it,TFCItems.UNFIRED_VESSEL.get())
+    }
+    /**/
+    step("手持干草，放进坑里8个 （对准-连点鼠标右键）") {
+        it isLooking  TFCBlocks.PIT_KILN.get()
+                &&
+                it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.STRAW_END
+    }
+    step("手持原木，放进坑里8个（对准-连点鼠标右键）") {
+        it isLooking  TFCBlocks.PIT_KILN.get()
+                &&
+                it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.LIT - 1
+    }
+    step("手持起火器，对准坑窑 长按右键") {
+        it isLooking  Blocks.FIRE
+    }
+    step("等待30秒，然后按鼠标右键，取出烧制完成的熟陶器") {
+        it bagHas TFCItems.VESSEL.get() && it bagHas TFCItems.JUG.get() //&&
+    }
+    step("将小缸丢到水中降温",{
+        alert("刚烧制好的陶器特别烫，用不了\n必须等它自然降温，或者丢入水中")
+        it.level().setBlock(it.blockPosition().north(),Blocks.WATER)
+    }){
+        it isLooking TFCItems.VESSEL.get()
+    }
+    step("把大缸放在坑里"){
+        lookingPitKlinHas(it,TFCItems.UNFIRED_LARGE_VESSEL.get())
+    }
+    step("用同样的方法烧制大缸"){
+        it bagHas TFCBlocks.LARGE_VESSEL.get().asItem()
+    }
+    step("手持陶罐，对准水按下鼠标右键，把水装进罐子里，这样你就能随时随地喝水了",{}) { player ->
+        player.mainHandItem.tag?.getCompound("fluid")?.getString("FluidName") == "minecraft:water"
+    }
+    step("手持小缸，按鼠标右键，看看里边有什么"){
+        mc.screen is SmallVesselInventoryScreen
+    }
+    step("把刚刚挖的黏土球放进去",{ alert("小缸可以放 小体积 的物品\n以及各种食物\n小缸可以让食物不易变质") }){
+        it.mainHandItem.tag?.getCompound("inventory") !=null
+    }
+    esc()
+    step("把大缸放在地上"){
+        it isLooking TFCBlocks.LARGE_VESSEL.get()
+    }
+    step("按鼠标右键 看看大缸里面有什么"){
+        mc.screen is LargeVesselScreen
+    }
+    step("往大缸第一格放点东西",{ alert("大缸可以放 中等体积 的物品\n点击“密封”按钮会盖上缸盖，使缸内食品不易变质") }){ player ->
+        val slot = (player.lookingAtBlockEntity as? AInventoryBlockEntity<*>)?.getInventory()?.getStackInSlot(0)
+        slot?.let {
+            return@step !it.isEmpty
+        }?:return@step false
+    }
+    step("扣上大缸的盖子 然后关闭大缸画面"){
+        mc.screen==null
+    }
+
 
 
 }
+val T1_BUILD = tutorial("1_build","初级生存·盖房子"){}
