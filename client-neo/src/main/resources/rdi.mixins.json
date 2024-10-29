@@ -19,7 +19,9 @@
     "jade.mModNameChineseDisplay",
     "jade.mNoDisplayModName",
     "tfc.AInventoryBlockEntity",
+    "tfc.mDryingBricksTooltip",
     "tfc.mFastPitKiln",
+    "tfc.mTfcDryingBricks",
     "tfc.mTfcNoInventoryTabs",
     "tfc.mTfcOverlay",
     "tfc.mTfcSizeTooltip"

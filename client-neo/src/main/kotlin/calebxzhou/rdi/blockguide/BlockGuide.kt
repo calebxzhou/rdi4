@@ -158,7 +158,7 @@ class BlockGuide(val steps: List<Step>) {
                         camPos.y(),
                         camPos.z(),
                         bPos,
-                        it.targetState, 1f, 0f, 0f, 0.6f
+                        it.nowState, 1f, 0f, 0f, 1f
                     )
                 }
 
@@ -171,7 +171,7 @@ class BlockGuide(val steps: List<Step>) {
                         camPos.y(),
                         camPos.z(),
                         bPos,
-                        it.targetState, 0f, 0f, 1f, 0.6f
+                        it.nowState, 0f, 0f, 1f, 1f
                     )
                 }
             }

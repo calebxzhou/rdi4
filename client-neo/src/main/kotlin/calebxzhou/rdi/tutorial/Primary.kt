@@ -1,7 +1,5 @@
 package calebxzhou.rdi.tutorial
 
-import calebxzhou.rdi.blockguide.BlockGuide
-import calebxzhou.rdi.blockguide.blockGuide
 import calebxzhou.rdi.common.bos
 import calebxzhou.rdi.mixin.client.tfc.AInventoryBlockEntity
 import calebxzhou.rdi.ui.general.alert
@@ -14,6 +12,8 @@ import net.dries007.tfc.client.screen.SmallVesselInventoryScreen
 import net.dries007.tfc.common.TFCTags.Items.FIREPIT_STICKS
 import net.dries007.tfc.common.TFCTags.Items.ROCK_KNAPPING
 import net.dries007.tfc.common.blocks.TFCBlocks
+import net.dries007.tfc.common.blocks.WattleBlock
+import net.dries007.tfc.common.blocks.devices.DryingBricksBlock
 import net.dries007.tfc.common.blocks.devices.PitKilnBlock
 import net.dries007.tfc.common.blocks.plant.Plant
 import net.dries007.tfc.common.blocks.rock.LooseRockBlock
@@ -23,11 +23,15 @@ import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.blocks.wood.Wood
 import net.dries007.tfc.common.items.Food
 import net.dries007.tfc.common.items.TFCItems
+import net.dries007.tfc.util.calendar.Calendars
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.DyeColor
+import net.minecraft.world.item.DyeItem
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 
@@ -249,7 +253,7 @@ val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
 
 
 }
-val T1_BUILD = tutorial("1_build", "初级生存·盖房子") {
+val T1_BUILD = tutorial("1_build", "初级生存·建筑") {
     var org = bos(0, -60, 0)
     buide("按照指示，把泥土堆起来", {
         it give Blocks.DIRT.asItem() * 8
@@ -283,7 +287,8 @@ val T1_BUILD = tutorial("1_build", "初级生存·盖房子") {
     step("因为干草块是空心的，所以它起不到任何支撑的作用，泥土放在它上面照样塌陷。现在按下ESC键，看看现在是什么季节，然后打在公屏上") {
         mc justChatted "初夏"
     }
-    step("给你一把铲子，铲掉地面上的雪，并且合成4个雪块", {
+    step("给你一把铲子，铲掉地面上的雪，并且合成1个雪块", {
+        org = org.copy dx 2
         it.serverLevel.setBlock(org, Blocks.SNOW)
         it.serverLevel.setBlock(org dx 1, Blocks.SNOW)
         it.serverLevel.setBlock(org dx 2, Blocks.SNOW)
@@ -292,9 +297,12 @@ val T1_BUILD = tutorial("1_build", "初级生存·盖房子") {
         it.serverLevel.setBlock(org dx 5, Blocks.SNOW)
         it giveRockTool RockCategory.ItemType.SHOVEL
     }) {
-        it bagHas Blocks.SNOW_BLOCK.asItem() * 4
+        it bagHas Blocks.SNOW_BLOCK.asItem()
     }
-    buide("季节又回到了夏天，按照指示摆放雪块与泥土") {
+    buide("按照指示摆放雪块",{
+        org = org.copy dx 3
+        it give Blocks.SNOW_BLOCK.asItem()*15
+    }) {
         place(org, Blocks.SNOW_BLOCK)
         place(org.above(), Blocks.SNOW_BLOCK)
         place(org.above().west(), Blocks.SNOW_BLOCK)
@@ -302,14 +310,104 @@ val T1_BUILD = tutorial("1_build", "初级生存·盖房子") {
     }
     step("雪块是实心的，可以起到支撑作用，并且即使在炎热的夏天，也不会融化。搜索板条的合成方式，用刚刚给你的木头做一些板条",
         {
-            it giveLog 64
+            it giveLog 16
+            it giveLog 16
+            it giveLog 16
         }) {
         it bagHas TFCBlocks.WATTLE.get().asItem()
     }
-    step("按照指示摆放板条", {
-        blockGuide {
-
+    buide("按照指示摆放板条",{
+        org = org.copy dx 4
+    }){
+        val block = TFCBlocks.WATTLE.get()
+        place(org, block)
+        place(org dy 1, block)
+        place(org dy 2, block)
+        destroy(org)
+        place(org dx 1, block)
+        place(org dx 1 dy 1, Blocks.DIRT)
+        place(org dx 1, block)
+    }
+    step("板条一旦失去支撑，整体都会塌掉，并且现在的空心板条仍然没有支撑作用，所以我们需要制作实心板条\n手持至少4个树枝，右键点击空心板条，即可制成实心板条",{
+        it giveTwig 16
+    }){
+        it.lookingAtBlock?.let { bst->
+            return@step bst.block is WattleBlock && bst.getValue(WattleBlock.WOVEN)
+        }?:false
+    }
+    step("用背包里的材料，制作涂料",{
+        it give TFCItems.STRAW.get()
+        it give Items.CLAY_BALL
+        it give Blocks.DIRT.asItem()
+    }){
+        it bagHas TFCItems.DAUB.get()
+    }
+    step("手持涂料，右键点击实心板条，即可制成未染色板条"){
+        it isLooking TFCBlocks.UNSTAINED_WATTLE.get()
+    }
+    DyeColor.entries.forEach { color->
+        step("手持刚刚给你的${color.name}染料，右键点击板条，给它上色",{
+            it.inventory.clearContent()
+            it give DyeItem.byColor(color)
+        }){
+            it isLooking TFCBlocks.STAINED_WATTLE[color]!!.get()
         }
-    }) { BlockGuide.isOff }
-
+    }
+    buide("按照指示摆放染色板条",{
+        org = org.copy dx 5
+        DyeColor.entries.forEach { color-> it give TFCBlocks.STAINED_WATTLE[color]!!.get().asItem()}
+    }){
+        DyeColor.entries.forEachIndexed {i, color->
+            place(org dz i,TFCBlocks.STAINED_WATTLE[color]!!.get())
+        }
+    }
+    val mud  =TFCBlocks.SOIL[SoilBlockType.MUD]!![SoilBlockType.Variant.LOAM]!!.get()
+    step("用石铲挖掉前方出现的壤泥",{ player ->
+        org = org.copy dx 6
+        player giveRockTool RockCategory.ItemType.SHOVEL
+        player.serverLevel.setBlock(org dz 1,mud)
+    }){
+        it bagHas mud.asItem()
+    }
+    val wetBrick = TFCBlocks.SOIL[SoilBlockType.DRYING_BRICKS]!![SoilBlockType.Variant.LOAM]!!.get()
+    step("把壤泥和干草合成为4个湿壤泥砖",{
+        it give TFCItems.STRAW.get()
+    }){
+        it bagHas wetBrick.asItem()*4
+    }
+    step("按下鼠标右键 把4个湿壤泥砖放在地上"){
+        it.lookingAtBlock?.let { bst->
+            return@step bst.block is DryingBricksBlock && bst.getValue(DryingBricksBlock.COUNT)==4
+        }?:false
+    }
+    step("等待游戏时间一天，让湿壤泥砖变为干壤泥砖（此处已经加速，等20秒就行）",{
+      }){
+        it.lookingAtBlock?.let { bst->
+            return@step bst.block is DryingBricksBlock && bst.getValue(DryingBricksBlock.DRIED)
+        }?:false
+    }
+    step("把干壤泥砖捡起来"){
+        it bagHas TFCItems.LOAM_MUD_BRICK.get()
+    }
+    val mudBricks= TFCBlocks.SOIL[SoilBlockType.MUD_BRICKS]!![SoilBlockType.Variant.LOAM]!!.get()
+    step("用4个干壤泥砖合成一个壤泥砖块"){
+        it bagHas mudBricks.asItem()
+    }
+    buide("壤泥砖块非常坚固，纯实心，可以任意悬空放置，任意支撑任何物品。必须用铲子才能破坏它。按照指示放置与破坏壤泥砖块",{
+        it give mudBricks.asItem()*16
+    }){
+        place(org,mudBricks)
+        place(org dy 1,mudBricks)
+        place(org dy 2,mudBricks)
+        place(org dy 3,mudBricks)
+        place(org dy 4,mudBricks)
+        place(org dy 4 dx 1,mudBricks)
+        place(org dy 4 dx 2,mudBricks)
+        place(org dy 4 dz 1,mudBricks)
+        place(org dy 4 dz 2,mudBricks)
+        destroy(org dy 1)
+        destroy(org dy 2)
+        destroy(org dy 3)
+        destroy(org dy 4)
+    }
 }
