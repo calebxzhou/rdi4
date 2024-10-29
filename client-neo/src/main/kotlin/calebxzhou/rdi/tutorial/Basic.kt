@@ -1,24 +1,11 @@
 package calebxzhou.rdi.tutorial
 
-import appeng.server.testplots.PosAndSide.north
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.blockguide.blockGuide
-import calebxzhou.rdi.launcher.SplashScreen.hide
-import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.util.*
 import mezz.jei.api.runtime.IRecipesGui
-import net.dries007.tfc.client.screen.FirepitScreen
-import net.dries007.tfc.client.screen.KnappingScreen
-import net.dries007.tfc.common.TFCTags.Items.FIREPIT_STICKS
-import net.dries007.tfc.common.TFCTags.Items.ROCK_KNAPPING
 import net.dries007.tfc.common.blocks.TFCBlocks
-import net.dries007.tfc.common.blocks.devices.PitKilnBlock
-import net.dries007.tfc.common.blocks.plant.Plant
-import net.dries007.tfc.common.blocks.rock.LooseRockBlock
-import net.dries007.tfc.common.blocks.rock.Rock
-import net.dries007.tfc.common.blocks.rock.RockCategory
-import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.dries007.tfc.common.items.Food
 import net.dries007.tfc.common.items.HideItemType
@@ -26,10 +13,7 @@ import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.gui.screens.ChatScreen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.core.BlockPos
-import net.minecraft.server.level.ServerLevel
-import net.minecraft.tags.ItemTags
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 
@@ -118,7 +102,7 @@ val TUTORIAL_BASIC
                     Items.CRACKED_STONE_BRICKS,
                     Items.MOSSY_STONE_BRICKS
                 )
-                    .map { it by 8 }
+                    .map { it*8 }
                     .forEach { p give it }
             }) {
             it.inventory.isEmpty
@@ -154,22 +138,20 @@ val TUTORIAL_BASIC
             !it.foodData.needsFood()
         }
         step("手持石镐，长按鼠标左键毁掉这四块石砖",{it give Items.STONE_PICKAXE}) {
-            it bagHas (Items.MOSSY_STONE_BRICKS by 8)
+            it bagHas  Items.MOSSY_STONE_BRICKS*8
         }
-        step("按E键打开背包", { it give (TFCItems.STRAW.get() by 8) }) { mc.screen is InventoryScreen }
-        step("鼠标右键点击干草，把它平分为两组"){ it bagHas (TFCItems.STRAW.get() by 4)}
-        step("鼠标左键点击干草，按住左键，在没有物品的槽位上滑动，把它平铺在空槽中"){ it bagHas (TFCItems.STRAW.get() by 1)}
+        step("按E键打开背包", { it give TFCItems.STRAW.get() * 8 }) { mc.screen is InventoryScreen }
         step("在画面右下角的文本框中，输入汉字 干草块，然后点击画面右侧出现的干草块，查看它的合成方式") {
             mc.screen is IRecipesGui
         }
         step("记住这个配方图案，按ESC回到背包画面") {
             mc.screen is InventoryScreen
         }
-        step("按照刚刚记住的图案，在画面中间偏右的“合成”区域摆放干草，合成两个干草块"){
-            it bagHas (TFCBlocks.THATCH.get().asItem() by 2)
+        step("点击干草，按鼠标右键平分干草，按照刚刚记住的图案，在画面中间偏右的“合成”区域摆放干草，合成两个干草块"){
+            it bagHas (TFCBlocks.THATCH.get().asItem()*2)
         }
         step("手持两个干草块"){
-            it handHas (TFCBlocks.THATCH.get().asItem() by 2)
+            it handHas (TFCBlocks.THATCH.get().asItem() * 2)
         }
         step("将两个干草块呈一字型放在地上",{
             blockGuide {

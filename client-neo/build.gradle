@@ -155,6 +155,7 @@ processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 jarJar.enable()
+
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     //minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
@@ -172,24 +173,35 @@ dependencies {
     //重要：升级mod版本要同时升级src zip
     //前置类
     implementation "thedarkcolour:kotlinforforge:$kff_version"
-    implementation fg.deobf("curse.maven:patchouli-306770:4636277")
+    implementation fg.deobf("maven.modrinth:patchouli:1.20.1-84-forge")
     implementation fg.deobf("maven.modrinth:architectury-api:9.2.14+forge")
     implementation fg.deobf("maven.modrinth:do-api:1.2.15")
     implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
     implementation fg.deobf("maven.modrinth:curios:5.10.0+1.20.1")
-    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
-    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+    /*
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:15.20.0.105"))
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:15.20.0.105"))
     // at runtime, use the full JEI jar for Forge
-    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
+    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:15.20.0.105"))*/
+    implementation fg.deobf("maven.modrinth:jei:iNv5B1Zj")
     //优化类
-    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
-    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
     implementation fg.deobf("maven.modrinth:entityculling:dlg7nMa6")
+    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
+    //implementation fg.deobf("maven.modrinth:badoptimizations:2.2.0")
+    //Remove Reloading Screen
+    implementation fg.deobf("maven.modrinth:rrls:4.0.6.1+mc1.20.1-forge")
+    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
+    //Let Me Despawn
+    //implementation fg.deobf("maven.modrinth:lmd:1.4.4")
+    //implementation fg.deobf("maven.modrinth:immediatelyfast:1.3.0+1.20.4-forge")
+    implementation fg.deobf("maven.modrinth:memoryleakfix:3w0IxNtk")
     implementation fg.deobf("maven.modrinth:embeddium:0.3.31+mc1.20.1")
+    //implementation fg.deobf("maven.modrinth:rubidium-extra:0.5.4.3+mc1.20.1-build.121")
     implementation fg.deobf("maven.modrinth:canary:mc1.20.1-0.3.3")
     implementation fg.deobf("maven.modrinth:fps-reducer:1.20-2.5")
     implementation fg.deobf("maven.modrinth:alternate-current:forge-mc1.20-1.7.0")
     implementation fg.deobf("maven.modrinth:imblocker-original:4.0.5")
+
     //辅助类
     implementation fg.deobf("maven.modrinth:jade:11.9.4+forge")
     implementation fg.deobf("maven.modrinth:xaeros-world-map:1.39.0_Forge_1.20")
@@ -268,3 +280,45 @@ tasks.withType(ScalaCompile) {
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
+configurations {
+    exportModJarsConfig {
+        extendsFrom implementation
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
+
+task exportModJars(type: Copy) {
+    doFirst {
+        // Delete all files inside the mods folder
+        delete fileTree("$buildDir/mods")
+    }
+
+    from {
+        configurations.exportModJarsConfig.resolvedConfiguration.resolvedArtifacts.findAll { artifact ->
+            artifact.moduleVersion.id.group in ['maven.modrinth', 'curse.maven']
+        }.collect { artifact ->
+            artifact.file
+        }
+    }
+    into "$buildDir/mods"
+
+    doLast {
+        def jarFile = file("$buildDir/libs/rdi-1.0.0-all.jar")
+        if (jarFile.exists()) {
+            copy {
+                from jarFile
+                into "$buildDir/mods"
+            }
+        } else {
+            tasks.build.execute()
+            copy {
+                from jarFile
+                into "$buildDir/mods"
+            }
+        }
+    }
+}
+
+exportModJars.dependsOn configurations.exportModJarsConfig
+

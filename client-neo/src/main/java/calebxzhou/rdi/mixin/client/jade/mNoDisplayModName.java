@@ -20,7 +20,7 @@ import snownee.jade.api.config.IPluginConfig;
 //jade不显示mod名称
 @Mixin(CorePlugin.class)
 public class mNoDisplayModName {
-    @Redirect(method = "registerClient",at= @At( value = "INVOKE", target = "Lsnownee/jade/api/IWailaClientRegistration;registerBlockComponent(Lsnownee/jade/api/IBlockComponentProvider;Ljava/lang/Class;)V"))
+    @Redirect(remap = false, method = "registerClient",at= @At( value = "INVOKE", target = "Lsnownee/jade/api/IWailaClientRegistration;registerBlockComponent(Lsnownee/jade/api/IBlockComponentProvider;Ljava/lang/Class;)V"))
     private void no1(IWailaClientRegistration registration, IBlockComponentProvider prov, Class<? extends Block> aClass){
         if(prov instanceof ModNameProvider){
             return;
@@ -28,7 +28,7 @@ public class mNoDisplayModName {
             registration.registerBlockComponent(prov,aClass);
         }
     }
-    @Redirect(method = "registerClient",at= @At( value = "INVOKE", target = "Lsnownee/jade/api/IWailaClientRegistration;registerEntityComponent(Lsnownee/jade/api/IEntityComponentProvider;Ljava/lang/Class;)V" ))
+    @Redirect(remap = false, method = "registerClient",at= @At( value = "INVOKE", target = "Lsnownee/jade/api/IWailaClientRegistration;registerEntityComponent(Lsnownee/jade/api/IEntityComponentProvider;Ljava/lang/Class;)V" ))
     private void no2(IWailaClientRegistration registration, IEntityComponentProvider prov, Class<? extends Entity> aClass){
         if(prov instanceof ModNameProvider){
             return;

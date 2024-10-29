@@ -3,6 +3,8 @@ package calebxzhou.rdi.tutorial
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.STORAGE
 import calebxzhou.rdi.banner.Banner
+import calebxzhou.rdi.blockguide.BlockGuide
+import calebxzhou.rdi.blockguide.blockGuide
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.screen.RPauseScreen
@@ -184,7 +186,16 @@ data class Tutorial(
         ) {
             steps += TutorialStep(text, beforeOpr, completeCondition)
         }
-
+        fun buide(
+            text: String,
+            beforeOpr: (ServerPlayer) -> Unit = {},
+            guider:  BlockGuide. Builder.() -> Unit
+        ){
+            step(text,{
+                beforeOpr(it)
+                blockGuide(guider)
+            }){BlockGuide.isOff}
+        }
         //让玩家自行检查操作是否完成 完成以后 点聊天框的完成按钮 必须手动下一步
         fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}) {
             val cmp = mcText(text) + mcText(" 完成后按T键，点击") +

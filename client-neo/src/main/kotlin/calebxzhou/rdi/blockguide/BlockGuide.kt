@@ -78,7 +78,7 @@ class BlockGuide(val steps: List<Step>) {
             }
         fun render(guiGraphics: GuiGraphics){
             guiGraphics.matrixOp {
-                translate(0.0, 24.0, 100.0)
+                translate(100.0, 24.0, 100.0)
                 guiGraphics.fill(0, 0, mcUIWidth/2, 20, 0x66000000.toInt())
                 translate(0.0, 6.0, 100.0)
                 val width = guiGraphics.drawString(mcFont, text, 10, 0, WHITE)

@@ -7,9 +7,7 @@ import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
-import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -215,39 +213,31 @@ val Player.lookingAtBlockEntity: BlockEntity?
         }
         return null
     }
-
+//轻量化itemstack 只有物品和数量
+typealias LiteItemStack = Pair<Item,Int>
 fun Player.bagHas(cond: (ItemStack) -> Boolean): Boolean {
     return inventory.hasAnyMatching(cond)
 }
-
 fun Player.bagHas(tag: TagKey<Item>, count: Int = 1): Boolean {
     return bagHas { it.`is`(tag) && it.count >= count }
 }
-
-fun Player.bagHasRockTool(type: RockCategory.ItemType): Boolean {
-    return RockCategory.entries.any { category ->
-        bagHas(TFCItems.ROCK_TOOLS[category]!![type]!!.get())
-    }
-}
-
 infix fun Player.bagHas(item: Item): Boolean {
-    return bagHas(item, 1)
+    return bagHas(item to 1)
 }
-
-infix fun Player.bagHas(item: ItemStack): Boolean {
+infix fun Player.bagHasStack(item: ItemStack): Boolean {
     return bagHas { it == item }
 }
-
-fun Player.bagHas(item: Item, count: Int = 1): Boolean {
-    return bagHas { it.`is`(item) && it.count >= count }
+//数量大于等于
+infix fun Player.bagHas(lis: LiteItemStack): Boolean {
+    return this.bagHas { it.`is`(lis.first) && it.count >= lis.second }
 }
 
 infix fun Player.handHas(item: Item): Boolean {
     return mainHandItem.`is`(item)
 }
 
-infix fun Player.handHas(itemStack: ItemStack): Boolean {
-    return mainHandItem.`is`(itemStack.item) && mainHandItem.count == itemStack.count
+infix fun Player.handHas(itemStack: LiteItemStack): Boolean {
+    return mainHandItem.`is`(itemStack.first) && mainHandItem.count == itemStack.second
 }
 
 infix fun Player.feetOn(block: Block): Boolean {
@@ -260,13 +250,11 @@ infix fun Player.isLooking(block: Block): Boolean {
 
 infix fun Player.isLooking(item: Item): Boolean = lookingAtItemEntity?.item?.`is`(item) == true
 
-infix fun Item.by(count: Int): ItemStack {
-    return ItemStack(this, count)
-}
+
 
 infix fun Minecraft.justChatted(text: String): Boolean = mc.gui.chat.recentChat.lastOrNull()?.contains(text) == true
 val Player.waterLevel
-    get() = (foodData as TFCFoodData).thirst
+    get() = (foodData as? TFCFoodData)?.thirst?:0f
 val Player.waterPercent
     get() = (waterLevel / TFCFoodData.MAX_THIRST * 100).roundToInt()
 val Player.lookingAtItemEntity: ItemEntity?
@@ -285,13 +273,6 @@ val Player.lookingAtEntity: Entity?
         return null
     }
 
-infix fun Player.give(item: Item) {
-    give(item by 1)
-}
-
-infix fun Player.give(itemStack: ItemStack) {
-    inventory.add(itemStack)
-}
 
 fun Minecraft.addToast(toast: Toast) {
     toasts.addToast(toast)

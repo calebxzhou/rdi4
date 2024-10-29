@@ -23,7 +23,7 @@ import java.util.List;
 @Mixin(ItemSizeManager.class)
 public class mTfcSizeTooltip {
     //在重量和体积图标后面加上汉字
-   @Overwrite
+   @Overwrite(remap = false)
    public static void addTooltipInfo(ItemStack stack, List<Component> text)
    {
        RTfcItemSizeManager.addTooltipInfo(stack, text);

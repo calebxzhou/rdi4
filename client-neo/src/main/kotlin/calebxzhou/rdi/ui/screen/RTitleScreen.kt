@@ -5,6 +5,7 @@ import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
+import calebxzhou.rdi.tutorial.T1_BUILD
 import calebxzhou.rdi.tutorial.T1_CERA
 import calebxzhou.rdi.ui.component.*
 import calebxzhou.rdi.ui.general.Icons
@@ -202,7 +203,7 @@ class RTitleScreen : RScreen("主页") {
                 false
             )
         }*/
-        T1_CERA.start()
+        T1_BUILD.start()
         //TUTORIAL_PRIMARY.start()
         /*if (!File("tutorial1_done").exists()) {
             Tutorial.stoneAge[0].start()
