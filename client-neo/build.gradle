@@ -291,11 +291,12 @@ import org.gradle.internal.os.OperatingSystem
 
 
 def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/"
-def modsDir = shippingDir+"client/.minecraft/mods/"
+def clientDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/client/.minecraft/"
+def modsDir = clientDir+"mods/"
 tasks.register('删临'){
     file("$buildDir/tmp").deleteDir()
 }
-tasks.register('exportOtherModJars') {
+tasks.register('导别m') {
     doFirst {
         // Ensure the target directory exists
         file(modsDir).deleteDir()
@@ -313,12 +314,8 @@ tasks.register('exportOtherModJars') {
     }
     dependsOn(configurations.exportModJarsConfig)
 }
-tasks.named('build').configure {
-    dependsOn('删临')
-}
 tasks.register('构移测'){
     dependsOn(build)
-    mustRunAfter('删临')
     doLast {
         // Copy the built project JAR to userDocumentsDir
         def builtJar = file("$buildDir/libs/${archivesBaseName}-${version}-all.jar")
@@ -328,16 +325,26 @@ tasks.register('构移测'){
         }
     }
 }
-tasks.register('shipModpack'){
-    dependsOn(exportOtherModJars,build)
+compileJava {
     doLast {
-        // Copy the built project JAR to userDocumentsDir
-        def builtJar = file("$buildDir/libs/${archivesBaseName}-${version}-all.jar")
-        copy {
-            from builtJar
-            into modsDir
+        if (state.failure != null) {
+            println '编译失败 删临重试'
+            tasks.删临.execute()
         }
-        // Zip the userDocumentsDir
+    }
+}
+task 清包(type: Exec) {
+    commandLine 'cmd', '/c', "cd ${clientDir} && python prepare4shipping.py"
+}
+tasks.register('出m'){
+    dependsOn(导别m,构移测)
+    doLast {
         ant.zip(destfile: shippingDir+"mods.zip", basedir: modsDir)
+    }
+}
+tasks.register('出包'){
+    dependsOn(导别m,构移测,清包)
+    doLast {
+        ant.zip(destfile: shippingDir+"rdi4r.zip", basedir: clientDir)
     }
 }
