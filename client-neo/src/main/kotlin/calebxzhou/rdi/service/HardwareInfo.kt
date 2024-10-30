@@ -18,6 +18,7 @@ object HardwareInfo {
     val cpu: CentralProcessor
     val gpus: List<GraphicsCard>
     val mems: List<PhysicalMemory>
+    val totalMemory: Long
     val displays: List<Display>
     //val cpu: String
     init {
@@ -48,6 +49,7 @@ object HardwareInfo {
         }*/
 
         mems = hal.memory.physicalMemory
+        totalMemory = mems.sumOf { it.capacity }
        /* var memTotalSize = 0f
         for (meminfo in hal.memory.physicalMemory) {
             val memSizef = meminfo.capacity.toFloat() / (1024 * 1024 * 1024f)

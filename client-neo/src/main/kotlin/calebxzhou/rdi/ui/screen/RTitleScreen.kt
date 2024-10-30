@@ -137,26 +137,9 @@ class RTitleScreen : RScreen("主页") {
         val account = Account.now ?: Account.DEFAULT
         //关闭音乐
         mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
-        /*FabricLoader.getInstance().allMods.forEach {
-            var modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${it.metadata.id}", it.metadata.name)
-            if(modName == it.metadata.name){
-                modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${it.metadata.id}.base", it.metadata.name)
-            }
-            if(modName == it.metadata.name){
-                modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${it.metadata.id}.${it.metadata.id}", it.metadata.name)
-            }
-            loadedModsIdName += it.metadata.id to modName
-        }
-        loadedModsIdName += listOf(
-            "minecraft" to "原版",
-            "ad_astra" to "星之所向",
-            "immersive_aircraft" to "拟真飞行器",
-            "vinery" to "葡园酒香",
-            "createdeco" to "机械动力：装饰",
-            "illagerinvasion" to "灾厄入侵",
-            "adorn" to "装饰",
-        )
-        log.info(loadedModsIdName)*/
+
+
+        /*日后启用
         RPlayerHeadButton(account) {
             if (account == Account.DEFAULT)
                 mc goScreen optScreen(this)
@@ -166,20 +149,29 @@ class RTitleScreen : RScreen("主页") {
             val accountNameWidth = mcFont.width(Account.now?.name?: Account.DEFAULT.name)
             x = mcUIWidth - (16 + accountNameWidth + 6)
             y = mcUIHeight- 17
-        }.also { registerWidget(it) }
+        }.also { registerWidget(it) }*/
+
         gridLayout(this,10, mcUIHeight - 16) {
             imageButton(Icons["start"], "开始") {
-                start()
+                mc goScreen optionScreen(this@RTitleScreen,"选择游玩模式"){
+                    "单人模式" to {mc goScreen SelectWorldScreen(this.mcScreen)}
+                    "线上模式" to { alert("线上多人模式预计2024.12.6开通") }
+                }
+            //start()
+            }
+            imageButton(Icons["tutorial"], "互动教程") {
+                mc goScreen RTutorialScreen(this@RTitleScreen)
+            //start()
             }
             imageButton(Icons["settings"], "设置") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
             imageButton(Icons["partner"], "致谢") {
-                alert("服务器硬件 wuhudsm66 \n 任务设计：terryaxe \nMod建议：ForiLuSa")
+                alert("服务器硬件 wuhudsm66\nMod建议 ForiLuSa 普通人 Caragan J4ckTh3R1pper")
             }
             imageButton(Icons["qq"], "QQ群") {
                 copyToClipboard("1095925708")
-                alert("已复制QQ群号：1095925708 欢迎加入RDI玩家交流群！")
+                alert("欢迎加入RDI玩家交流群\n已复制QQ群号：1095925708 ")
 
 
 

@@ -2,7 +2,11 @@
   "required": true,
   "package": "calebxzhou.rdi.mixin.client",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "rdi.refmap.json",
+  "refmap": "rdi.mixins.refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.7",
   "mixins": [
     "ALivingEntity",
     "mAlwaysOfflineMode",
@@ -18,6 +22,7 @@
     "gameplay.mPlayer",
     "jade.mModNameChineseDisplay",
     "jade.mNoDisplayModName",
+    "railway.mRailNoDevCheck",
     "tfc.AInventoryBlockEntity",
     "tfc.mDryingBricksTooltip",
     "tfc.mFastPitKiln",
@@ -49,9 +54,5 @@
     "mWidgetMouseCursor",
     "mWindowTitle",
     "tfc.mTfcKnappingScreen"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "minVersion": "0.8"
+  ]
 }
