@@ -130,6 +130,7 @@ data class Tutorial(
             Const.DEBUG,
             GameRules().apply {
                 getRule(GameRules.RULE_COMMANDBLOCKOUTPUT).set(false, null)
+                getRule(GameRules.RULE_RANDOMTICKING).set(100, null)
                 getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null)
                 getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(false, null)
                 getRule(GameRules.RULE_DAYLIGHT).set(false, null)

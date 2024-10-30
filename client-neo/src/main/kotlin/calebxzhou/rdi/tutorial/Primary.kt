@@ -253,7 +253,7 @@ val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
 
 
 }
-val T1_BUILD = tutorial("1_build", "初级生存·建筑") {
+val T1_BUILD = tutorial("1_build", "初级生存·建筑材料") {
     var org = bos(0, -60, 0)
     buide("按照指示，把泥土堆起来", {
         it give Blocks.DIRT.asItem() * 8
