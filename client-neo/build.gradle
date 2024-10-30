@@ -188,7 +188,7 @@ def mods = [
         "distanthorizons:2.2.1-a-1.20.1",
         //************真mod*************
         "terrafirmacraft:3.2.7",
-        "functional-storage:3.2.7",
+        "functional-storage:1.20.1-1.2.12",
         "firmalife:2.1.11",
         "farmers-delight:1.20.1-1.2.4",
         "oceans-delight:1.0.2-1.20",
