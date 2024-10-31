@@ -169,7 +169,7 @@ class RTitleScreen : RScreen("主页") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
             imageButton(Icons["partner"], "致谢") {
-                alert("服务器硬件 wuhudsm66\nMod建议 ForiLuSa 普通人 Caragan J4ckTh3R1pper")
+                alert("服务器硬件 wuhudsm66\nMod建议 ForiLuSa 普通人 Caragan J4ckTh3R1pper\n测试 wuhudsm66 狗查")
             }
             imageButton(Icons["qq"], "QQ群") {
                 copyToClipboard("1095925708")

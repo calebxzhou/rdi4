@@ -28,6 +28,7 @@
     "tfc.mFastPitKiln",
     "tfc.mTfcDryingBricks",
     "tfc.mTfcFastCharcoal",
+    "tfc.mTfcLogPileBlock",
     "tfc.mTfcNoInventoryTabs",
     "tfc.mTfcOverlay",
     "tfc.mTfcSizeTooltip"

@@ -190,7 +190,7 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
     }) {
         it handHas TFCItems.FIRESTARTER.get()
     }
-    step("对准裸露的木堆，长按鼠标右键点燃") {
+    step("对准裸露的木堆，按住鼠标右键，直到点燃") {
         it isLooking Blocks.FIRE
     }
     step("手持泥土，右键点击火焰，把木炭盖好（如果出现其他有火焰的地方，也要盖好，否则烧制木炭失败）") {
@@ -486,4 +486,19 @@ val T1_BUILD = tutorial("1_build", "建筑材料") {
         destroy(org dy 3)
         destroy(org dy 4)
     }
+}
+val T1_ARGI = tutorial("1_agri","农业"){
+//农作物（以燕麦为代表）
+// 小型灌木（以云莓为代表）
+// 大型灌木（以蓝莓为代表）
+// 果树（以红苹果为代表）
+}
+val T1_ANIMAL = tutorial("1_animal","牧业"){
+
+}
+val T1_PET = tutorial("1_pet","宠物"){
+
+}
+val T1_FOOD = tutorial("1_food","食物与营养"){
+
 }
