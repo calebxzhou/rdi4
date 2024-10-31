@@ -23,7 +23,6 @@ fun uiGuide(builder: UiGuide.Builder.() -> Unit) {
 
 class UiGuide(
     val screenClass: Class<Screen>?,
-    val rightClick: Boolean,
     val steps: List<Step>
 ) {
     private var stepIndex = 0
@@ -31,10 +30,11 @@ class UiGuide(
         get() = steps.getOrNull(stepIndex)
     var areaNow: Rect2i? = null
 
-    fun render(guiGraphics: GuiGraphics) {
+    fun render(guiGraphics: GuiGraphics, mx: Int, my: Int) {
         areaNow?.let { area ->
             guiGraphics.fill(0, 0, mcUIWidth, mcUIHeight, 0xaa000000.toInt())
-            guiGraphics.fill(area.x, area.y, area.x + area.width, area.y + area.height, 0xaa00bb00.toInt())
+            val color = if(stepNow?.rightClick==true)  0xaabb0000 else 0xaa00bb00
+            guiGraphics.fill(area.x, area.y, area.x + area.width, area.y + area.height, color.toInt())
         }
     }
 
@@ -52,21 +52,25 @@ class UiGuide(
         } ?: stop()
     }
 
-    fun onClick(e: ScreenEvent.MouseButtonPressed.Pre) : Boolean{
+    fun onClick(e: ScreenEvent.MouseButtonPressed.Pre): Boolean {
         val mx = (e.mouseX).toInt()
         val my = (e.mouseY).toInt()
-        if (rightClick && e.button == InputConstants.MOUSE_BUTTON_LEFT)
-            return false
-        areaNow?.let { area ->
-            //不允许点击绿框以外 的部分
-            if ((mx in area.x..area.x + area.width)
-                && (my in area.y..area.y + area.height)
-            ) {
-                next()
-                return true
-            }else return false
+        stepNow?.let { step ->
+            if (step.rightClick && e.button == InputConstants.MOUSE_BUTTON_LEFT)
+                return false
+            areaNow?.let { area ->
+                //不允许点击绿框以外 的部分
+                if ((mx in area.x..area.x + area.width)
+                    && (my in area.y..area.y + area.height)
+                ) {
+                    next()
+                    return true
+                } else return false
+            } ?:
+            //没有区域限制时
+            return true
         }?:
-        //没有区域限制时
+        //没有guide步骤时
         return true
     }
 
@@ -89,18 +93,20 @@ class UiGuide(
         var now: UiGuide? = null
             private set
         val isOn
-            get() = now!=null
+            get() = now != null
     }
 
     data class Step(
+        var rightClick: Boolean = false,
         val areaSupplier: (Screen) -> Rect2i?,
-    )
+    ) {
+    }
 
     class Builder(val screenClass: Class<Screen>?) {
         val steps = arrayListOf<Step>()
-        var rightClick = false
-        fun step(areaSupplier: (Screen) -> Rect2i?) {
-            steps += Step(areaSupplier)
+
+        fun step(right: Boolean=false,areaSupplier: (Screen) -> Rect2i?) {
+            steps += Step(right,areaSupplier)
         }
 
         //背包里的空位(E键画面)
@@ -111,28 +117,33 @@ class UiGuide(
         //背包里的空位(任意容器画面)
         fun airSlotContainer() {
             slotScreen { screen, slot ->
-                if(screen is AbstractContainerScreen<*>){
-                    val invSlotEndIndex = screen.menu.slots.size-1
-                    val invSlotStartIndex = screen.menu.slots.size - 4*9
+                if (screen is AbstractContainerScreen<*>) {
+                    val invSlotEndIndex = screen.menu.slots.size - 1
+                    val invSlotStartIndex = screen.menu.slots.size - 4 * 9
                     !slot.hasItem() && slot.index in invSlotStartIndex..invSlotEndIndex
-                }else
+                } else
                     false
             }
         }
 
         fun slot(vararg indexes: Int) {
-            indexes.forEach { index -> slotScreen { _, it -> it.index == index } }
+            slot(false,*indexes)
+        }
+        fun slot(right: Boolean,vararg indexes: Int) {
+            indexes.forEach { index -> slotScreen(right) { _, it -> it.index == index } }
         }
 
-        fun slot(findCondition: (Slot) -> Boolean) {
-            slotScreen { _, slot -> findCondition(slot) }
+
+        fun slot(right: Boolean=false,findCondition: (Slot) -> Boolean) {
+            slotScreen(right) { _, slot -> findCondition(slot) }
         }
-        fun slotScreen(findCondition: (Screen, Slot) -> Boolean) {
-            step { screen ->
+
+        private fun slotScreen(right: Boolean=false,findCondition: (Screen, Slot) -> Boolean) {
+            step(right) { screen ->
                 if (screen is AbstractContainerScreen<*>) {
                     val oX = screen.guiLeft
                     val oY = screen.guiTop
-                    screen.menu.slots.find{slot -> findCondition(screen,slot)}?.let {
+                    screen.menu.slots.find { slot -> findCondition(screen, slot) }?.let {
                         //给格子窜到ui的位置上
                         val x = oX + it.x
                         val y = oY + it.y
@@ -149,16 +160,20 @@ class UiGuide(
         }
 
         fun widgets(vararg indexes: Int) {
+            widgets(false, *indexes)
+        }
+
+        fun widgets(right: Boolean, vararg indexes: Int) {
 
             indexes.forEach { index ->
-                steps += Step { screen ->
+                steps += Step (right){ screen ->
                     screen.children()
                         .filterIndexed { i, w ->
                             w is AbstractWidget && i == index
                         }
                         .firstOrNull()?.let {
                             (it as AbstractWidget).run {
-                               // logger.info("找到${screenClass}的控件${index}=${this}")
+                                // logger.info("找到${screenClass}的控件${index}=${this}")
                                 Rect2i(x, y, width, height)
                             }
                         } ?: let {
@@ -170,18 +185,8 @@ class UiGuide(
         }
 
         fun start() {
-
-            UiGuide(screenClass, rightClick,steps).start()
+            UiGuide(screenClass, steps).start()
         }
 
     }
-    /*data class WidgetIndexStep(
-        val index: Int
-    ): Step()
-    data class SlotIndexStep(
-        val index: Int
-    ): Step()
-    data class SlotFindStep(
-        val predicate: (Slot) -> Boolean
-    ):Step()*/
 }

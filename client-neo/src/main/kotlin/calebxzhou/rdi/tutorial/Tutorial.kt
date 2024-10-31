@@ -6,8 +6,6 @@ import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.blockguide.blockGuide
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.ui.screen.RPauseScreen
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
@@ -17,9 +15,7 @@ import net.dries007.tfc.TerraFirmaCraft
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineLabel
-import net.minecraft.client.gui.screens.ChatScreen
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
-import net.minecraft.client.gui.screens.LevelLoadingScreen
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.core.registries.Registries
@@ -130,7 +126,7 @@ data class Tutorial(
             Const.DEBUG,
             GameRules().apply {
                 getRule(GameRules.RULE_COMMANDBLOCKOUTPUT).set(false, null)
-                getRule(GameRules.RULE_RANDOMTICKING).set(100, null)
+                getRule(GameRules.RULE_RANDOMTICKING).set(20, null)
                 getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null)
                 getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(false, null)
                 getRule(GameRules.RULE_DAYLIGHT).set(false, null)
@@ -155,11 +151,10 @@ data class Tutorial(
         now = this
     }
 
-    var file = File(STORAGE,"tutorial/${id}")
+    var file = File(STORAGE.resolve("tutorial").also { it.mkdirs() }, id)
     var isDone: Boolean
         get() = file.exists()
         set(value) {
-            file.mkdirs()
             if (value)
                 file.createNewFile()
             else
@@ -170,6 +165,7 @@ data class Tutorial(
         now = null
         Banner.reset()
         TutorialState.reset()
+        BlockGuide.now?.stop()
         deleteMap()
     }
 

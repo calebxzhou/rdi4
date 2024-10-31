@@ -40,13 +40,13 @@ class BlockGuide(val steps: List<Step>) {
         val nowModel
             get() = mc.itemRenderer.getModel(nowItemStack, mc.level, mc.player, 0)
         val nowDisplayName
-            get() = nowItemStack.hoverName
+            get() = nowState.block.name
         val targetItemStack
             get() = ItemStack(targetState.block)
         val targetModel
             get() = mc.itemRenderer.getModel(targetItemStack, mc.level, mc.player, 0)
         val targetDisplayName
-            get() = targetItemStack.hoverName
+            get() = targetState.block.name
         val text = when (type) {
             BlockOperation.PLACE -> "在绿框处放置"//之后的
             BlockOperation.DESTROY -> "破坏红框处的"//当前的

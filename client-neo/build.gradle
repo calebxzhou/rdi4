@@ -343,7 +343,7 @@ tasks.register('出m'){
     }
 }
 tasks.register('出包'){
-    dependsOn(导别m,构移测,清包)
+    dependsOn(出m,清包)
     doLast {
         ant.zip(destfile: shippingDir+"rdi4r.zip", basedir: clientDir)
     }

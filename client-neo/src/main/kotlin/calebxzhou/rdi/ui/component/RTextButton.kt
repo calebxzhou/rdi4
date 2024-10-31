@@ -13,7 +13,7 @@ class RTextButton(
     var text: MutableComponent,
     x: Int=0,
     y: Int=0,
-    onClick: (Button) -> Unit,
+    onClick: (Button) -> Unit={},
 ) : RButton(
     text,
     x,

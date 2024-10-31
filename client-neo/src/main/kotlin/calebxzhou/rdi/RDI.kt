@@ -23,12 +23,10 @@ import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.util.*
-import com.simibubi.create.infrastructure.ponder.scenes.fluid.HosePulleyScenes.level
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
-import net.dries007.tfc.config.ClientConfig
 import net.dries007.tfc.config.FoodExpiryTooltipStyle
 import net.dries007.tfc.config.TFCConfig
 import net.dries007.tfc.config.TimeDeltaTooltipStyle
@@ -280,7 +278,7 @@ object RDIEvents {
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
-        UiGuide.now?.render(e.guiGraphics)
+        UiGuide.now?.render(e.guiGraphics,e.mouseX,e.mouseY)
         Banner.renderScreen(e.guiGraphics, e.screen)
         Tutorial.now?.render(e.guiGraphics)
         SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
@@ -303,17 +301,15 @@ object RDIEvents {
         if(e.side.isClient){
             OmniNavi.tick()
             BlockGuide.now?.tick(e.level)
-            mc.screen?.let {
-                UiGuide.now?.tick(it)
-            }
+
         }
     }
     fun onClientTick(e: TickEvent.ClientTickEvent) {
         if (e.phase == TickEvent.Phase.END) {
             Banner.tick()
-
-
-
+            mc.screen?.let {
+                UiGuide.now?.tick(it)
+            }
         }
     }
 
@@ -337,12 +333,6 @@ object RDIEvents {
                 border.size = 64.0
             }
             it.changeStep(0,e.entity as ServerPlayer)
-        }
-        timerDelay(3000) {
-
-            Tutorial.now?.let {
-                alert("即将开始教程“${it.name}”\n注意画面左下角的提示")
-            }
         }
     }
 

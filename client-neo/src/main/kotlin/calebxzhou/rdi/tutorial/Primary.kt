@@ -1,6 +1,8 @@
 package calebxzhou.rdi.tutorial
 
+import calebxzhou.rdi.common.SmartBlockPos
 import calebxzhou.rdi.common.bos
+import calebxzhou.rdi.common.smart
 import calebxzhou.rdi.mixin.client.tfc.AInventoryBlockEntity
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.util.*
@@ -14,6 +16,7 @@ import net.dries007.tfc.common.TFCTags.Items.ROCK_KNAPPING
 import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.common.blocks.WattleBlock
 import net.dries007.tfc.common.blocks.devices.DryingBricksBlock
+import net.dries007.tfc.common.blocks.devices.FirepitBlock
 import net.dries007.tfc.common.blocks.devices.PitKilnBlock
 import net.dries007.tfc.common.blocks.plant.Plant
 import net.dries007.tfc.common.blocks.rock.LooseRockBlock
@@ -34,11 +37,12 @@ import net.minecraft.world.item.DyeItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.FireBlock
 
 /**
  * calebxzhou @ 2024-10-24 8:14
  */
-val T1_STONE = tutorial("1_stone", "初级生存·石器") {
+val T1_STONE = tutorial("1_stone", "石器") {
     step("对准树下面散落的树枝", {
         (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition())
     }) { it isLooking TFCBlocks.WOODS[Wood.OAK]!![Wood.BlockType.TWIG]!!.get() }
@@ -96,16 +100,16 @@ val T1_STONE = tutorial("1_stone", "初级生存·石器") {
     }
 
 }
-val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
+val T1_FIRE = tutorial("1_fire", "钻木取火") {
     step("按E键打开背包", {
-        it giveRock 15
         it giveTwig 15
+        it giveTwig 15
+        it giveLog 15
         it giveLog 15
         it give (TFCItems.STRAW.get() * 15)
     }) { mc.screen is InventoryScreen }
     tip("鼠标右键点击树枝，把它平分") {
-        rightClick = true
-        slot { it.item.`is`(FIREPIT_STICKS) }
+        slot(true) { it.item.`is`(FIREPIT_STICKS) }
     }
     tip("鼠标左键点击绿框") {
         airSlotInv()
@@ -123,7 +127,7 @@ val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
         it.lookingAtItemEntity?.item?.`is`(ItemTags.LOGS) == true
     }
     step("手持起火器，对准这些树枝和原木，长按鼠标右键点燃（不成功就多试几次）") {
-        it.lookingAtBlock?.`is`(TFCBlocks.FIREPIT.get()) == true
+        it isLooking TFCBlocks.FIREPIT.get()
     }
     step("鼠标右键点击 刚刚点燃的篝火", { it.give(TFCItems.FOOD[Food.PORK]!!.get()) }) {
         mc.screen is FirepitScreen
@@ -144,7 +148,79 @@ val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
     ) {
         !it.foodData.needsFood()
     }
+    val pos = SmartBlockPos(8, -61, 8)
+    buide("按照指示挖一个2x3的坑", {
+    }) {
+        destroy(pos dx 1)
+        destroy(pos dx 1 dz 1)
+        destroy(pos dx 1 dz 2)
+        destroy(pos dx 2)
+        destroy(pos dx 2 dz 1)
+        destroy(pos dx 2 dz 2)
+    }
+    buide("在坑中放置原木堆，(手持原木 按下左Shift下蹲的同时 按鼠标右键放置)\n右键点击原木堆，把里面的木头都填满", {
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+        it giveLog 16
+    }) {
+        val bk = TFCBlocks.LOG_PILE.get()
+        place(pos dx 1, bk)
+        place(pos dx 1 dz 1, bk)
+        place(pos dx 1 dz 2, bk)
+        place(pos dx 2, bk)
+        place(pos dx 2 dz 1, bk)
+        place(pos dx 2 dz 2, bk)
+    }
+    buide("蹲下的同时，在原木堆上方放置泥土") {
+        val bk = Blocks.DIRT
+        place(pos dy 1 dx 1 dz 1, bk)
+        place(pos dy 1 dx 1 dz 2, bk)
+        place(pos dy 1 dx 2, bk)
+        place(pos dy 1 dx 2 dz 1, bk)
+        place(pos dy 1 dx 2 dz 2, bk)
+    }
+    step("手持起火器",{
+        it give Blocks.DIRT.asItem()*16
+    }) {
+        it handHas TFCItems.FIRESTARTER.get()
+    }
+    step("对准裸露的木堆，长按鼠标右键点燃") {
+        it isLooking Blocks.FIRE
+    }
+    step("手持泥土，右键点击火焰，把木炭盖好（如果出现其他有火焰的地方，也要盖好，否则烧制木炭失败）") {
+        it isLooking Blocks.DIRT
+    }
+    step("等它不冒烟了，再把木炭堆挖开") {
+        it isLooking TFCBlocks.CHARCOAL_PILE.get()
+    }
+    step("用铲子收集里面的木炭",{
+        it giveRockTool RockCategory.ItemType.SHOVEL
+    }) {
+        it bagHas Items.CHARCOAL
+    }
+    step("木炭暂时用不到，以后提炼矿物的时候用到，回到之前做的篝火那边") {
+        it isLooking TFCBlocks.FIREPIT.get()
+    }
+    step("在篝火画面左侧添加原木，用起火器重新点燃篝火") {
+        it isLooking TFCBlocks.FIREPIT.get() &&
+                it.lookingAtBlock?.getValue(FirepitBlock.LIT) == true
+    }
+
+}
+val T1_CERA = tutorial("1_cera", "陶器") {
+
     step("四处转转，寻找植物“蹄盖蕨”", {
+        it giveTwig 15
+        it giveTwig 15
+        it giveLog 15
+        it giveLog 15
+        it give (TFCItems.STRAW.get() * 15)
         var originBlock = BlockPos(8, -60, 8)
         val loam =
             TFCBlocks.SOIL[SoilBlockType.CLAY_GRASS]!![SoilBlockType.Variant.SILTY_LOAM]!!.get().defaultBlockState()
@@ -206,7 +282,7 @@ val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
                 &&
                 it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.LIT - 1
     }
-    step("手持起火器，对准坑窑 长按右键") {
+    step("制作并手持起火器，对准坑窑 长按右键点燃") {
         it isLooking Blocks.FIRE
     }
     step("等待30秒，然后按鼠标右键，取出烧制完成的熟陶器") {
@@ -251,9 +327,8 @@ val T1_CERA = tutorial("1_cera", "初级生存·火与陶器") {
         mc.screen == null
     }
 
-
 }
-val T1_BUILD = tutorial("1_build", "初级生存·建筑材料") {
+val T1_BUILD = tutorial("1_build", "建筑材料") {
     var org = bos(0, -60, 0)
     buide("按照指示，把泥土堆起来", {
         it give Blocks.DIRT.asItem() * 8
@@ -287,7 +362,7 @@ val T1_BUILD = tutorial("1_build", "初级生存·建筑材料") {
     step("因为干草块是空心的，所以它起不到任何支撑的作用，泥土放在它上面照样塌陷。现在按下ESC键，看看现在是什么季节，然后打在公屏上") {
         mc justChatted "初夏"
     }
-    step("给你一把铲子，铲掉地面上的雪，并且合成1个雪块", {
+    step("用铲子，最快速度铲掉地面上的雪，并且合成1个雪块", {
         org = org.copy dx 2
         it.serverLevel.setBlock(org, Blocks.SNOW)
         it.serverLevel.setBlock(org dx 1, Blocks.SNOW)
@@ -299,9 +374,9 @@ val T1_BUILD = tutorial("1_build", "初级生存·建筑材料") {
     }) {
         it bagHas Blocks.SNOW_BLOCK.asItem()
     }
-    buide("按照指示摆放雪块",{
+    buide("按照指示摆放雪块", {
         org = org.copy dx 3
-        it give Blocks.SNOW_BLOCK.asItem()*15
+        it give Blocks.SNOW_BLOCK.asItem() * 15
     }) {
         place(org, Blocks.SNOW_BLOCK)
         place(org.above(), Blocks.SNOW_BLOCK)
@@ -316,9 +391,9 @@ val T1_BUILD = tutorial("1_build", "初级生存·建筑材料") {
         }) {
         it bagHas TFCBlocks.WATTLE.get().asItem()
     }
-    buide("按照指示摆放板条",{
+    buide("按照指示摆放板条", {
         org = org.copy dx 4
-    }){
+    }) {
         val block = TFCBlocks.WATTLE.get()
         place(org, block)
         place(org dy 1, block)
@@ -328,83 +403,84 @@ val T1_BUILD = tutorial("1_build", "初级生存·建筑材料") {
         place(org dx 1 dy 1, Blocks.DIRT)
         place(org dx 1, block)
     }
-    step("板条一旦失去支撑，整体都会塌掉，并且现在的空心板条仍然没有支撑作用，所以我们需要制作实心板条\n手持至少4个树枝，右键点击空心板条，即可制成实心板条",{
-        it giveTwig 16
-    }){
-        it.lookingAtBlock?.let { bst->
+    step("板条一旦失去支撑，整体都会塌掉，并且现在的空心板条仍然没有支撑作用，所以我们需要制作实心板条\n手持至少4个树枝，右键点击空心板条，即可制成实心板条",
+        {
+            it giveTwig 16
+        }) {
+        it.lookingAtBlock?.let { bst ->
             return@step bst.block is WattleBlock && bst.getValue(WattleBlock.WOVEN)
-        }?:false
+        } ?: false
     }
-    step("用背包里的材料，制作涂料",{
+    step("用背包里的材料，制作涂料", {
         it give TFCItems.STRAW.get()
         it give Items.CLAY_BALL
         it give Blocks.DIRT.asItem()
-    }){
+    }) {
         it bagHas TFCItems.DAUB.get()
     }
-    step("手持涂料，右键点击实心板条，即可制成未染色板条"){
+    step("手持涂料，右键点击实心板条，即可制成未染色板条") {
         it isLooking TFCBlocks.UNSTAINED_WATTLE.get()
     }
-    DyeColor.entries.forEach { color->
-        step("手持刚刚给你的${color.name}染料，右键点击板条，给它上色",{
+    DyeColor.entries.forEach { color ->
+        step("手持刚刚给你的${color.name}染料，右键点击板条，给它上色", {
             it.inventory.clearContent()
             it give DyeItem.byColor(color)
-        }){
+        }) {
             it isLooking TFCBlocks.STAINED_WATTLE[color]!!.get()
         }
     }
-    buide("按照指示摆放染色板条",{
+    buide("按照指示摆放染色板条", {
         org = org.copy dx 5
-        DyeColor.entries.forEach { color-> it give TFCBlocks.STAINED_WATTLE[color]!!.get().asItem()}
-    }){
-        DyeColor.entries.forEachIndexed {i, color->
-            place(org dz i,TFCBlocks.STAINED_WATTLE[color]!!.get())
+        DyeColor.entries.forEach { color -> it give TFCBlocks.STAINED_WATTLE[color]!!.get().asItem() }
+    }) {
+        DyeColor.entries.forEachIndexed { i, color ->
+            place(org dz i, TFCBlocks.STAINED_WATTLE[color]!!.get())
         }
     }
-    val mud  =TFCBlocks.SOIL[SoilBlockType.MUD]!![SoilBlockType.Variant.LOAM]!!.get()
-    step("用石铲挖掉前方出现的壤泥",{ player ->
+    val mud = TFCBlocks.SOIL[SoilBlockType.MUD]!![SoilBlockType.Variant.LOAM]!!.get()
+    step("用石铲挖掉前方出现的壤泥", { player ->
         org = org.copy dx 6
         player giveRockTool RockCategory.ItemType.SHOVEL
-        player.serverLevel.setBlock(org dz 1,mud)
-    }){
+        player.serverLevel.setBlock(org dz 1, mud)
+    }) {
         it bagHas mud.asItem()
     }
     val wetBrick = TFCBlocks.SOIL[SoilBlockType.DRYING_BRICKS]!![SoilBlockType.Variant.LOAM]!!.get()
-    step("把壤泥和干草合成为4个湿壤泥砖",{
+    step("把壤泥和干草合成为4个湿壤泥砖", {
         it give TFCItems.STRAW.get()
-    }){
-        it bagHas wetBrick.asItem()*4
+    }) {
+        it bagHas wetBrick.asItem() * 4
     }
-    step("按下鼠标右键 把4个湿壤泥砖放在地上"){
-        it.lookingAtBlock?.let { bst->
-            return@step bst.block is DryingBricksBlock && bst.getValue(DryingBricksBlock.COUNT)==4
-        }?:false
+    step("按下鼠标右键 把4个湿壤泥砖放在地上") {
+        it.lookingAtBlock?.let { bst ->
+            return@step bst.block is DryingBricksBlock && bst.getValue(DryingBricksBlock.COUNT) == 4
+        } ?: false
     }
-    step("等待游戏时间一天，让湿壤泥砖变为干壤泥砖（此处已经加速，等20秒就行）",{
-      }){
-        it.lookingAtBlock?.let { bst->
+    step("等待游戏时间一天，让湿壤泥砖变为干壤泥砖（此处已经加速，等5~20秒就行）", {
+    }) {
+        it.lookingAtBlock?.let { bst ->
             return@step bst.block is DryingBricksBlock && bst.getValue(DryingBricksBlock.DRIED)
-        }?:false
+        } ?: false
     }
-    step("把干壤泥砖捡起来"){
+    step("把干壤泥砖捡起来") {
         it bagHas TFCItems.LOAM_MUD_BRICK.get()
     }
-    val mudBricks= TFCBlocks.SOIL[SoilBlockType.MUD_BRICKS]!![SoilBlockType.Variant.LOAM]!!.get()
-    step("用4个干壤泥砖合成一个壤泥砖块"){
+    val mudBricks = TFCBlocks.SOIL[SoilBlockType.MUD_BRICKS]!![SoilBlockType.Variant.LOAM]!!.get()
+    step("用4个干壤泥砖合成一个壤泥砖块") {
         it bagHas mudBricks.asItem()
     }
-    buide("壤泥砖块非常坚固，纯实心，可以任意悬空放置，任意支撑任何物品。必须用铲子才能破坏它。按照指示放置与破坏壤泥砖块",{
-        it give mudBricks.asItem()*16
-    }){
-        place(org,mudBricks)
-        place(org dy 1,mudBricks)
-        place(org dy 2,mudBricks)
-        place(org dy 3,mudBricks)
-        place(org dy 4,mudBricks)
-        place(org dy 4 dx 1,mudBricks)
-        place(org dy 4 dx 2,mudBricks)
-        place(org dy 4 dz 1,mudBricks)
-        place(org dy 4 dz 2,mudBricks)
+    buide("壤泥砖块非常坚固，纯实心，可以任意悬空放置，任意支撑任何物品。必须用铲子才能破坏它。按照指示放置与破坏壤泥砖块", {
+        it give mudBricks.asItem() * 16
+    }) {
+        place(org, mudBricks)
+        place(org dy 1, mudBricks)
+        place(org dy 2, mudBricks)
+        place(org dy 3, mudBricks)
+        place(org dy 4, mudBricks)
+        place(org dy 4 dx 1, mudBricks)
+        place(org dy 4 dx 2, mudBricks)
+        place(org dy 4 dz 1, mudBricks)
+        place(org dy 4 dz 2, mudBricks)
         destroy(org dy 1)
         destroy(org dy 2)
         destroy(org dy 3)

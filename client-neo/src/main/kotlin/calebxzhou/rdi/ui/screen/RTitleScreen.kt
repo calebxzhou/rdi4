@@ -5,13 +5,11 @@ import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
+import calebxzhou.rdi.tutorial.Chapter
 import calebxzhou.rdi.tutorial.T1_BUILD
 import calebxzhou.rdi.tutorial.T1_CERA
 import calebxzhou.rdi.ui.component.*
-import calebxzhou.rdi.ui.general.Icons
-import calebxzhou.rdi.ui.general.alert
-import calebxzhou.rdi.ui.general.alertOs
-import calebxzhou.rdi.ui.general.optionScreen
+import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -153,6 +151,10 @@ class RTitleScreen : RScreen("主页") {
 
         gridLayout(this,10, mcUIHeight - 16) {
             imageButton(Icons["start"], "开始") {
+                Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
+                    alertErr("请先完成教程 ${it.name} 章节")
+                    return@imageButton
+                }
                 mc goScreen optionScreen(this@RTitleScreen,"选择游玩模式"){
                     "单人模式" to {mc goScreen SelectWorldScreen(this.mcScreen)}
                     "线上模式" to { alert("线上多人模式预计2024.12.6开通") }

@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Blocks
 /**
  * calebxzhou @ 2024-10-22 16:32
  */
-val TUTORIAL_BASIC
+val BASIC
     get() = tutorial("basic", "基础操作") {
         val origin = BlockPos(0, -60, 0)
         val goHome = { player: Player ->
@@ -147,8 +147,26 @@ val TUTORIAL_BASIC
         step("记住这个配方图案，按ESC回到背包画面") {
             mc.screen is InventoryScreen
         }
-        step("点击干草，按鼠标右键平分干草，按照刚刚记住的图案，在画面中间偏右的“合成”区域摆放干草，合成两个干草块"){
-            it bagHas (TFCBlocks.THATCH.get().asItem()*2)
+        tip("鼠标右键点击干草，再左键点击空位，平分干草"){
+            slot(true) { it.item.`is`(TFCItems.STRAW.get()) }
+            slot(1)
+            slot(right = true,1)
+            slot(2)
+            slot(right = true,2)
+            slot(3)
+            slot(right = true,1)
+            slot(4)
+            slot(0)
+            airSlotInv()
+        }
+        tip("鼠标左键点击剩下的干草") {
+            slot { it.item.`is`(TFCItems.STRAW.get()) }
+        }
+        tip("鼠标移动到绿框上，按住左键，在合成框中滑动，实现自动平分"){
+            slot(1)
+        }
+        step("点击刚合成好的干草块，再点击背包里的干草块，合二为一"){
+            it bagHas (TFCBlocks.THATCH.get().asItem() * 2)
         }
         step("手持两个干草块"){
             it handHas (TFCBlocks.THATCH.get().asItem() * 2)
