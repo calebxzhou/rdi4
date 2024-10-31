@@ -1,9 +1,8 @@
 package calebxzhou.rdi.uiguide
 
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcUIHeight
-import calebxzhou.rdi.util.mcUIWidth
+import calebxzhou.rdi.ui.screen.RPauseScreen
+import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
@@ -31,10 +30,23 @@ class UiGuide(
     var areaNow: Rect2i? = null
 
     fun render(guiGraphics: GuiGraphics, mx: Int, my: Int) {
-        areaNow?.let { area ->
-            guiGraphics.fill(0, 0, mcUIWidth, mcUIHeight, 0xaa000000.toInt())
-            val color = if(stepNow?.rightClick==true)  0xaabb0000 else 0xaa00bb00
-            guiGraphics.fill(area.x, area.y, area.x + area.width, area.y + area.height, color.toInt())
+        if (mc.screen?.javaClass != screenClass) {
+            return
+        }
+        stepNow?.let { step ->
+
+            areaNow?.let { area ->
+                guiGraphics.fill(0, 0, mcUIWidth, mcUIHeight, 0xaa000000.toInt())
+                val color = if (step.rightClick) 0xaabb0000 else 0xaa00bb00
+                guiGraphics.fill(area.x, area.y, area.x + area.width, area.y + area.height, color.toInt())
+            }
+            guiGraphics.drawCenteredString(
+                mcFont,
+                "鼠标${if (step.rightClick) "右键" else "左键"} 点击${if (step.rightClick) "红色" else "绿色"}区域",
+                mcUIWidth / 2,
+                10,
+                WHITE
+            )
         }
     }
 
@@ -69,7 +81,7 @@ class UiGuide(
             } ?:
             //没有区域限制时
             return true
-        }?:
+        } ?:
         //没有guide步骤时
         return true
     }
@@ -105,8 +117,8 @@ class UiGuide(
     class Builder(val screenClass: Class<Screen>?) {
         val steps = arrayListOf<Step>()
 
-        fun step(right: Boolean=false,areaSupplier: (Screen) -> Rect2i?) {
-            steps += Step(right,areaSupplier)
+        fun step(right: Boolean = false, areaSupplier: (Screen) -> Rect2i?) {
+            steps += Step(right, areaSupplier)
         }
 
         //背包里的空位(E键画面)
@@ -127,18 +139,19 @@ class UiGuide(
         }
 
         fun slot(vararg indexes: Int) {
-            slot(false,*indexes)
+            slot(false, *indexes)
         }
-        fun slot(right: Boolean,vararg indexes: Int) {
+
+        fun slot(right: Boolean, vararg indexes: Int) {
             indexes.forEach { index -> slotScreen(right) { _, it -> it.index == index } }
         }
 
 
-        fun slot(right: Boolean=false,findCondition: (Slot) -> Boolean) {
+        fun slot(right: Boolean = false, findCondition: (Slot) -> Boolean) {
             slotScreen(right) { _, slot -> findCondition(slot) }
         }
 
-        private fun slotScreen(right: Boolean=false,findCondition: (Screen, Slot) -> Boolean) {
+        private fun slotScreen(right: Boolean = false, findCondition: (Screen, Slot) -> Boolean) {
             step(right) { screen ->
                 if (screen is AbstractContainerScreen<*>) {
                     val oX = screen.guiLeft
@@ -166,7 +179,7 @@ class UiGuide(
         fun widgets(right: Boolean, vararg indexes: Int) {
 
             indexes.forEach { index ->
-                steps += Step (right){ screen ->
+                steps += Step(right) { screen ->
                     screen.children()
                         .filterIndexed { i, w ->
                             w is AbstractWidget && i == index

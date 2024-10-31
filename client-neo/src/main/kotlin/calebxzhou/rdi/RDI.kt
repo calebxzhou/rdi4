@@ -216,7 +216,9 @@ object RDIEvents {
         val cmds = listOf(
             TutorialCommand.cmd,
         )
-        cmds.forEach { e.dispatcher.register(it) }
+        if (Const.DEBUG) {
+            cmds.forEach { e.dispatcher.register(it) }
+        }
 
     }
 
@@ -278,7 +280,7 @@ object RDIEvents {
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
-        UiGuide.now?.render(e.guiGraphics,e.mouseX,e.mouseY)
+        UiGuide.now?.render(e.guiGraphics, e.mouseX, e.mouseY)
         Banner.renderScreen(e.guiGraphics, e.screen)
         Tutorial.now?.render(e.guiGraphics)
         SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
@@ -286,9 +288,9 @@ object RDIEvents {
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
         OmniNavi.renderLevelStage(e)
-        if(e.stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES){
+        if (e.stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
 
-        BlockGuide.now?.render(e)
+            BlockGuide.now?.render(e)
         }
     }
 
@@ -297,13 +299,15 @@ object RDIEvents {
 
         Tutorial.tick(e.server)
     }
-    fun onClientLevelTick(e: TickEvent.LevelTickEvent){
-        if(e.side.isClient){
+
+    fun onClientLevelTick(e: TickEvent.LevelTickEvent) {
+        if (e.side.isClient) {
             OmniNavi.tick()
             BlockGuide.now?.tick(e.level)
 
         }
     }
+
     fun onClientTick(e: TickEvent.ClientTickEvent) {
         if (e.phase == TickEvent.Phase.END) {
             Banner.tick()
@@ -332,7 +336,7 @@ object RDIEvents {
                 border.setCenter(0.0, 0.0)
                 border.size = 64.0
             }
-            it.changeStep(0,e.entity as ServerPlayer)
+            it.changeStep(0, e.entity as ServerPlayer)
         }
     }
 

@@ -78,15 +78,15 @@ class BlockGuide(val steps: List<Step>) {
             }
         fun render(guiGraphics: GuiGraphics){
             guiGraphics.matrixOp {
-                translate(100.0, 24.0, 100.0)
+                translate(100.0, 24.0, 1.0)
                 guiGraphics.fill(0, 0, mcUIWidth/2, 20, 0x66000000.toInt())
-                translate(0.0, 6.0, 100.0)
+                translate(0.0, 6.0, 0.0)
                 val width = guiGraphics.drawString(mcFont, text, 10, 0, WHITE)
                 guiGraphics.drawString(mcFont,displayName,width+16+4,0, WHITE)
-                translate(width.toDouble()+8, .0, 100.0)
-                translate(0.0, 4.0, 100.0)
+                translate(width.toDouble()+8, .0, 0.0)
+                translate(0.0, 4.0, 0.0)
                 mulPoseMatrix(Matrix4f().scaling(1.0f, -1.0f, 1.0f))
-                scale(16.0f,16.0f,100f)
+                scale(16.0f,16.0f,10f)
                 mc.itemRenderer.render(
                     itemStack,
                     ItemDisplayContext.GUI,

@@ -216,11 +216,11 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
 val T1_CERA = tutorial("1_cera", "陶器") {
 
     step("四处转转，寻找植物“蹄盖蕨”", {
-        it giveTwig 15
-        it giveTwig 15
-        it giveLog 15
-        it giveLog 15
-        it give (TFCItems.STRAW.get() * 15)
+        it giveTwig 16
+        it giveTwig 16
+        it giveLog 16
+        it giveLog 16
+        it give (TFCItems.STRAW.get() * 64)
         var originBlock = BlockPos(8, -60, 8)
         val loam =
             TFCBlocks.SOIL[SoilBlockType.CLAY_GRASS]!![SoilBlockType.Variant.SILTY_LOAM]!!.get().defaultBlockState()

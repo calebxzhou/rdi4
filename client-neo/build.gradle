@@ -291,8 +291,9 @@ import org.gradle.internal.os.OperatingSystem
 
 
 def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/"
-def clientDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/client/.minecraft/"
-def modsDir = clientDir+"mods/"
+def clientDir = shippingDir+"client/"
+def clientMcDir = clientDir+".minecraft/"
+def modsDir = clientMcDir+"mods/"
 tasks.register('删临'){
     file("$buildDir/tmp").deleteDir()
 }
@@ -334,12 +335,12 @@ compileJava {
     }
 }
 task 清包(type: Exec) {
-    commandLine 'cmd', '/c', "cd ${clientDir} && python prepare4shipping.py"
+    commandLine 'cmd', '/c', "cd ${clientMcDir} && python prepare4shipping.py"
 }
 tasks.register('出m'){
     dependsOn(导别m,构移测)
     doLast {
-        ant.zip(destfile: shippingDir+"mods.zip", basedir: modsDir)
+        ant.zip(destfile: shippingDir+"rdi4r仅mods.zip", basedir: modsDir)
     }
 }
 tasks.register('出包'){
