@@ -23,10 +23,12 @@ import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.util.*
+import com.simibubi.create.content.fluids.PipeConnection.r
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
+import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.config.FoodExpiryTooltipStyle
 import net.dries007.tfc.config.TFCConfig
 import net.dries007.tfc.config.TimeDeltaTooltipStyle
@@ -36,6 +38,7 @@ import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.BlockTags
+import net.minecraft.tags.ItemTags
 import net.minecraftforge.client.event.RecipesUpdatedEvent
 import net.minecraftforge.client.event.RegisterClientCommandsEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
@@ -47,10 +50,12 @@ import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.event.ToastAddEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.Tags
 import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
@@ -145,6 +150,7 @@ object RDIEvents {
         bus.addListener(::onRenderLevelStage)
         bus.addListener(::onAddToast)
         bus.addListener(::leftClickBlock)
+        bus.addListener(::rightClickBlock)
         bus.addListener(::onRenderGui)
         bus.addListener(::afterScreenRender)
         bus.addListener(::screenMouseClick)
@@ -351,6 +357,15 @@ object RDIEvents {
             mc.addHudMessage("砍树必须用斧头")
         }
 
+    }
+    fun rightClickBlock(e: RightClickBlock){
+        //原木堆
+        if (e.level.getBlockState(e.hitVec.blockPos).`is`(TFCBlocks.LOG_PILE.get())) {
+            //只有手持原木or空手 才能打开原木堆画面
+            if (!(e.entity handHas ItemTags.LOGS) && !e.entity.handsAir) {
+                e.isCanceled=true
+            }
+        }
     }
 
     fun pureColorBackground(event: ScreenEvent.BackgroundRendered) {

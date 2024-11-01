@@ -22,11 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(LogPileBlock.class)
 public class mTfcLogPileBlock {
     //手持起火器打不开木堆画面
-    @Inject(remap = false,
-            method = "use",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getBlockEntity(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntityType;)Ljava/util/Optional;"),locals = LocalCapture.CAPTURE_FAILEXCEPTION, cancellable = true)
-    private void RDI$handingFireStarterNoOpenScreen(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result, CallbackInfoReturnable<InteractionResult> cir, ItemStack stack){
-        if (stack.is(TFCItems.FIRESTARTER.get())) {
+    /*@Inject(remap = false,
+            method = "Lnet/dries007/tfc/common/blocks/devices/LogPileBlock;use(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getBlockEntity(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntityType;)Ljava/util/Optional;") , cancellable = true)
+    private void RDI$handingFireStarterNoOpenScreen(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result, CallbackInfoReturnable<InteractionResult> cir ){
+        if (player.getItemInHand(hand).is(TFCItems.FIRESTARTER.get())) {
             cir.setReturnValue(InteractionResult.PASS);
         }
-    }
+    }*/
 }

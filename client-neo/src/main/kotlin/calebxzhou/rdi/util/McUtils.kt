@@ -235,11 +235,14 @@ infix fun Player.bagHas(lis: LiteItemStack): Boolean {
 infix fun Player.handHas(item: Item): Boolean {
     return mainHandItem.`is`(item)
 }
-
+val Player.handsAir
+    get() = mainHandItem.isEmpty
 infix fun Player.handHas(itemStack: LiteItemStack): Boolean {
     return mainHandItem.`is`(itemStack.first) && mainHandItem.count == itemStack.second
 }
-
+infix fun Player.handHas(itemTag: TagKey<Item>): Boolean {
+    return mainHandItem.`is`(itemTag)
+}
 infix fun Player.feetOn(block: Block): Boolean {
     return level().getBlockState(blockPosition().below()).`is`(block)
 }

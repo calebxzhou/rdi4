@@ -22,6 +22,7 @@
     "gameplay.mPlayer",
     "jade.mModNameChineseDisplay",
     "jade.mNoDisplayModName",
+    "jech.mDevPreventConfig",
     "railway.mRailNoDevCheck",
     "tfc.AInventoryBlockEntity",
     "tfc.mDryingBricksTooltip",

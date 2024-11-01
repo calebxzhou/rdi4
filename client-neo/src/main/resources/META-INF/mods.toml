@@ -1,11 +1,13 @@
 modLoader = "javafml" #mandatory
 loaderVersion = "[4.10,)" #mandatory
-license = "1"
+license = "GPL3"
 [[mods]] #mandatory
 modId = "rdi" #mandatory
-version = "4.6neo" #mandatory
+version = "4R" #mandatory
 displayName = "RDI" #mandatory
 authors = "calebxzhou" #optional
-description = '''1'''
+description = '''core mod for RDI modpack.
+https://github.com/calebxzhou/rdi4
+'''
 [[mixins]]
 config = "rdi.mixins.json"
