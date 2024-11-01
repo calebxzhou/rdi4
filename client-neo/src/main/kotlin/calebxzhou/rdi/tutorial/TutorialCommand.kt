@@ -16,7 +16,7 @@ object TutorialCommand {
                     arrayOf(
                         "prev",
                         "next",
-                        "quit",
+                        "done",
                         "pause",
                         "index"
                     ), build
@@ -34,8 +34,8 @@ object TutorialCommand {
                             Tutorial.now?.nextStep(serverPlayer)
                         }
 
-                        "quit" -> {
-                            Tutorial.now?.quit()
+                        "done" -> {
+                            Tutorial.now?.isDone=true
                             mc.addChatMessage("退出")
                         }
 

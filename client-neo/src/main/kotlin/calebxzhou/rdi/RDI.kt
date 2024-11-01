@@ -39,6 +39,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.BlockTags
 import net.minecraft.tags.ItemTags
+import net.minecraft.world.InteractionResult
 import net.minecraftforge.client.event.RecipesUpdatedEvent
 import net.minecraftforge.client.event.RegisterClientCommandsEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
@@ -61,6 +62,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
+import net.minecraftforge.fml.loading.FMLConfig
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
@@ -93,6 +95,7 @@ fun risSync(todo: () -> Unit) {
 //@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
     init {
+
         RDIEvents.init()
         STORAGE.mkdirs()
         RItems.REGISTER.register(FMLJavaModLoadingContext.get().modEventBus);
@@ -213,18 +216,24 @@ object RDIEvents {
                 }
             }
         }
-
+        FMLConfig.updateConfig(FMLConfig.ConfigValue.VERSION_CHECK,false)
         TFCConfig.CLIENT.timeDeltaTooltipStyle.set(TimeDeltaTooltipStyle.DAYS)
         TFCConfig.CLIENT.foodExpiryTooltipStyle.set(FoodExpiryTooltipStyle.TIME_LEFT)
+        File("saves").listFiles()?.forEach { subDir ->
+            if (subDir.isDirectory && subDir.name.startsWith("__rdi_tutorial")) {
+                subDir.deleteRecursively()
+                println("删除教程存档: ${subDir.name}")
+            }
+        }
     }
 
     fun registerCommand(e: RegisterCommandsEvent) {
         val cmds = listOf(
             TutorialCommand.cmd,
         )
-        if (Const.DEBUG) {
+       // if (Const.DEBUG) {
             cmds.forEach { e.dispatcher.register(it) }
-        }
+       // }
 
     }
 
@@ -289,7 +298,9 @@ object RDIEvents {
         UiGuide.now?.render(e.guiGraphics, e.mouseX, e.mouseY)
         Banner.renderScreen(e.guiGraphics, e.screen)
         Tutorial.now?.render(e.guiGraphics)
-        SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
+        if (Const.DEBUG) {
+            SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
+        }
     }
 
     fun onRenderLevelStage(e: RenderLevelStageEvent) {
@@ -358,12 +369,14 @@ object RDIEvents {
         }
 
     }
-    fun rightClickBlock(e: RightClickBlock){
+
+    fun rightClickBlock(e: RightClickBlock) {
         //原木堆
         if (e.level.getBlockState(e.hitVec.blockPos).`is`(TFCBlocks.LOG_PILE.get())) {
             //只有手持原木or空手 才能打开原木堆画面
             if (!(e.entity handHas ItemTags.LOGS) && !e.entity.handsAir) {
-                e.isCanceled=true
+                e.cancellationResult = InteractionResult.PASS
+                //e.isCanceled = true
             }
         }
     }

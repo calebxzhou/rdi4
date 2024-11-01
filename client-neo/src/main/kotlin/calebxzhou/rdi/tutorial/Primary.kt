@@ -6,6 +6,7 @@ import calebxzhou.rdi.common.smart
 import calebxzhou.rdi.mixin.client.tfc.AInventoryBlockEntity
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.util.*
+import com.electronwill.nightconfig.toml.TomlFormat
 import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.client.screen.FirepitScreen
 import net.dries007.tfc.client.screen.KnappingScreen
@@ -159,6 +160,7 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
         destroy(pos dx 2 dz 2)
     }
     buide("在坑中放置原木堆，(手持原木 按下左Shift下蹲的同时 按鼠标右键放置)\n右键点击原木堆，把里面的木头都填满", {
+        it giveRockTool RockCategory.ItemType.AXE
         it giveLog 16
         it giveLog 16
         it giveLog 16
@@ -411,7 +413,7 @@ val T1_BUILD = tutorial("1_build", "建筑材料") {
             return@step bst.block is WattleBlock && bst.getValue(WattleBlock.WOVEN)
         } ?: false
     }
-    step("用背包里的材料，制作涂料", {
+    step("用背包里的材料，制作涂料（自行搜索合成配方）", {
         it give TFCItems.STRAW.get()
         it give Items.CLAY_BALL
         it give Blocks.DIRT.asItem()
@@ -486,19 +488,4 @@ val T1_BUILD = tutorial("1_build", "建筑材料") {
         destroy(org dy 3)
         destroy(org dy 4)
     }
-}
-val T1_ARGI = tutorial("1_agri","农业"){
-//农作物（以燕麦为代表）
-// 小型灌木（以云莓为代表）
-// 大型灌木（以蓝莓为代表）
-// 果树（以红苹果为代表）
-}
-val T1_ANIMAL = tutorial("1_animal","牧业"){
-
-}
-val T1_PET = tutorial("1_pet","宠物"){
-
-}
-val T1_FOOD = tutorial("1_food","食物与营养"){
-
 }

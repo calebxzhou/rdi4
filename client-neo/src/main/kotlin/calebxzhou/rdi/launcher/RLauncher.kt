@@ -31,6 +31,5 @@ fun main(args: Array<String>){
     process.inputStream.bufferedReader().forEachLine {
         println(it)
     }
-    process.waitFor()
 
 }

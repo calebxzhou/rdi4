@@ -48,12 +48,12 @@ init {
     var txKBps = 0f
     val txKBpsStr
         get() = if(txKBps>0.01f)
-            "${String.format("%.2f",txKBps)}K/s"
+            "↑${String.format("%.2f",txKBps)}K/s"
         else
-            "总"+humanReadableByteCount(totalTxBytes)
+            ""//"总"+humanReadableByteCount(totalTxBytes)
     var rxKBps = 0f
     val rxKBpsStr
-        get() = if(rxKBps>0.01f)"${String.format("%.2f",rxKBps)}K/s" else "总"+humanReadableByteCount(totalRxBytes)
+        get() = if(rxKBps>0.01f)"↓${String.format("%.2f",rxKBps)}K/s" else ""//""总"+humanReadableByteCount(totalRxBytes)
 
     private val recordsTx = hashMapOf<Int,PacketRecord>()
     private val recordsRx = hashMapOf<Int,PacketRecord>()
@@ -88,9 +88,9 @@ init {
     @JvmStatic
     fun render(guiGraphics: GuiGraphics){
         val tx = mcText(
-            "↑ $txKBpsStr"
+            "$txKBpsStr"
         ).withStyle(ChatFormatting.GOLD)
-        val rx = mcText("↓ $rxKBpsStr")
+        val rx = mcText("$rxKBpsStr")
             .withStyle(ChatFormatting.GREEN)
         guiGraphics.drawString(mcFont, tx, mcUIWidth - mcFont.width(tx), mcUIHeight-20,0,true)
         guiGraphics.drawString(mcFont, rx, mcUIWidth - mcFont.width(rx), mcUIHeight-10,0,true)

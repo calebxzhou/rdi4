@@ -20,7 +20,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle' version '[6.0.18,6.2)'
+    id 'net.neoforged.gradle' version '6.0+'
     id 'org.spongepowered.mixin' version '0.7+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
@@ -216,7 +216,6 @@ def modsExportOnly = [
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-
     implementation "thedarkcolour:kotlinforforge:4.11.0"
     minecraftLibrary 'org.mongodb:bson:5.1.0'
     implementation(jarJar("org.mongodb:bson:5.1.0")) {
@@ -287,9 +286,7 @@ tasks.withType(ScalaCompile) {
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
-import org.gradle.internal.os.OperatingSystem
-
-
+import java.util.jar.JarFile
 
 def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/"
 def clientDir = shippingDir+"client/"
@@ -327,22 +324,14 @@ tasks.register('构移测'){
         }
     }
 }
-compileJava {
-    doLast {
-        if (state.failure != null) {
-            println '编译失败 删临重试'
-            tasks.删临.execute()
-        }
-    }
-}
-task 清端(type: Exec) {
-    commandLine 'cmd', '/c', "cd ${clientMcDir} && python prepare4shipping.py"
-}
 tasks.register('出包'){
     dependsOn(导别m,构移测)
     doLast {
         ant.zip(destfile: shippingDir+"rdi4r仅mods.zip", basedir: modsDir)
     }
+}
+tasks.register('清端', Exec) {
+    commandLine 'cmd', '/c', "cd ${clientMcDir} && python prepare4shipping.py"
 }
 tasks.register('出端'){
     dependsOn(出包,清端)

@@ -110,10 +110,10 @@ val BASIC
         step("将丢掉的物品全捡回来") {
             !it.inventory.isEmpty
         }
-        step("将苔石放置在地面上") {
+        step("将苔石砖放置在地面上") {
             it isLooking Blocks.MOSSY_STONE_BRICKS
         }
-        step("站在苔石上面") {
+        step("站在苔石砖上面") {
             it feetOn Blocks.MOSSY_STONE_BRICKS
         }
         step("跳起来的同时，把 裂纹石砖 放在脚下") {
@@ -147,7 +147,7 @@ val BASIC
         step("记住这个配方图案，按ESC回到背包画面") {
             mc.screen is InventoryScreen
         }
-        tip("鼠标右键点击干草，再左键点击空位，平分干草"){
+        /*tip("鼠标右键点击干草，再左键点击空位，平分干草"){
             slot(true) { it.item.`is`(TFCItems.STRAW.get()) }
             slot(1)
             slot(right = true,1)
@@ -164,8 +164,8 @@ val BASIC
         }
         tip("鼠标移动到绿框上，按住左键，在合成框中滑动，实现自动平分"){
             slot(1)
-        }
-        step("点击刚合成好的干草块，再点击背包里的干草块，合二为一"){
+        }*/
+        step("合成两个干草块"){
             it bagHas (TFCBlocks.THATCH.get().asItem() * 2)
         }
         step("手持两个干草块"){
