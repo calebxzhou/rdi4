@@ -1,6 +1,6 @@
 package calebxzhou.rdi.tfc
 
-import calebxzhou.rdi.util.WHITE
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.util.mcFont
 import net.dries007.tfc.client.screen.KnappingScreen
 import net.minecraft.client.gui.GuiGraphics

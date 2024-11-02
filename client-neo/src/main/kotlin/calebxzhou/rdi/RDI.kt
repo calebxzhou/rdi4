@@ -7,6 +7,7 @@ import calebxzhou.rdi.RDI.Companion.modIdChineseName
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.chunkstats.ChunkStats
+import calebxzhou.rdi.common.PINE_GREEN
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
@@ -20,10 +21,8 @@ import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.tutorial.TutorialCommand
 import calebxzhou.rdi.ui.RGui
 import calebxzhou.rdi.ui.general.SlotWidgetDebugRenderer
-import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.util.*
-import com.simibubi.create.content.fluids.PipeConnection.r
 import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
@@ -51,7 +50,6 @@ import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.event.ToastAddEvent
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.common.Tags
 import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent

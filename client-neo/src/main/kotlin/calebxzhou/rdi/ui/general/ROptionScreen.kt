@@ -1,12 +1,12 @@
 package calebxzhou.rdi.ui.general
 
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
-import snownee.jade.overlay.DatapackBlockManager.override
 
 /*
 optionScreen{

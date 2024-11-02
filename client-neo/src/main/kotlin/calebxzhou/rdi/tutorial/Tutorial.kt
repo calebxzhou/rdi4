@@ -5,6 +5,7 @@ import calebxzhou.rdi.STORAGE
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.blockguide.blockGuide
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide

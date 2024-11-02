@@ -1,6 +1,6 @@
 package calebxzhou.rdi.launcher
 
-import calebxzhou.rdi.util.PINE_GREEN
+import calebxzhou.rdi.common.PINE_GREEN
 import calebxzhou.rdi.util.getFileInJarUrl
 import java.awt.*
 import java.io.File

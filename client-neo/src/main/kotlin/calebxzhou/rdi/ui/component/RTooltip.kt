@@ -1,8 +1,8 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.rdi.util.LIGHT_RED
-import calebxzhou.rdi.util.LIGHT_YELLOW
-import calebxzhou.rdi.util.PINE_GREEN
+import calebxzhou.rdi.common.LIGHT_RED
+import calebxzhou.rdi.common.LIGHT_YELLOW
+import calebxzhou.rdi.common.PINE_GREEN
 import net.minecraft.client.gui.GuiGraphics
 
 class RTooltip {
@@ -13,9 +13,9 @@ class RTooltip {
             val y1 = y-4
             val x2 = x1 + width + 8
             val y2 = y1 + height + 8
-            guiGraphics.fill(x1,y1,x2 , y2, z,LIGHT_YELLOW)
-            guiGraphics.fill(x1+1,y1+1,x2-1 , y2-1, z,LIGHT_RED)
-            guiGraphics.fill(x1+2,y1+2,x2-2 , y2-2, z,PINE_GREEN,)
+            guiGraphics.fill(x1,y1,x2 , y2, z, LIGHT_YELLOW)
+            guiGraphics.fill(x1+1,y1+1,x2-1 , y2-1, z, LIGHT_RED)
+            guiGraphics.fill(x1+2,y1+2,x2-2 , y2-2, z, PINE_GREEN,)
         }
     }
 }

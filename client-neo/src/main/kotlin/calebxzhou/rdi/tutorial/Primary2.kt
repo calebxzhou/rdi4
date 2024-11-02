@@ -78,12 +78,12 @@ val T1_ARGI = tutorial("1_agri","农业"){
     }){
         it bagHas TFCItems.FOOD[Food.LEMON]!!.get()
     }
-    step("用斧头砍断&l侧枝&r，得到树苗。（不要砍树干，否则树就废了，什么都得不到）",{
+    step("用斧头砍断§c§l侧枝§r，得到树苗。（不要砍树干，否则树就废了，什么都得不到）",{
         it giveRockTool RockCategory.ItemType.AXE
     }){
         it bagHas TFCBlocks.FRUIT_TREE_SAPLINGS[FruitBlocks.Tree.LEMON]!!.get().asItem()
     }
-    //§
+    //§ = Alt+Num21
     var pos = bos(0,-60,0)
     val loam = TFCBlocks.SOIL[SoilBlockType.DIRT]!![SoilBlockType.Variant.LOAM]!!.get()
     buide("按照指示挖掉泥土，摆放壤土",{

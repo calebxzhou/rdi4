@@ -2,7 +2,7 @@ package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.util.Gl
 import calebxzhou.rdi.util.ServerConnector.ping
-import calebxzhou.rdi.util.WHITE
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcUIHeight
 import calebxzhou.rdi.util.mcUIWidth

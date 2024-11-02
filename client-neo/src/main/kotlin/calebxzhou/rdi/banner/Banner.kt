@@ -1,6 +1,6 @@
 package calebxzhou.rdi.banner
 
-import calebxzhou.rdi.banner.Banner.plusAssign
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.util.*
 import com.mojang.brigadier.arguments.StringArgumentType
 import net.minecraft.client.gui.GuiGraphics

@@ -1,13 +1,10 @@
 package calebxzhou.rdi.ui.general
 
-import ca.weblite.objc.RuntimeUtils.msg
-import calebxzhou.rdi.logger
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.component.RButton
-import calebxzhou.rdi.ui.component.RDocWidget
 import calebxzhou.rdi.ui.component.RIconButton
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.ui.component.docWidget
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineTextWidget

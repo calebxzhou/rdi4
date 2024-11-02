@@ -1,12 +1,12 @@
 package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.banner.Banner
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.Icons
-import calebxzhou.rdi.ui.general.ROptionScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.ui.screen.RPauseScreen.DisplayMode.*
 import calebxzhou.rdi.util.*
@@ -22,11 +22,8 @@ import net.dries007.tfc.util.calendar.ICalendar
 import net.dries007.tfc.util.calendar.Month
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
-import net.minecraft.client.gui.screens.OptionsScreen
 import net.minecraft.client.resources.language.I18n
-import net.minecraft.network.chat.Component
 import xaero.map.WorldMapSession
-import java.awt.SystemColor.text
 
 class RPauseScreen : RScreen("暂停") {
     override var showTitle = false
@@ -96,7 +93,7 @@ class RPauseScreen : RScreen("暂停") {
         val MM = ((ticks / (monthDayAmount * ICalendar.TICKS_IN_DAY)) % ICalendar.MONTHS_IN_YEAR).toInt()+1
         val dd = ICalendar.getDayOfMonth(ticks, monthDayAmount.toLong())
         val yy = ICalendar.getTotalYears(ticks, monthDayAmount.toLong())
-        guiGraphics.drawString(mcFont,"${yy}年${MM}月${dd}日 $day ${season} ${hh}:${mm}",startX,startY,WHITE)
+        guiGraphics.drawString(mcFont,"${yy}年${MM}月${dd}日 $day ${season} ${hh}:${mm}",startX,startY, WHITE)
 
     }
 
@@ -128,11 +125,13 @@ class RPauseScreen : RScreen("暂停") {
         guiGraphics.drawString(mcFont,
             mcText(
             "温度 当前")+style.format(currentTemp, true)!!+ mcText(" 平均")+style.format(averageTemp, true)!!,startX,startY,
-            WHITE)
+            WHITE
+        )
         guiGraphics.drawString(mcFont,
             mcText(
             "降水 ${rainfall}mm"),startX,startY+12,
-            WHITE)
+            WHITE
+        )
 
     }
 }

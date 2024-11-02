@@ -1,6 +1,7 @@
 package calebxzhou.rdi.blockguide
 
 import calebxzhou.rdi.common.BlockOperation
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics

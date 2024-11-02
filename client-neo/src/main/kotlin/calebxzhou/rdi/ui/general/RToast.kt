@@ -1,5 +1,6 @@
 package calebxzhou.rdi.ui.general
 
+import calebxzhou.rdi.common.*
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
@@ -63,7 +64,7 @@ class RToast(val type: RMessageLevel, val msg: String, val time: Int = 5000) : T
     private fun renderProgress(guiGraphics: GuiGraphics, timeSinceLastVisible: Long) {
         val prog = Mth.clampedLerp(lastProgress, progress, (timeSinceLastVisible - lastProgressTime).toFloat() / 100.0f)
         val progX = getProgressBarLength(prog).toInt()
-        guiGraphics.fill(3, 8, progX, 9, RED) 
+        guiGraphics.fill(3, 8, progX, 9, RED)
         lastProgress = prog
         lastProgressTime = timeSinceLastVisible
     }

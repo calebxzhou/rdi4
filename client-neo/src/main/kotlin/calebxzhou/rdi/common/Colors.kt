@@ -1,4 +1,4 @@
-package calebxzhou.rdi.util
+package calebxzhou.rdi.common
 
 /**
  * calebxzhou @ 2024-05-31 14:08

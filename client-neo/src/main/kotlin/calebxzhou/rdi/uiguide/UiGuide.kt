@@ -1,7 +1,7 @@
 package calebxzhou.rdi.uiguide
 
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.ui.screen.RPauseScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics

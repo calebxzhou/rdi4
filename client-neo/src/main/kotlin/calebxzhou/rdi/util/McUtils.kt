@@ -1,6 +1,7 @@
 package calebxzhou.rdi.util
 
 import calebxzhou.rdi.Const
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
