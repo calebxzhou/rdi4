@@ -2,7 +2,7 @@ package calebxzhou.rdi.jade
 
 import calebxzhou.rdi.lang.EnglishStorage
 import calebxzhou.rdi.util.mcText
-import calebxzhou.rdi.util.resLoca
+import calebxzhou.rdi.util.asset
 import net.minecraft.ChatFormatting
 import snownee.jade.api.*
 import snownee.jade.api.config.IPluginConfig
@@ -10,7 +10,7 @@ import snownee.jade.api.config.IPluginConfig
 enum class EnglishDisplayProvider : IBlockComponentProvider,IEntityComponentProvider{
     INSTANCE;
 
-    override fun getUid() = resLoca("jade/english_display")
+    override fun getUid() = asset("jade/english_display")
 
     override fun appendTooltip(tooltip: ITooltip, accessor: BlockAccessor, config: IPluginConfig) {
         appendTooltip(tooltip,accessor.block.descriptionId)

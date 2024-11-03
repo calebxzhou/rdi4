@@ -20,7 +20,7 @@ object Const {
     const val IHQ_VERSION = 0x460
     val SEED = 11451400L
     //显示版本
-    const val VERSION_STR = "RDI 4R Demo2"
+    const val VERSION_STR = "RDI 4R Demo3"
     val SERVER_DATA
         get() = ServerData("RDI", VERSION_STR,false)
 }

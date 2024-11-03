@@ -15,9 +15,10 @@ import org.joml.Matrix4f
 fun GuiGraphics.renderItemStack(itemStack: ItemStack, width: Int = 16, height: Int = 16){
     val pose = pose()
     val bakedmodel: BakedModel = mc.itemRenderer.getModel(itemStack, null, null, 1)
+    //翻过来
     pose.mulPoseMatrix(Matrix4f().scaling(1.0f, -1.0f, 1.0f))
     pose.scale(width.toFloat(), height.toFloat(), width.toFloat())
-    val flag = !bakedmodel.usesBlockLight()
+    val flag = true//!bakedmodel.usesBlockLight()
     if (flag) {
         Lighting.setupForFlatItems()
     }

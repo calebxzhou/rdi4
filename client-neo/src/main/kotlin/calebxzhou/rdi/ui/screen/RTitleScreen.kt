@@ -5,6 +5,7 @@ import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
+import calebxzhou.rdi.text.richText
 import calebxzhou.rdi.tutorial.Chapter
 import calebxzhou.rdi.tutorial.T1_BUILD
 import calebxzhou.rdi.tutorial.T1_CERA
@@ -20,6 +21,7 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.Difficulty
+import net.minecraft.world.item.Items
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.LevelSettings
@@ -31,12 +33,27 @@ class RTitleScreen : RScreen("主页") {
     override var showTitle = false
     override var closeable = false
     val LOGO: ResourceLocation =
-        ResourceLocation("rdi", "textures/gui/title/mojangstudios.png")
+        ResourceLocation("rdi", "textures/logo.png")
 
     val SCREEN_BG: ResourceLocation =
         ResourceLocation("rdi", "textures/screen_bg.png")
     var shiftMode = false
     var ctrlMode = false
+    val richtext
+        get() = richText(200, mcUIHeight - 20) {
+            text("123123")
+            icon("qq")
+            text("234456")
+            item(Items.STONE_BRICKS)
+            text("234456")
+            ret()
+            text("1231232")
+            icon("qq")
+            text("234456")
+            item(Items.STONE_BRICKS)
+            text("234456")
+
+        }
 
     companion object {
         val optScreen = { prevScreen: RScreen ->
@@ -89,7 +106,7 @@ class RTitleScreen : RScreen("主页") {
             val pwd = it.formData["pwd"]!!
             val cpwd = it.formData["cpwd"]!!
             if (pwd != cpwd) {
-                  alertOs("确认密码与密码不一致")
+                alertOs("确认密码与密码不一致")
                 return
             }
             val qq = it.formData["qq"]!!
@@ -122,7 +139,7 @@ class RTitleScreen : RScreen("主页") {
                     toastOk("登录成功")
                     mc goScreen RTitleScreen()
                 } else {
-                    alertOs("密码错误" )
+                    alertOs("密码错误")
                 }
             }
         }
@@ -149,35 +166,32 @@ class RTitleScreen : RScreen("主页") {
             y = mcUIHeight- 17
         }.also { registerWidget(it) }*/
 
-        gridLayout(this,10, mcUIHeight - 16) {
+        gridLayout(this, 10, mcUIHeight - 16) {
             imageButton(Icons["start"], "开始") {
                 Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
                     alertErr("请先完成教程 ${it.name} 章节")
                     return@imageButton
                 }
-                mc goScreen optionScreen(this@RTitleScreen,"选择游玩模式"){
-                    "单人模式" to {mc goScreen SelectWorldScreen(this.mcScreen)}
+                mc goScreen optionScreen(this@RTitleScreen, "选择游玩模式") {
+                    "单人模式" to { mc goScreen SelectWorldScreen(this.mcScreen) }
                     "线上模式" to { alert("线上多人模式预计2024.12.6开通") }
                 }
-            //start()
+                //start()
             }
             imageButton(Icons["tutorial"], "互动教程") {
                 mc goScreen RTutorialScreen(this@RTitleScreen)
-            //start()
+                //start()
             }
             imageButton(Icons["settings"], "设置") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
             imageButton(Icons["partner"], "致谢") {
-                alert("服务器硬件 wuhudsm66\nMod建议 ForiLuSa 普通人 Caragan J4ckTh3R1pper\n测试 wuhudsm66 狗查 Caragan")
+                mc goScreen AboutScreen()
             }
-            imageButton(Icons["qq"], "QQ群") {
+            /*imageButton(Icons["qq"], "QQ群") {
                 copyToClipboard("1095925708")
                 alert("欢迎加入RDI玩家交流群\n已复制QQ群号：1095925708 ")
-
-
-
-            }
+            }*/
         }
 
 
@@ -230,6 +244,7 @@ class RTitleScreen : RScreen("主页") {
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //下方的灰条
         guiGraphics.fill(0, height - 20, width, height, 0xAA000000.toInt())
+        //richtext.render(guiGraphics)
         //drawTextAt(guiGraphics, Const.VERSION_STR, 10, height - 15)
 //上方的灰条（已登录
         /*RAccount.now?.let {
@@ -268,10 +283,10 @@ class RTitleScreen : RScreen("主页") {
                 }
             }
         }*/
-       /* if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
-            start()
-        }*/
-        if(mc pressingKey InputConstants.KEY_0){
+        /* if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
+             start()
+         }*/
+        if (mc pressingKey InputConstants.KEY_0) {
             mc goScreen SelectWorldScreen(this)
         }
     }

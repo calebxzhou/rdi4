@@ -167,7 +167,6 @@ def mods = [
         //************优化类************
         "entityculling:dlg7nMa6",
         "ferrite-core:DG5Fn9Sz",
-        "rrls:4.0.6.1+mc1.20.1-forge",
         "modernfix:m83ZRQdk",
         "memoryleakfix:3w0IxNtk",
         "embeddium:0.3.31+mc1.20.1",
@@ -181,6 +180,7 @@ def mods = [
         "justenoughcharacters:o6aLisEm",
         "xaeros-world-map:1.39.0_Forge_1.20",
         "xaeros-minimap:24.5.0_Forge_1.20",
+        "screenshot-to-clipboard:1.0.9+forge",
         //************图形************
        // "distanthorizons:2.2.1-a-1.20.1",
         //************真mod*************
@@ -217,10 +217,18 @@ dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     implementation "thedarkcolour:kotlinforforge:4.11.0"
+
     minecraftLibrary 'org.mongodb:bson:5.1.0'
     implementation(jarJar("org.mongodb:bson:5.1.0")) {
         jarJar.ranged(it, "[5.1.0,)")
     }
+    //用jetbrains runtime jdk可以实现dcevm热重载
+    // https://mvnrepository.com/artifact/org.hotswapagent/hotswap-agent-core
+    minecraftLibrary 'org.hotswapagent:hotswap-agent-core:2.0.1'
+    implementation(jarJar("org.hotswapagent:hotswap-agent-core:2.0.1")) {
+        jarJar.ranged(it, "[2.0.1,)")
+    }
+
     minecraftLibrary 'com.googlecode.soundlibs:jorbis:0.0.17.4'
     implementation(jarJar('com.googlecode.soundlibs:jorbis:0.0.17.4')) {
         jarJar.ranged(it, "[0.0.17.4,)")

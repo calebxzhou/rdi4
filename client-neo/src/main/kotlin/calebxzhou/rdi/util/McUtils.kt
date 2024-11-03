@@ -79,7 +79,7 @@ val Player.thrist: Float
         else 0f
     }
 
-fun resLoca(path: String) = ResourceLocation(Const.MODID, path)
+fun asset(path: String) = ResourceLocation(Const.MODID, path)
 fun MinecraftServer.executeCommand(cmd: String) {
     commands.performPrefixedCommand(createCommandSourceStack(), cmd)
 }
@@ -309,7 +309,7 @@ val ServerPlayer.serverLevel
 
 fun ServerLevel.loadStructure(name: String, pos: BlockPos): Boolean {
     val mgr = structureManager
-    val templateO = mgr.get(resLoca(name))
+    val templateO = mgr.get(asset(name))
     if (templateO.isEmpty) {
         logger.warn("找不到结构 $name")
         return false
