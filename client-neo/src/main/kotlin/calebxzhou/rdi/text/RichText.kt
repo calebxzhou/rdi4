@@ -3,16 +3,20 @@ package calebxzhou.rdi.text
 import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.ui.general.Icons
 import calebxzhou.rdi.ui.general.renderItemStack
+import calebxzhou.rdi.util.hoverText
 import calebxzhou.rdi.util.matrixOp
 import calebxzhou.rdi.util.mcFont
+import calebxzhou.rdi.util.mcText
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.PlayerFaceRenderer
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 
 //文字，以及插在文字中的小图标
-fun richText(x: Int, y: Int, builder: RichText.Builder.() -> Unit): RichText {
+fun richText(x: Int=100, y: Int=100, builder: RichText.Builder.() -> Unit): RichText {
     return RichText.Builder(x, y).apply(builder).build()
 }
 typealias RichTextRenderer = (GuiGraphics) -> Unit
@@ -30,9 +34,13 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
             translate(0f,y,0f)
             offsetY += y
         }
-        fun text(str: String, color: Int = WHITE) {
+        fun text(str: String, color: Int = WHITE,hoverText: String?=null,) {
             ren += {
-                val width = it.drawString(mcFont, str, 0, 0, color)
+                val txt = mcText(str)
+                if(hoverText!=null){
+                    txt.hoverText(hoverText)
+                }
+                val width = it.drawString(mcFont, txt, 0, 0, color)
                 it.pose().dx(width.toFloat())
             }
         }

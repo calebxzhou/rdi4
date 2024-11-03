@@ -10,6 +10,7 @@
   "mixins": [
     "ALivingEntity",
     "mAlwaysOfflineMode",
+    "mLoadPackDebug",
     "mLoginProtocol1",
     "mNetMetrics",
     "mNetMetrics2",
@@ -38,6 +39,7 @@
     "AEditBox",
     "ALoadingOverlay",
     "AMc",
+    "AModelManager",
     "ATutorial",
     "mChat",
     "mFastCreateMojangService",

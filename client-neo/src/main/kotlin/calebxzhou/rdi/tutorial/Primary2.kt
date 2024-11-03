@@ -25,9 +25,11 @@ import net.minecraft.world.level.block.Blocks
 val T1_ARGI = tutorial("1_agri","农业"){
     step("适合种植的植物分为4类：第一种是农作物，面前的燕麦就是其中之一。打掉即可收集果实+种子（不限工具）",{
         it giveRockTool RockCategory.ItemType.HOE
-        it.serverLevel.setBlock(it.blockPosition().smart dz 4,TFCBlocks.WILD_CROPS[Crop.OAT]!!.get())
+        it.serverLevel.setBlock(it.blockPosition().smart dz 4,TFCBlocks.WILD_CROPS[Crop.OAT]!!.get().defaultBlockState().apply {
+            setValue(SeasonalPlantBlock.LIFECYCLE,Lifecycle.FRUITING)
+        })
     }){
-        it bagHas TFCItems.FOOD[Food.OAT]!!.get()
+        it bagHas TFCItems.FOOD[Food.OAT_GRAIN]!!.get()
     }
     step("第2种是小型灌木，代表为御膳橘灌木。按下鼠标右键收获果实",{
         it.serverLevel.setBlock(

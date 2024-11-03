@@ -65,6 +65,8 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
 import java.io.File
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
 import java.util.concurrent.Executors
 
 
@@ -251,20 +253,7 @@ object RDIEvents {
     }
 
     fun loadComplete(e: FMLLoadCompleteEvent) {
-        //初始化modid to 中文名称
-        /* ModList.get().mods.forEach {
-             val id = it.modId
-             val name = it.displayName
-             var modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}", name)
-             if (modName == name) {
-                 modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.base", name)
-             }
-             if (modName == name) {
-                 modName = ClientLanguage.getInstance().getOrDefault("itemGroup.${id}.${id}", name)
-             }
-             modIdChineseName += id to modName
-             logger.info("modid cn name: ${id}=${modName}")
-         }*/
+
         modIdChineseName += "tfc" to "群峦传说"
         modIdChineseName += "firmalife" to "群峦人生"
         modIdChineseName += "ae2" to "应用能源2"
@@ -280,6 +269,7 @@ object RDIEvents {
         modIdChineseName += "computercraft" to "电脑"
         modIdChineseName += "minecraft" to "原版"
         lang = ClientLanguage.loadFrom(mc.resourceManager, listOf("en_us"), false)
+
     }
 
     fun allLoadComplete(e: TextureStitchEvent.Post) {

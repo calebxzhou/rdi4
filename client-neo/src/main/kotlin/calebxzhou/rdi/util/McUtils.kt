@@ -17,7 +17,9 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.server.IntegratedServer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
@@ -94,6 +96,8 @@ fun mcText(str: String? = null): MutableComponent {
         Component.literal(it)
     } ?: Component.empty()
 }
+fun MutableComponent.hoverText(str:String): MutableComponent =
+    this.withStyle(Style.EMPTY.withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText(str))))
 
 fun GuiGraphics.matrixOp(handler: PoseStack.() -> Unit) {
     val stack = pose()
