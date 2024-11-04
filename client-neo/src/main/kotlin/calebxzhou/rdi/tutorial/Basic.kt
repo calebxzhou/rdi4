@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.Blocks
  * calebxzhou @ 2024-10-22 16:32
  */
 val BASIC
-    get() = tutorial("basic", "基础操作") {
+    get() = tutorial("basic", "基础操作",flat = false) {
         val origin = BlockPos(0, -60, 0)
         val goHome = { player: Player ->
             player.teleportTo(0.0, -60.0, 0.0)
@@ -186,5 +186,7 @@ val BASIC
         step("右键点击干草块，得到兽皮床") {
             it.lookingAtBlock?.`is`(TFCBlocks.THATCH_BED.get()) == true
         }
-        selfChk("右键点击兽皮床，设置复活点")
+        step("右键点击兽皮床，设置复活点"){
+            it.respawnPosition != origin
+        }
     }

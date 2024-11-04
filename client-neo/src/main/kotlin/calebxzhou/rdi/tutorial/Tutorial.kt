@@ -78,7 +78,7 @@ data class Tutorial(
         if (newStep != null) {
             logger.info("开始教程${stepIndex}")
             mc.addChatMessage("")
-            mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
+            //mc.addChatMessage(mcText("${stepIndex + 1}.") + newStep.text)
             player.playNote()
             newStep.beforeOpr(player)
         } else {
@@ -94,7 +94,7 @@ data class Tutorial(
                 guiGraphics.matrixOp {
                     translate(0.0, 24.0, 100.0)
                     guiGraphics.fill(0, 50, 100, 300, 0x66000000)
-                    MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
+                    //MultiLineLabel.create(mcFont, stepNow.text, 100).renderLeftAligned(guiGraphics, 0, 50, 10, WHITE)
                 }
             }
         }
@@ -195,18 +195,12 @@ data class Tutorial(
             }){BlockGuide.isOff}
         }
         //让玩家自行检查操作是否完成 完成以后 点聊天框的完成按钮 必须手动下一步
-        fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}) {
+        /*fun selfChk(text: String, beforeOpr: (ServerPlayer) -> Unit = {}) {
             val cmp = mcText(text) + mcText(" 完成后按T键，点击") +
-                    mcText("<这里>")
-                        .withStyle(
-                            Style.EMPTY
-                                .applyFormat(ChatFormatting.GREEN)
-                                .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText("检查完成情况，下一步")))
-                                .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tutorial next"))
-                        )
+                    mcText("<这里>").clickCommand("/tutorial next")
             steps += TutorialStep(cmp, beforeOpr) { false }
         }
-
+*/
         fun tip(
             text: String,
             builder: UiGuide.Builder.() -> Unit,

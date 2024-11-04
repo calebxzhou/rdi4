@@ -42,7 +42,7 @@ class RLoadingOverlay(
         val celProg = Mth.ceil(mcUIWidth.toFloat() * this.progress)
         guiGraphics.blit(
             bgb,
-            mcUIWidth - celProg, 0, 0f, 0f, celProg, mcUIHeight, mcUIWidth, mcUIHeight
+            0, 0, 0f, 0f, mcUIWidth, mcUIHeight, mcUIWidth, mcUIHeight
         )
         guiGraphics.blit(bg, 0, 0, 0f, 0f, celProg, mcUIHeight, mcUIWidth, mcUIHeight)
         guiGraphics.matrixOp {

@@ -176,7 +176,7 @@ def mods = [
         "imblocker-original:4.0.5",
         //*************辅助类************
         "jade:11.9.4+forge",
-        "i18nupdatemod:3.6.0",
+
         "justenoughcharacters:o6aLisEm",
         "xaeros-world-map:1.39.0_Forge_1.20",
         "xaeros-minimap:24.5.0_Forge_1.20",
@@ -209,7 +209,7 @@ def mods = [
 ]
 //只导出 不在开发环境运行
 def modsExportOnly = [
-
+        "i18nupdatemod:3.6.0",
         "kotlin-for-forge:4.11.0",
 ]
 

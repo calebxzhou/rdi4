@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -16,10 +17,7 @@ import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.server.IntegratedServer
 import net.minecraft.core.BlockPos
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.HoverEvent
-import net.minecraft.network.chat.MutableComponent
-import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.*
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
@@ -48,6 +46,7 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import snownee.jade.overlay.RayTracing
+import java.awt.SystemColor.text
 import kotlin.math.roundToInt
 
 val mc: Minecraft
@@ -96,8 +95,28 @@ fun mcText(str: String? = null): MutableComponent {
         Component.literal(it)
     } ?: Component.empty()
 }
-fun MutableComponent.hoverText(str:String): MutableComponent =
-    this.withStyle(Style.EMPTY.withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText(str))))
+fun MutableComponent.hoverText(str:String): MutableComponent {
+    withStyle(
+        Style.EMPTY
+            .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, mcText(str)))
+    )
+    return this
+}
+fun MutableComponent.clickCommand(cmd: String) : MutableComponent{
+    hoverText("点击运行指令")
+    withStyle(Style.EMPTY.withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, cmd)))
+    return this
+}
+fun MutableComponent.clickCopy(text: String) : MutableComponent{
+    hoverText("点击复制")
+    withStyle(Style.EMPTY.withClickEvent(ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text)))
+    return this
+}
+fun MutableComponent.clickBrowse(url: String) : MutableComponent{
+    hoverText("点击打开链接")
+    withStyle(Style.EMPTY.withClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, url)))
+    return this
+}
 
 fun GuiGraphics.matrixOp(handler: PoseStack.() -> Unit) {
     val stack = pose()

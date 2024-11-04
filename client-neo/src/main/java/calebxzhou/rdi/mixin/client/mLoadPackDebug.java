@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(ReloadableResourceManager.class)
 public class mLoadPackDebug {
-    @Redirect(method = "createReload",at= @At(value = "INVOKE", target = "Lorg/slf4j/Logger;isDebugEnabled()Z"))
+    /*@Redirect(method = "createReload",at= @At(value = "INVOKE", target = "Lorg/slf4j/Logger;isDebugEnabled()Z"))
     private boolean R$dev(Logger instance){
         return Const.getDEBUG();
-    }
+    }*/
 }
