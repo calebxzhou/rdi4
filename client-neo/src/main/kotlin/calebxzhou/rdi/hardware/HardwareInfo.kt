@@ -1,4 +1,4 @@
-package calebxzhou.rdi.service
+package calebxzhou.rdi.hardware
 
 import oshi.SystemInfo
 import oshi.hardware.CentralProcessor

@@ -1,5 +1,6 @@
 package calebxzhou.rdi.ui.screen
 
+import calebxzhou.rdi.hardware.*
 import calebxzhou.rdi.text.richText
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.util.clickBrowse
@@ -23,9 +24,29 @@ class AboutScreen : RScreen("关于") {
         ret()
         icon("github")
         text("GitHub：calebxzhou/rdi4")
+        ret()
+        icon("os")
+        text("OS：${os}")
+        ret()
+        icon("cpu")
+        text("CPU：${cpu}")
+        ret()
+        icon("gpu")
+        text("GPU：${gpu}")
+        ret()
+        icon("ram")
+        text("RAM: ${mem}")
+        ret()
+        icon("disp")
+        text("显示:")
+        ret()
+        disp.forEach {
+            text(it)
+            ret()
+        }
         fill()
-
     }
+
     override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         rt.render(guiGraphics)
     }

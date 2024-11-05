@@ -1,6 +1,6 @@
 package calebxzhou.rdi.test
 
-import calebxzhou.rdi.service.HardwareInfo
+import calebxzhou.rdi.hardware.HardwareInfo
 
 fun main() {
     print(HardwareInfo.toString())

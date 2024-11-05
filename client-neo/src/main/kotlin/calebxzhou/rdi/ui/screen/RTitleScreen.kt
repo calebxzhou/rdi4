@@ -185,7 +185,7 @@ class RTitleScreen : RScreen("主页") {
             imageButton(Icons["settings"], "设置") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
-            imageButton(Icons["partner"], "致谢") {
+            imageButton(Icons["partner"], "关于") {
                 mc goScreen AboutScreen()
             }
             /*imageButton(Icons["qq"], "QQ群") {
