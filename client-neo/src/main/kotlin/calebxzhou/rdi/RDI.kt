@@ -13,6 +13,7 @@ import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.item.ItemInfo
 import calebxzhou.rdi.item.RItems
+import calebxzhou.rdi.lan.Lan
 import calebxzhou.rdi.lang.EnglishStorage.lang
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
@@ -243,6 +244,7 @@ object RDIEvents {
         )
         val cmds = listOf(
             OmniNavi.cmd(e.buildContext),
+            Lan.cmd,
             ItemInfo.cmd,
             ChunkStats.cmd,
         )

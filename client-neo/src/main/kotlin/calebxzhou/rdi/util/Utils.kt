@@ -16,6 +16,7 @@ import java.lang.management.OperatingSystemMXBean
 import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.schedule
@@ -124,3 +125,11 @@ fun ObjectId.toUUID() : UUID{
 //    bb.putLong(0)
     return UUID(bb.getLong(0), bb.getLong(8))
 }
+val String.objectId : ObjectId
+    get() {
+        // Use a hash function (e.g., SHA-1) to generate a 12-byte value
+        val digest = MessageDigest.getInstance("SHA-1").digest(toByteArray())
+        val objectIdBytes = digest.copyOfRange(0, 12)
+
+        return ObjectId(objectIdBytes)
+    }

@@ -16,6 +16,7 @@ import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -148,8 +149,7 @@ class RTitleScreen : RScreen("主页") {
 
     public override fun init() {
 
-        //SplashScreen.hide()
-        val account = Account.now ?: Account.DEFAULT
+        Account.logout()
         //关闭音乐
         //mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
 
@@ -167,31 +167,40 @@ class RTitleScreen : RScreen("主页") {
         }.also { registerWidget(it) }*/
 
         gridLayout(this, 10, mcUIHeight - 16) {
-            imageButton(Icons["start"], "开始") {
-                Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
+            iconButton("start", text = "开始") {
+                /*Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
                     alertErr("请先完成教程 ${it.name} 章节")
                     return@imageButton
-                }
+                }*/
                 mc goScreen optionScreen(this@RTitleScreen, "选择游玩模式") {
-                    "单人模式" to { mc goScreen SelectWorldScreen(this.mcScreen) }
-                    "线上模式" to { alert("线上多人模式预计2024.12.6开通") }
+                    "单人模式" to SelectWorldScreen(this.mcScreen)
+                    "多人模式" to optionScreen(this.mcScreen, "选择联机类型") {
+                            "局域网" to formScreen(this.mcScreen,"输入信息"){
+                                text("name","你的游戏昵称",16, defaultValue = LocalStorage["guestName"])
+                                submit {
+                                    val name = it.formData["name"]!!
+                                    LocalStorage["guestName"]=name
+                                    Account.guestLogin(name)
+                                    mc goScreen JoinMultiplayerScreen(RTitleScreen())
+                                    alert("0.让你的朋友打开一个存档，输入/lan指令启动联机\n1.然后这个界面，就能搜到他了\n如果搜不到，可以手动输入他的ip跟端口添加")
+                                }
+                            }
+                            "私服" to { alert("私服模式预计2025.1中开通") }
+                            "线上模式" to { alert("线上多人模式预计2024.12中开通") }
+                        }
                 }
                 //start()
             }
-            imageButton(Icons["tutorial"], "互动教程") {
+            /*iconButton("tutorial", "互动教程") {
                 mc goScreen RTutorialScreen(this@RTitleScreen)
                 //start()
-            }
-            imageButton(Icons["settings"], "设置") {
+            }*/
+            iconButton("settings", text = "设置") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
-            imageButton(Icons["partner"], "关于") {
+            iconButton("partner", text = "关于") {
                 mc goScreen AboutScreen()
             }
-            /*imageButton(Icons["qq"], "QQ群") {
-                copyToClipboard("1095925708")
-                alert("欢迎加入RDI玩家交流群\n已复制QQ群号：1095925708 ")
-            }*/
         }
 
 

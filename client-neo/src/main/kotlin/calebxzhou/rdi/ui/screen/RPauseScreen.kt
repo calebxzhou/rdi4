@@ -33,16 +33,16 @@ class RPauseScreen : RScreen("暂停") {
     }
     override fun init() {
         gridLayout(this, hAlign = HAlign.CENTER,y=2) {
-            /*imageButton(Icons["basic_info"],"基本信息"){
+            /*imageButton("basic_info","基本信息"){
                 displayMode = BASIC_INFO
             }*/
-            imageButton(Icons["map"],"地图"){
+            iconButton("map", text = "地图"){
                 mc goScreen xaero.map.gui.GuiMap(this@RPauseScreen,this@RPauseScreen,WorldMapSession.getCurrentSession().mapProcessor,mc.player!!)
             }
-            imageButton(Icons["settings"],"设置"){
+            iconButton("settings",text = "设置"){
                 mc goScreen RSettingsScreen(this@RPauseScreen,mc.options)
             }
-            imageButton(Icons["exit"],"退出"){
+            iconButton("exit",text = "退出"){
                 mc.level?.disconnect()
                 if(mc.isLocalServer){
                     mc.clearLevel(GenericDirtMessageScreen(mcText("存档中，请稍候")))

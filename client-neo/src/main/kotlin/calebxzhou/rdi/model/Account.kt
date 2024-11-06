@@ -1,8 +1,11 @@
 package calebxzhou.rdi.model
 
 import calebxzhou.rdi.util.mc
+import calebxzhou.rdi.util.objectId
 import calebxzhou.rdi.util.toUUID
 import com.mojang.authlib.GameProfile
+import com.possible_triangle.sliceanddice.block.slicer.SlicerArmInteractionType.id
+import jogamp.graph.font.typecast.ot.table.Table.name
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -34,7 +37,8 @@ data class Account(
         var now: Account? = null
 
         @JvmStatic
-        var mcUserNow = now?.mcUser ?: User(
+        val mcUserNow
+            get() = now?.mcUser ?: User(
             "rdi",
             UUID.randomUUID().toString(),
             "",
@@ -44,6 +48,10 @@ data class Account(
         )
         val isLogin
             get() = now != null
+        fun logout() {now = null}
+        fun guestLogin(name: String){
+            Account.now = Account(name.objectId,name,"","")
+        }
     }
     @Contextual
     val uuid = id.toUUID()

@@ -31,7 +31,7 @@ abstract class RScreen(open val title: MutableComponent) : Screen(title) {
     override fun init() {
         super.init()
         if(closeable){
-            widgets += RIconButton(Icons["back"],mcText(),0,0){onClose()}
+            widgets += RIconButton(icon = "back"){onClose()}
         }
         widgets.forEach { addRenderableWidget(it) }
     }
