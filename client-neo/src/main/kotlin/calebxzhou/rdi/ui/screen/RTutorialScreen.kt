@@ -21,12 +21,13 @@ class RTutorialScreen(private val prevScreen: Screen) : RScreen("互动教程") 
             y += chapterBtn.height
             val grid = gridLayout(this, x, y) {
                 it.tutorials.forEach { tutorial ->
-                    button(mcText(tutorial.name).withStyle(
+                    val cpnt = mcText(tutorial.name).withStyle(
                         if (tutorial.isDone)
                             ChatFormatting.GREEN
                         else
                             ChatFormatting.WHITE
-                    )) {
+                    )
+                    iconButton(item=tutorial.icon,cpnt=cpnt) {
                         tutorial.start()
                     }
                 }

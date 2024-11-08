@@ -10,17 +10,18 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
-
+import java.awt.SystemColor.text
 
 
 class RIconButton(
     val icon: String?=null,
     val item: Item?=null,
     val text: String ="",
+    val cpnt: MutableComponent=text.toMcText(),
     x: Int=0,
     y: Int=0,
     val onClick: (Button) -> Unit
-) : RButton(text.toMcText(), x, y, mcTextWidthOf(text.toMcText()) + 24, 20, onClick) {
+) : RButton(cpnt, x, y, mcTextWidthOf(cpnt) + 24, 20, onClick) {
 
     override fun renderWidget(gg: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
         icon?.let {
@@ -33,8 +34,8 @@ class RIconButton(
         }
         item?.let {
             gg.matrixOp {
-                gg.pose().translate(0f, 4f, 0f)
-                gg.renderItemStack(item.defaultInstance, 12, 12)
+                gg.pose().translate(x.toFloat()+8, y.toFloat()+5f, 1f)
+                gg.renderItemStack(item.defaultInstance, 14, 14)
             }
         }
         //渲染文字
@@ -43,7 +44,7 @@ class RIconButton(
             scale(0.90f,0.90f,1f)
             translate(x.toFloat()/0.9f+18,y.toFloat()/0.9f+2.8f,1f)
             gg.drawString(
-                mcFont, text,0,0,if (isHoveredOrFocused)
+                mcFont, cpnt,0,0,if (isHoveredOrFocused)
                     ChatFormatting.AQUA.color ?: 16777215
                 else
                     16777215

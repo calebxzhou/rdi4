@@ -6,10 +6,7 @@ import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.Icons
 import calebxzhou.rdi.ui.general.renderItemStack
-import calebxzhou.rdi.util.matrixOp
-import calebxzhou.rdi.util.mcText
-import calebxzhou.rdi.util.mcUIHeight
-import calebxzhou.rdi.util.mcUIWidth
+import calebxzhou.rdi.util.*
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripRenderHandler.pose
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
@@ -54,10 +51,11 @@ class GridLayoutBuilder(
         icon: String?=null,
         item: Item?=null,
         text: String = "",
+        cpnt: MutableComponent = text.toMcText(),
         x: Int = 0,
         y: Int = 0,
         onClick: (Button) -> Unit
-    ) = RIconButton(icon,item, (text),x,y,onClick).also{ children += it }
+    ) = RIconButton(icon,item, text,cpnt, x, y, onClick).also{ children += it }
 
 
     fun build(): GridLayout{

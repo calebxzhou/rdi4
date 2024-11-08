@@ -296,7 +296,7 @@ val T1_CERA = tutorial("1_cera", "陶器") {
     }) {
         it isLooking TFCItems.VESSEL.get()
     }
-    step("把大缸放在坑里") {
+    step("离远点再挖一个坑 把大缸放在坑里") {
         lookingPitKilnHas(it, TFCItems.UNFIRED_LARGE_VESSEL.get())
     }
     step("用同样的方法烧制大缸") {

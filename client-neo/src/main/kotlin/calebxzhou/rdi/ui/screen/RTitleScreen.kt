@@ -191,10 +191,10 @@ class RTitleScreen : RScreen("主页") {
                 }
                 //start()
             }
-            /*iconButton("tutorial", "互动教程") {
+            iconButton("tutorial", text = "互动教程") {
                 mc goScreen RTutorialScreen(this@RTitleScreen)
                 //start()
-            }*/
+            }
             iconButton("settings", text = "设置") {
                 mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
             }
