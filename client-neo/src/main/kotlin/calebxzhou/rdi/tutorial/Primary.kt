@@ -4,6 +4,7 @@ import calebxzhou.rdi.common.SmartBlockPos
 import calebxzhou.rdi.common.bos
 import calebxzhou.rdi.common.smart
 import calebxzhou.rdi.mixin.client.tfc.AInventoryBlockEntity
+import calebxzhou.rdi.text.richText
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.util.*
 import com.electronwill.nightconfig.toml.TomlFormat
@@ -43,20 +44,35 @@ import net.minecraft.world.level.block.FireBlock
 /**
  * calebxzhou @ 2024-10-24 8:14
  */
+val tfcTwig = TFCBlocks.WOODS[Wood.OAK]!![Wood.BlockType.TWIG]!!.get()
+val tfcRock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get()
 val T1_STONE = tutorial("1_stone", "石器") {
-    step("对准树下面散落的树枝", {
+    step(richText {
+        text("对准树下面散落的")
+        item(tfcTwig.asItem())
+        text("树枝")
+    }, {
         (it.level() as ServerLevel).loadStructure("maple_tree", it.blockPosition())
-    }) { it isLooking TFCBlocks.WOODS[Wood.OAK]!![Wood.BlockType.TWIG]!!.get() }
-    step("空手对准，按鼠标右键捡起来5个") { it.bagHas(FIREPIT_STICKS, 5) }
-    step("同样，捡起脚下石头10个", { player: Player ->
-        val rockBlock = TFCBlocks.ROCK_BLOCKS[Rock.ANDESITE]!![Rock.BlockType.LOOSE]!!.get().defaultBlockState()
+    }) { it isLooking tfcTwig }
+    step(richText {
+        text("空手对准，")
+        rmb()
+        text("捡5个树枝")
+        item(tfcTwig.asItem() to 5)
+    }) { it.bagHas(FIREPIT_STICKS, 5) }
+    step(richText {
+        icon("rmb")
+        text("捡起脚下石头10个")
+        item(tfcRock.asItem() to 10)
+    }, {
+        val rockBlock = tfcRock.defaultBlockState()
         val rock = rockBlock.setValue(LooseRockBlock.COUNT, 3)
-        val level = player.level()
-        level.setBlock(player.blockPosition(), rock)
-        level.setBlock(player.blockPosition().north(), rock)
-        level.setBlock(player.blockPosition().south(), rock)
-        level.setBlock(player.blockPosition().east(), rock)
-        level.setBlock(player.blockPosition().west(), rock)
+        val level = it.level()
+        level.setBlock(it.blockPosition(), rock)
+        level.setBlock(it.blockPosition().north(), rock)
+        level.setBlock(it.blockPosition().south(), rock)
+        level.setBlock(it.blockPosition().east(), rock)
+        level.setBlock(it.blockPosition().west(), rock)
     }) { it.bagHas(ROCK_KNAPPING, 10) }
     step("手持石头，看天空，按鼠标右键进入打磨画面") { mc.screen is KnappingScreen }
     step("在画面右下角的文本框中，输入汉字 石斧头，查看它的合成方式") {
@@ -69,7 +85,7 @@ val T1_STONE = tutorial("1_stone", "石器") {
         slot(0)
         airSlotContainer()
     }
-    step("用前面学习到的知识，去搜索 石斧 的合成方法，尝试做一个出来") {
+    step("搜索 石斧 的合成方法，做一个出来") {
         it.hasRockTool(RockCategory.ItemType.AXE)
     }
     step("手持石斧，对准树的根部，长按鼠标左键给它砍断") {
@@ -187,8 +203,8 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
         place(pos dy 1 dx 2 dz 1, bk)
         place(pos dy 1 dx 2 dz 2, bk)
     }
-    step("手持起火器",{
-        it give Blocks.DIRT.asItem()*16
+    step("手持起火器", {
+        it give Blocks.DIRT.asItem() * 16
     }) {
         it handHas TFCItems.FIRESTARTER.get()
     }
@@ -201,7 +217,7 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
     step("等它不冒烟了，再把木炭堆挖开") {
         it isLooking TFCBlocks.CHARCOAL_PILE.get()
     }
-    step("用铲子收集里面的木炭",{
+    step("用铲子收集里面的木炭", {
         it giveRockTool RockCategory.ItemType.SHOVEL
     }) {
         it bagHas Items.CHARCOAL

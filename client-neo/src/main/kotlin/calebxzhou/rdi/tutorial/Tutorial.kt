@@ -7,6 +7,7 @@ import calebxzhou.rdi.banner.Banner.plusAssign
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.blockguide.blockGuide
 import calebxzhou.rdi.logger
+import calebxzhou.rdi.text.RichText
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
@@ -79,7 +80,6 @@ data class Tutorial(
         val newStep = this.stepNow
         if (newStep != null) {
             logger.info("开始教程${stepIndex}")
-            mc.addChatMessage("")
             player.playNote()
             newStep.beforeOpr(player)
         } else {
@@ -88,15 +88,20 @@ data class Tutorial(
         }
     }
 
-    fun render(guiGraphics: GuiGraphics) {
+    fun render(guiGraphics: GuiGraphics,isContainerScreen: Boolean=false) {
            stepNow?.let { stepNow ->
                 guiGraphics.matrixOp {
-                    translate(0.0, 24.0, 100.0)
-                    guiGraphics.fill(0, 50, 100, 300, 0x66000000)
+                    if(isContainerScreen) {
+                        translate(0f,0f,1f)
+                    } else {
+                        translate(80.0, 50.0, 1.0)
+                    }
+                    //guiGraphics.fill(0, 50, 100, 300, 0x66000000)
                     stepNow.text.render(guiGraphics)
                 }
             }
     }
+
 
     fun tick(server: MinecraftServer) {
         server.playerList.players.forEach { player ->
@@ -177,6 +182,13 @@ data class Tutorial(
         val steps = arrayListOf<TutorialStep>()
         fun step(
             text: String,
+            beforeOpr: (ServerPlayer) -> Unit = {},
+            completeCondition: (ServerPlayer) -> Boolean
+        ) {
+            steps += TutorialStep(text, beforeOpr, completeCondition)
+        }
+        fun step(
+            text: RichText,
             beforeOpr: (ServerPlayer) -> Unit = {},
             completeCondition: (ServerPlayer) -> Boolean
         ) {

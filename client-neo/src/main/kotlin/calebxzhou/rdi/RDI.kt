@@ -28,12 +28,14 @@ import io.netty.util.concurrent.DefaultThreadFactory
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
+import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.config.FoodExpiryTooltipStyle
 import net.dries007.tfc.config.TFCConfig
 import net.dries007.tfc.config.TimeDeltaTooltipStyle
 import net.minecraft.client.gui.components.toasts.AdvancementToast
 import net.minecraft.client.gui.components.toasts.RecipeToast
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
@@ -217,7 +219,7 @@ object RDIEvents {
                 }
             }
         }
-        FMLConfig.updateConfig(FMLConfig.ConfigValue.VERSION_CHECK,false)
+        FMLConfig.updateConfig(FMLConfig.ConfigValue.VERSION_CHECK, false)
         TFCConfig.CLIENT.timeDeltaTooltipStyle.set(TimeDeltaTooltipStyle.DAYS)
         TFCConfig.CLIENT.foodExpiryTooltipStyle.set(FoodExpiryTooltipStyle.TIME_LEFT)
         File("saves").listFiles()?.forEach { subDir ->
@@ -232,9 +234,9 @@ object RDIEvents {
         val cmds = listOf(
             TutorialCommand.cmd,
         )
-       // if (Const.DEBUG) {
-            cmds.forEach { e.dispatcher.register(it) }
-       // }
+        // if (Const.DEBUG) {
+        cmds.forEach { e.dispatcher.register(it) }
+        // }
 
     }
 
@@ -282,12 +284,15 @@ object RDIEvents {
         Banner.renderGui(e.guiGraphics)
         BlockGuide.now?.renderGui(e.guiGraphics)
         OmniNavi.renderGui(e.guiGraphics)
+        Tutorial.now?.render(e.guiGraphics)
     }
 
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
         UiGuide.now?.render(e.guiGraphics, e.mouseX, e.mouseY)
         Banner.renderScreen(e.guiGraphics, e.screen)
-        Tutorial.now?.render(e.guiGraphics)
+        if (e.screen is AbstractContainerScreen<*> || e.screen is IRecipesGui) {
+            Tutorial.now?.render(e.guiGraphics, true)
+        }
         if (Const.DEBUG) {
             SlotWidgetDebugRenderer.render(e.guiGraphics, e.screen)
         }

@@ -1,17 +1,19 @@
 package calebxzhou.rdi.text
 
 import calebxzhou.rdi.common.WHITE
+import calebxzhou.rdi.tutorial.full
 import calebxzhou.rdi.ui.general.Icons
+import calebxzhou.rdi.ui.general.KeyboardIcons
 import calebxzhou.rdi.ui.general.renderItemStack
-import calebxzhou.rdi.util.matrixOp
-import calebxzhou.rdi.util.mcFont
-import calebxzhou.rdi.util.mcText
+import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
 
 //文字，以及插在文字中的小图标
 typealias RichTextRenderer = RichText.Context.() -> Unit
@@ -40,15 +42,17 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
         fun text(str: String, color: Int = WHITE) {
             ren += {
                 val txt = mcText(str)
-                val width = guiGraphics.drawString(mcFont, txt, nowX, nowY, color)
-                nowX+=width
+                val width = MultiLineLabel.create(mcFont,txt, mcUIWidth).renderLeftAligned(guiGraphics,nowX,nowY,10,color)
+                //val width = guiGraphics.drawString(mcFont, txt, nowX, nowY, color)
+                nowX+= mcFont.width(txt)
             }
         }
 
         fun text(txt: Component) {
             ren += {
-                val width = guiGraphics.drawString(mcFont, txt, nowX, nowY, txt.style.color?.value ?: WHITE)
-                nowX += width
+                val width = MultiLineLabel.create(mcFont,txt,mcUIWidth).renderLeftAligned(guiGraphics,nowX,nowY,10,txt.style.color?.value?: WHITE)
+                //val width = guiGraphics.drawString(mcFont, txt, nowX, nowY, txt.style.color?.value ?: WHITE)
+                nowX += mcFont.width(txt)
             }
         }
 
@@ -60,16 +64,18 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
         }
 
         fun item(item: Item) {
+            item(item to 1)
+        }
+        fun item(item:LiteItemStack){
             ren += {
                 nowX += 5
                 guiGraphics.matrixOp {
-                    pose.translate(0f, 4f, 0f)
-                    guiGraphics.renderItemStack(item.defaultInstance, 12, 12)
+                    pose.translate(nowX.toFloat(), nowY.toFloat()+4, 0f)
+                    guiGraphics.renderItemStack(item.full, 12, 12)
                 }
                 nowX += 8
             }
         }
-
         fun icon(name: String) {
             ren += {
                 guiGraphics.matrixOp {
@@ -79,6 +85,19 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
                 nowX += 12
             }
         }
+        fun rmb(){
+            icon("rmb")
+        }
+
+        /*fun key(name: String) {
+            ren += {
+                guiGraphics.matrixOp {
+                    pose.translate(0f, -1f, 0f)
+                    guiGraphics.blit(KeyboardIcons[name], nowX,nowY, 0f, 0f, 10, 10, 10, 10)
+                }
+                nowX += 12
+            }
+        }*/
 
         fun ret() {
             ren += {
@@ -107,6 +126,6 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
     }
 }
 
-fun richText(x: Int = 100, y: Int = 100, builder: RichText.Builder.() -> Unit): RichText {
+fun richText(x: Int = 0, y: Int = 0, builder: RichText.Builder.() -> Unit): RichText {
     return RichText.Builder(x, y).apply(builder).build()
 }
