@@ -1,9 +1,7 @@
 package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.mixin.client.tfc.AInventoryBlockEntity
-import calebxzhou.rdi.util.LiteItemStack
-import calebxzhou.rdi.util.bagHas
-import calebxzhou.rdi.util.lookingAtBlockEntity
+import calebxzhou.rdi.util.*
 import net.dries007.tfc.common.blockentities.PlacedItemBlockEntity
 import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.common.blocks.rock.Rock
@@ -30,6 +28,7 @@ infix fun Player.give(itemStack: ItemStack) {
     inventory.add(itemStack)
 }
 infix fun Player.give(lis: LiteItemStack){
+    mc.addChatMessage("给你"+lis.first.description.string)
     give(lis.full)
 }
 infix fun Player.give(item: Item) {
@@ -41,7 +40,10 @@ infix fun Player.giveTwig(count:Int) =
     give(TFCBlocks.WOODS[Wood.OAK]!![Wood.BlockType.TWIG]!!.get().asItem() * count)
 infix fun Player.giveLog(count:Int) =
     give(TFCBlocks.WOODS[Wood.OAK]!![Wood.BlockType.LOG]!!.get().asItem() * count)
-infix fun Player.giveRockTool(type: RockCategory.ItemType) = give(TFCItems.ROCK_TOOLS[RockCategory.METAMORPHIC]!![type]!!.get())
+infix fun Player.giveRockTool(type: RockCategory.ItemType) {
+    give(type.item)
+}
+
 fun lookingPitKilnHas(player: Player, item: Item): Boolean {
     val looking = player.lookingAtBlockEntity
     if(looking is PlacedItemBlockEntity){

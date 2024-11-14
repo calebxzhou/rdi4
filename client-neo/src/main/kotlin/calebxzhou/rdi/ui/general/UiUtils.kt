@@ -1,5 +1,6 @@
 package calebxzhou.rdi.ui.general
 
+import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.util.matrixOp
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcFont
@@ -35,9 +36,5 @@ fun GuiGraphics.renderItemStack(itemStack: ItemStack, width: Int = 16, height: I
     if (flag) {
         Lighting.setupFor3DItems()
     }
-    //渲染数量
-    pose.matrixOp {
-        pose.translate(0.0f, 0.0f, 200.0f)
-        drawString(mcFont, mcText("${itemStack.count}"), width - 10, height - 10, 16777215, true)
-    }
+
 }

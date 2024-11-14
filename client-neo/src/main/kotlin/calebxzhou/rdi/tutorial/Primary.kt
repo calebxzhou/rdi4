@@ -74,7 +74,13 @@ val T1_STONE = tutorial("1_stone", "石器") {
         level.setBlock(it.blockPosition().east(), rock)
         level.setBlock(it.blockPosition().west(), rock)
     }) { it.bagHas(ROCK_KNAPPING, 10) }
-    step("手持石头，看天空，按鼠标右键进入打磨画面") { mc.screen is KnappingScreen }
+    step(richText {
+        text("手持")
+        item(tfcRock.asItem())
+        text("石头，不要瞄准任何方块，")
+        rmb()
+        text("开始打磨")
+    }) { mc.screen is KnappingScreen }
     step("在画面右下角的文本框中，输入汉字 石斧头，查看它的合成方式") {
         mc.screen is IRecipesGui
     }
@@ -91,7 +97,13 @@ val T1_STONE = tutorial("1_stone", "石器") {
     step("手持石斧，对准树的根部，长按鼠标左键给它砍断") {
         it.bagHas(ItemTags.LOGS, 1)
     }
-    step("拿着石子,看天空,按鼠标右键打磨") { mc.screen is KnappingScreen }
+    step(richText {
+        text("手持")
+        item(tfcRock.asItem())
+        text("石头，不要瞄准任何方块，")
+        rmb()
+        text("开始打磨")
+    }) { mc.screen is KnappingScreen }
     step("在画面右下角的文本框中，输入汉字 石刀刃，查看它的合成方式") {
         mc.screen is IRecipesGui
     }
@@ -103,7 +115,6 @@ val T1_STONE = tutorial("1_stone", "石器") {
         widgets(5, 10, 11, 12, 13, 14, 15)
         slot(0)
         airSlotContainer()
-
     }
     step("用前面学习到的知识，去搜索 石刀 的合成方法，尝试做一个出来") { it.hasRockTool(RockCategory.ItemType.KNIFE) }
     step("手持石刀，去树下面割3个干草（对准-鼠标左键点击）")

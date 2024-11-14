@@ -8,7 +8,9 @@ import calebxzhou.rdi.ui.general.RToast
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
+import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
+import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
@@ -326,7 +328,14 @@ fun Level.setBlock(pos: BlockPos, state: BlockState) {
 fun Level.setBlock(pos: BlockPos, block: Block) {
     setBlock(pos, block.defaultBlockState())
 }
-
+fun Level.setBlock(block: Block,vararg pos: BlockPos,) {
+    setBlock(block.defaultBlockState(),*pos)
+}
+fun Level.setBlock(block: BlockState,vararg pos: BlockPos,) {
+    pos.forEach {
+    setBlock(it, block)
+    }
+}
 val ServerPlayer.serverLevel
     get() = level() as ServerLevel
 
@@ -433,6 +442,8 @@ fun mcTextWidthOf(text: Component): Int {
 fun copyToClipboard(s: String) {
     GLFW.glfwSetClipboardString(mcWindowHandle, s)
 }
+val RockCategory.ItemType.item
+    get() =     TFCItems.ROCK_TOOLS[RockCategory.METAMORPHIC]!![this]!!.get()
 
 object McUtils {
     @JvmStatic

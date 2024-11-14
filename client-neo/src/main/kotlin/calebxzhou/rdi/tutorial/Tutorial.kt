@@ -92,7 +92,7 @@ data class Tutorial(
            stepNow?.let { stepNow ->
                 guiGraphics.matrixOp {
                     if(isContainerScreen) {
-                        translate(0f,0f,1f)
+                        translate(5f,5f,1f)
                     } else {
                         translate(80.0, 50.0, 1.0)
                     }
@@ -196,6 +196,16 @@ data class Tutorial(
         }
         fun buide(
             text: String,
+            beforeOpr: (ServerPlayer) -> Unit = {},
+            guider:  BlockGuide. Builder.() -> Unit
+        ){
+            step(text,{
+                beforeOpr(it)
+                blockGuide(guider)
+            }){BlockGuide.isOff}
+        }
+        fun buide(
+            text: RichText,
             beforeOpr: (ServerPlayer) -> Unit = {},
             guider:  BlockGuide. Builder.() -> Unit
         ){

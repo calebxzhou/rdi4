@@ -159,6 +159,7 @@ object RDIEvents {
         bus.addListener(::rightClickBlock)
         bus.addListener(::onRenderGui)
         bus.addListener(::afterScreenRender)
+        bus.addListener(::onCloseScreen)
         bus.addListener(::screenMouseClick)
         bus.addListener(::onClientTick)
         bus.addListener(::onClientLevelTick)
@@ -286,7 +287,12 @@ object RDIEvents {
         OmniNavi.renderGui(e.guiGraphics)
         Tutorial.now?.render(e.guiGraphics)
     }
-
+    fun onCloseScreen(e: ScreenEvent.Closing){
+        //如果正在进行uiguide 不允许关闭当前画面
+        if(UiGuide.isOn) {
+            e.isCanceled=true
+        }
+    }
     fun afterScreenRender(e: ScreenEvent.Render.Post) {
         UiGuide.now?.render(e.guiGraphics, e.mouseX, e.mouseY)
         Banner.renderScreen(e.guiGraphics, e.screen)

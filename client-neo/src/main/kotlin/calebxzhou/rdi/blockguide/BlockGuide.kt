@@ -106,15 +106,25 @@ class BlockGuide(val steps: List<Step>) {
     class Builder {
         val steps = arrayListOf<Step>()
         fun place(pos: BlockPos, block: Block) {
-            steps += Step(pos, BlockOperation.PLACE, block.defaultBlockState()) { it.blockIs(pos, block) }
+            place(block,pos)
         }
-
+        fun place(block: Block,vararg  pos: BlockPos){
+            pos.forEach { pos1->
+                steps += Step(pos1, BlockOperation.PLACE, block.defaultBlockState()) { it.blockIs(pos1, block) }
+            }
+        }
         fun place(pos: BlockPos, state: BlockState) {
             steps += Step(pos, BlockOperation.PLACE, state)
         }
-
-        fun destroy(pos: BlockPos) {
-            steps += Step(pos, BlockOperation.DESTROY) { it.isAir(pos) }
+        fun interact(vararg pos: BlockPos){
+            pos.forEach { pos1->
+                steps += Step(pos1,BlockOperation.INTERACT)
+            }
+        }
+        fun destroy(vararg pos: BlockPos) {
+            pos.forEach {pos1->
+            steps += Step(pos1, BlockOperation.DESTROY) { it.isAir(pos1) }
+            }
         }
 
         fun build(): BlockGuide {

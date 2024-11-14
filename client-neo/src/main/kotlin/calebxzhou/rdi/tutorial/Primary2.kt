@@ -2,12 +2,12 @@ package calebxzhou.rdi.tutorial
 
 import calebxzhou.rdi.common.bos
 import calebxzhou.rdi.common.smart
+import calebxzhou.rdi.text.richText
 import calebxzhou.rdi.ui.general.alert
-import calebxzhou.rdi.util.bagHas
-import calebxzhou.rdi.util.serverLevel
-import calebxzhou.rdi.util.setBlock
+import calebxzhou.rdi.util.*
 import net.dries007.tfc.common.blocks.TFCBlocks
 import net.dries007.tfc.common.blocks.crop.Crop
+import net.dries007.tfc.common.blocks.crop.WildCropBlock
 import net.dries007.tfc.common.blocks.plant.fruit.FruitBlocks
 import net.dries007.tfc.common.blocks.plant.fruit.Lifecycle
 import net.dries007.tfc.common.blocks.plant.fruit.SeasonalPlantBlock
@@ -22,106 +22,195 @@ import net.minecraft.world.level.block.Blocks
 /**
  * calebxzhou @ 2024-11-01 16:52
  */
-val T1_ARGI = tutorial("1_agri","农业"){
-    step("适合种植的植物分为4类：第一种是农作物，面前的燕麦就是其中之一。打掉即可收集果实+种子（不限工具）",{
+val T1_ARGI = tutorial("1_agri", "农业") {
+    val oat = TFCBlocks.WILD_CROPS[Crop.OAT]!!.get()
+    step(richText {
+        text("适合种植的植物分为4类")
+        ret()
+        text("1.农作物 例：")
+        item(oat.asItem())
+        text("燕麦")
+        ret()
+        lmb()
+        text("打掉->果实+种子")
+    }, {
         it giveRockTool RockCategory.ItemType.HOE
-        it.serverLevel.setBlock(it.blockPosition().smart dz 4,TFCBlocks.WILD_CROPS[Crop.OAT]!!.get().defaultBlockState().apply {
-            setValue(SeasonalPlantBlock.LIFECYCLE,Lifecycle.FRUITING)
-        })
-    }){
-        it bagHas TFCItems.FOOD[Food.OAT_GRAIN]!!.get()
-    }
-    step("第2种是小型灌木，代表为御膳橘灌木。按下鼠标右键收获果实",{
         it.serverLevel.setBlock(
             it.blockPosition().smart dz 4,
-            TFCBlocks.STATIONARY_BUSHES[FruitBlocks.StationaryBush.BUNCHBERRY]!!.get().defaultBlockState().apply {
-                setValue(SeasonalPlantBlock.LIFECYCLE,Lifecycle.FRUITING)
-            })
-    }){
+            oat.defaultBlockState().setValue(WildCropBlock.MATURE, true)
+        )
+    }) {
+        it bagHas TFCItems.FOOD[Food.OAT]!!.get()
+    }
+    val bunchBerry = TFCBlocks.STATIONARY_BUSHES[FruitBlocks.StationaryBush.BUNCHBERRY]!!.get()
+    step(
+        richText {
+            text("2. 小型灌木")
+            ret()
+            text("例：")
+            item(bunchBerry.asItem())
+            text("御膳橘灌木")
+            ret()
+            rmb()
+            text("收获果实")
+        }, {
+            it.serverLevel.setBlock(
+                it.blockPosition().smart dz 4,
+                bunchBerry.defaultBlockState()
+                    .setValue(SeasonalPlantBlock.LIFECYCLE, Lifecycle.FRUITING)
+            )
+        }) {
         it bagHas TFCItems.FOOD[Food.BUNCHBERRY]!!.get()
     }
-    step("第3种是大型灌木，以蓝莓灌木为代表。按下鼠标右键收获果实",{
+    val blueBerry = TFCBlocks.SPREADING_BUSHES[FruitBlocks.SpreadingBush.BLUEBERRY]!!.get()
+    step(richText {
+        text("3. 大型灌木")
+        ret()
+        text("例：")
+        item(blueBerry.asItem())
+        text("蓝莓灌木")
+        ret()
+        rmb()
+        text("收获果实")
+    }, {
         it.serverLevel.setBlock(
             it.blockPosition().smart dz 4,
-            TFCBlocks.SPREADING_BUSHES[FruitBlocks.SpreadingBush.BLUEBERRY]!!.get().defaultBlockState().apply {
-                setValue(SeasonalPlantBlock.LIFECYCLE,Lifecycle.FRUITING)
-            })
-    }){
+            blueBerry.defaultBlockState().setValue(SeasonalPlantBlock.LIFECYCLE, Lifecycle.FRUITING)
+        )
+    }) {
         it bagHas TFCItems.FOOD[Food.BLUEBERRY]!!.get()
     }
-    step("用石刀把蓝莓灌木和御膳橘灌木收入囊中。",{
-        alert("若要将灌木收入囊中，必须用刀\n否则啥也得不到")
-        it giveRockTool  RockCategory.ItemType.KNIFE
-    }){
-        it bagHas TFCBlocks.STATIONARY_BUSHES[FruitBlocks.StationaryBush.BUNCHBERRY]!!.get().asItem()
-                &&
-        it bagHas TFCBlocks.SPREADING_BUSHES[FruitBlocks.SpreadingBush.BLUEBERRY]!!.get().asItem()
+    step(richText {
+        text("用")
+        item(RockCategory.ItemType.KNIFE.item)
+        text("石刀 将")
+        item(blueBerry.asItem())
+        text("蓝莓灌木")
+        text(" 和")
+        item(bunchBerry.asItem())
+        text("御膳橘灌木")
+        text(" 收入囊中")
+    }, {
+        mc.addChatMessage("采集灌木，必须用刀，否则啥也得不到")
+        it giveRockTool RockCategory.ItemType.KNIFE
+    }) {
+        it bagHas bunchBerry.asItem()
     }
-    step("最后一种是果树，比如柠檬树。右键有果实的树叶，可以得到柠檬。",{
+    val lemonLeaf = TFCBlocks.FRUIT_TREE_LEAVES[FruitBlocks.Tree.LEMON]!!.get()
+    val lemon = TFCItems.FOOD[Food.LEMON]!!.get()
+    step(richText {
+        text("4. 果树  例：")
+        item(lemonLeaf.asItem())
+        text("柠檬树")
+        rmb()
+        text("有果实的树叶 -> ")
+        item(lemon)
+        text("柠檬")
+    }, {
         val branch = TFCBlocks.FRUIT_TREE_BRANCHES[FruitBlocks.Tree.LEMON]!!.get()
-        val leave = TFCBlocks.FRUIT_TREE_LEAVES[FruitBlocks.Tree.LEMON]!!.get().defaultBlockState().apply {
-            setValue(SeasonalPlantBlock.LIFECYCLE,Lifecycle.FRUITING)
-        }
+        val leave = lemonLeaf.defaultBlockState()
+            .setValue(SeasonalPlantBlock.LIFECYCLE, Lifecycle.FRUITING)
+
         val bos = it.blockPosition().smart dz 4
-        it.serverLevel.setBlock(bos, branch)
-        it.serverLevel.setBlock(bos dy 1, branch)
-        it.serverLevel.setBlock(bos dy 2, branch)
-        it.serverLevel.setBlock(bos dy 3, branch)
-        it.serverLevel.setBlock(bos dy 3 dx 1, branch)
-        it.serverLevel.setBlock(bos dy 3 dx 2, branch)
-        it.serverLevel.setBlock(bos dy 3 dx 3, leave)
-        it.serverLevel.setBlock(bos dy 4 dx 2, branch)
-        it.serverLevel.setBlock(bos dy 4 dx 3, leave)
-        it.serverLevel.setBlock(bos dy 5 dx 2, branch)
-        it.serverLevel.setBlock(bos dy 5 dx 3, leave)
-        it.serverLevel.setBlock(bos dy 4, branch)
-        it.serverLevel.setBlock(bos dy 5, branch)
-        it.serverLevel.setBlock(bos dy 6, branch)
-    }){
-        it bagHas TFCItems.FOOD[Food.LEMON]!!.get()
+        it.serverLevel.run {
+            //树干
+            setBlock(
+                branch,
+                bos,
+                bos dy 1,
+                bos dy 2,
+                bos dy 3,
+                bos dy 4,
+                bos dy 5
+            )
+            //树枝
+            setBlock(
+                branch,
+                bos dy 3 dx 1,
+                bos dy 3 dx 2,
+                bos dy 4 dx 3,
+                bos dy 4 dx 2,
+                bos dy 4 dx 3,
+                bos dy 5 dx 2,
+                bos dy 5 dx 3
+            )
+            //树叶
+            setBlock(
+                leave,
+                bos dy 3 dx 3,
+                bos dy 4 dx 3,
+                bos dy 5 dx 3
+            )
+        }
+    }) {
+        it bagHas lemon
     }
-    step("用斧头砍断§c§l侧枝§r，得到树苗。（不要砍树干，否则树就废了，什么都得不到）",{
+    step("用斧头砍断§c§l侧枝§r，得到树苗。（不要砍树干，否则树就废了，什么都得不到）", {
         it giveRockTool RockCategory.ItemType.AXE
-    }){
+    }) {
         it bagHas TFCBlocks.FRUIT_TREE_SAPLINGS[FruitBlocks.Tree.LEMON]!!.get().asItem()
     }
     //§ = Alt+Num21
-    var pos = bos(0,-60,0)
+    val pos = bos(0, -61, 0)
     val loam = TFCBlocks.SOIL[SoilBlockType.DIRT]!![SoilBlockType.Variant.LOAM]!!.get()
-    buide("按照指示挖掉泥土，摆放壤土",{
-        pos = it.blockPosition().smart dz 2
-        it give loam.asItem()*16
+    buide("前往地图x0z0的中心位置，按照指示挖掉泥土，摆放壤土", {
+        it give loam.asItem() * 32
         it give Items.WATER_BUCKET
-    }){
-        destroy(pos)
-        destroy(pos dx 1)
-        destroy(pos dx -1)
-        destroy(pos dz 1)
-        destroy(pos dz -1)
-        destroy(pos dx -1 dz -1)
-        destroy(pos dx -1 dz 1)
-        destroy(pos dx 1 dz -1)
-        destroy(pos dx 1 dz 1)
-        place(pos, Blocks.WATER)
-        place(pos dx 1,loam)
-        place(pos dx -1,loam)
-        place(pos dz 1,loam)
-        place(pos dz -1,loam)
-        place(pos dx -1 dz -1,loam)
-        place(pos dx -1 dz 1,loam)
-        place(pos dx 1 dz -1,loam)
-        place(pos dx 1 dz 1,loam)
-
+    }) {
+        destroy(pos, *pos.around2, pos.below)
+        place(loam, pos.below)
+        place(loam, *pos.around2)
     }
-    //todo 每个种子都试一遍
+    step("往中间那个坑里倒水"){
+        it isLooking Blocks.WATER
+    }
+    step(richText {
+        text("手持")
+        item(RockCategory.ItemType.HOE.item)
+        text("石锄")
+    }) {
+        it handHas RockCategory.ItemType.HOE.item
+    }
+    buide(richText {
+        rmb()
+        item(RockCategory.ItemType.HOE.item)
+        text(" ->")
+        item(loam.asItem())
+        text("按照提示，用石锄耕地")
+    }) {
+        interact(*pos.around2)
+    }
+    buide("把水底下那格也耕了") {
+        interact(pos.below)
+    }
+    //每个种子都试一遍
+    TFCBlocks.CROPS.forEach { (crop, block) ->
+        val cropBlock = block.get()
+        val cropItem = cropBlock.asItem()
+        step(richText {
+            text("把")
+            item(cropItem)
+            text(cropItem.description)
+            rmb()
+            if (crop == Crop.RICE) {
+                text("种在水里的耕地上")
+            } else {
+                text("种在耕地上")
+            }
+        }, {
+            it give cropItem
+        }) {
+            it isLooking cropBlock
+        }
+    }
 
 }
-val T1_ANIMAL = tutorial("1_animal","牧业"){
+val T1_ANIMAL = tutorial("1_animal", "牧业") {
 
 }
-val T1_PET = tutorial("1_pet","宠物"){
+val T1_PET = tutorial("1_pet", "宠物") {
 
 }
-val T1_FOOD = tutorial("1_food","食物与营养"){
+val T1_FOOD = tutorial("1_food", "食物与营养") {
 
 }
