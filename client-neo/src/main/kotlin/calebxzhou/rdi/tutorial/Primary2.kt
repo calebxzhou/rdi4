@@ -15,6 +15,7 @@ import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.blocks.soil.SoilBlockType
 import net.dries007.tfc.common.items.Food
 import net.dries007.tfc.common.items.TFCItems
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 
@@ -145,10 +146,20 @@ val T1_ARGI = tutorial("1_agri", "农业") {
     }) {
         it bagHas lemon
     }
+    val lemonSpl = TFCBlocks.FRUIT_TREE_SAPLINGS[FruitBlocks.Tree.LEMON]!!.get()
     step("用斧头砍断§c§l侧枝§r，得到树苗。（不要砍树干，否则树就废了，什么都得不到）", {
         it giveRockTool RockCategory.ItemType.AXE
     }) {
-        it bagHas TFCBlocks.FRUIT_TREE_SAPLINGS[FruitBlocks.Tree.LEMON]!!.get().asItem()
+        it bagHas lemonSpl.asItem()
+    }
+    step(richText {
+        text("把")
+        item(lemonSpl.asItem())
+        text("柠檬树苗")
+        rmb()
+        text("种在地上")
+    }){
+        it isLooking lemonSpl
     }
     //§ = Alt+Num21
     val pos = bos(0, -61, 0)
@@ -193,7 +204,7 @@ val T1_ARGI = tutorial("1_agri", "农业") {
             text(cropItem.description)
             rmb()
             if (crop == Crop.RICE) {
-                text("种在水里的耕地上")
+                text("种在§c§l水里§r的耕地上")
             } else {
                 text("种在耕地上")
             }
@@ -202,6 +213,15 @@ val T1_ARGI = tutorial("1_agri", "农业") {
         }) {
             it isLooking cropBlock
         }
+    }
+    step(richText {
+        text("每种农作物都有适宜的温度范围，温度不合适就会枯萎")
+        ret()
+        text("现在打掉所有的枯萎农作物")
+    },{
+        it.inventory.clearContent()
+    }){ player ->
+        player.inventory.items.filter { it!=(ItemStack.EMPTY) }.size>=8
     }
 
 }

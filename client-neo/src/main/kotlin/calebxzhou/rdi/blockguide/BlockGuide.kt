@@ -188,7 +188,6 @@ class BlockGuide(val steps: List<Step>) {
             }
         }
     }
-
     fun tick(level: Level) {
         stepNow?.let {
             if (it.okCond(level)) {
@@ -198,6 +197,15 @@ class BlockGuide(val steps: List<Step>) {
 
         } ?: stop()
     }
+    fun onRightClick(level: Level) {
+        stepNow?.let {
+            if (it.type == BlockOperation.INTERACT) {
+                next()
+                return@let
+            }
+        }
+    }
+
 
     fun start() {
         logger.info("block guide started ${steps.size}steps")

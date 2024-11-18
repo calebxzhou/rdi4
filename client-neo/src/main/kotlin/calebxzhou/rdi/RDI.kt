@@ -380,6 +380,7 @@ object RDIEvents {
                 //e.isCanceled = true
             }
         }
+        BlockGuide.now?.onRightClick(e.level)
     }
 
     fun pureColorBackground(event: ScreenEvent.BackgroundRendered) {

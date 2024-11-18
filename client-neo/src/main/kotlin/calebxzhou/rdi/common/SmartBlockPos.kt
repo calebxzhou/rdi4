@@ -41,6 +41,7 @@ data class SmartBlockPos(private val x: Int = 0, private val y: Int = 0, private
             this.west.north,
             this.west.south
         )
+
     /*
      XXXXX
      XXXXX
@@ -50,29 +51,37 @@ data class SmartBlockPos(private val x: Int = 0, private val y: Int = 0, private
     val around2
         get() = arrayOf(
             this.east,
-            this.east.east,
-            this.west,
-            this.west.west,
-            this.north,
-            this.north.north,
-            this.south,
-            this.south.south,
             this.east.north,
             this.east.north.north,
+            this.east.east,
+            this.east.east.north,
+            this.east.east.north.north,
+            this.east.east.south,
+            this.east.east.south.south,
             this.east.south,
             this.east.south.south,
+            this.west,
             this.west.north,
             this.west.north.north,
+            this.west.west,
+            this.west.west.north,
+            this.west.west.north.north,
+            this.west.west.south,
+            this.west.west.south.south,
             this.west.south,
             this.west.south.south,
+            this.north,
             this.north.east,
             this.north.east.east,
             this.north.west,
             this.north.west.west,
+            this.north.north,
+            this.south,
             this.south.east,
             this.south.east.east,
             this.south.west,
-            this.south.west.west
+            this.south.west.west,
+            this.south.south
         )
     val copy
         get() = SmartBlockPos(x, y, z)
