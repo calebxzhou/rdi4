@@ -22,10 +22,13 @@ import kotlinx.coroutines.runBlocking
 import org.bson.UuidRepresentation
 import java.io.File
 
+val dbHost = System.getProperty("rdi.dbHost")?:"127.0.0.1"
+val dbPort = System.getProperty("rdi.dbPort").toIntOrNull()?:27017
+val hqPort = System.getProperty("rdi.hqPort").toIntOrNull()?:38411
 val log = KotlinLogging.logger {}
 val db = MongoClient.create(MongoClientSettings.builder()
     .applyToClusterSettings { builder ->
-        builder.hosts(listOf(ServerAddress("127.0.0.1", 27017)))
+        builder.hosts(listOf(ServerAddress(dbHost, dbPort)))
     }
     .uuidRepresentation(UuidRepresentation.STANDARD)
     .build()).getDatabase("rdi_neo")
@@ -52,9 +55,9 @@ fun main() {
 
             }
         })
-        .bind(PORT) // Bind to the same port
+        .bind(hqPort) // Bind to the same port
         .syncUninterruptibly()
-    embeddedServer(Netty, host = "0.0.0.0", port = PORT) {
+    embeddedServer(Netty, host = "0.0.0.0", port = hqPort) {
         routing {
             get("/core") {
                 val file = File("assets/rdi-1.0.0.jar")

@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics
 class AboutScreen : RScreen("关于") {
     val rt = richText(10,20){
         icon("server")
-        text("服务器硬件：wuhudsm66")
+        text("服务器：科洛 wuhudsm66")
         ret()
         icon("plugin")
         text("Mod建议：ForiLuSa 谋士兔 Caragan J4ckTh3R1pper Juliiee")
