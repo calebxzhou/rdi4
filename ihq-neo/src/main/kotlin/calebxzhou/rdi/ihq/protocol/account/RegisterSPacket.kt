@@ -16,7 +16,7 @@ data class RegisterSPacket(
 ): SPacket {
     constructor(buf: ByteBuf): this(buf.readString(32),buf.readString(16),buf.readString(10))
     override suspend fun process(ctx: ChannelHandlerContext) {
-        PlayerService.register(this,ctx)
+        //PlayerService.register(this,ctx)
     }
 
 

@@ -1,8 +1,9 @@
 package calebxzhou.rdi.ihq.service
 
 import calebxzhou.rdi.ihq.accountCol
+import calebxzhou.rdi.ihq.log
 import calebxzhou.rdi.ihq.model.Account
-import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
+import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.util.*
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Updates
@@ -113,20 +114,36 @@ object PlayerService {
         }
     }
 
-    suspend fun register(pkt: RegisterSPacket, ctx: ChannelHandlerContext) {
-        if (getByQQ(pkt.qq) != null || getByName(pkt.name) != null) {
-            ctx.err("QQ或昵称被占用")
+    suspend fun register(call: ApplicationCall) {
+        val name = call["name"]
+        val pwd = call["pwd"]
+        val qq = call["qq"]
+        if (getByQQ(qq) != null || getByName(name) != null) {
+            call.e400("QQ或昵称被占用")
             return
         }
         val account = Account(
-            name = pkt.name,
-            pwd = pkt.pwd,
-            qq = pkt.qq
+            name=name,
+            pwd=pwd,
+            qq =qq
         )
         accountCol.insertOne(account)
-        ctx.ok()
+        call.ok()
     }
+    suspend fun login(call: ApplicationCall){
+        val usr = call["usr"]
+        val pwd = call["pwd"]
+        validate(usr, pwd)?.let { account ->
+            log.info { "${usr}登录成功" }
 
+            val session = AccountSession(account = account)
+            call.ass= session
+            call.ok(session.id)
+        }?:let {
+            log.info { "${usr}登录失败" }
+            call.e401("密码错误")
+        }
+    }
 
 
 

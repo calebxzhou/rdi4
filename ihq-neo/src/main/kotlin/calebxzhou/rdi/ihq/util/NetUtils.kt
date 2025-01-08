@@ -1,8 +1,16 @@
 package calebxzhou.rdi.ihq.util
 
+import calebxzhou.rdi.ihq.exception.AuthError
+import calebxzhou.rdi.ihq.exception.ParamError
 import calebxzhou.rdi.ihq.model.Account
+import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.sessions.sessions
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.DecoderException
@@ -11,7 +19,10 @@ import io.netty.util.AttributeKey
 import org.bson.types.ObjectId
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
-
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.application.*
+import io.ktor.server.sessions.*
 /**
  * calebxzhou @ 2024-06-07 16:54
  */
@@ -173,3 +184,37 @@ var ChannelHandlerContext.reqId: Byte
 var ChannelHandlerContext.account: Account?
     get() = this["account"]
     set(value) = this.set("account",value)
+suspend fun ApplicationCall.e400(msg: String? = null){
+    err(HttpStatusCode.BadRequest,msg)
+}
+suspend fun ApplicationCall.e401(msg: String? = null){
+    err(HttpStatusCode.Unauthorized,msg)
+}
+suspend fun ApplicationCall.e404(msg: String? = null){
+    err(HttpStatusCode.NotFound,msg)
+}
+suspend fun ApplicationCall.e500(msg: String? = null){
+    err(HttpStatusCode.InternalServerError,msg)
+}
+suspend fun ApplicationCall.err(status: HttpStatusCode,msg: String? = null) {
+    msg?.run {
+        respondText(this, status = status)
+    } ?: run {
+        respond(status)
+    }
+}
+suspend fun ApplicationCall.ok(msg: String? = null) {
+    msg?.run {
+        respondText(this, status = HttpStatusCode.OK)
+    } ?: run {
+        respond(HttpStatusCode.OK)
+    }
+}
+
+suspend operator fun ApplicationCall.get(paramKey: String): String {
+    return this.parameters[paramKey] ?: throw ParamError("参数不全")
+}
+
+var ApplicationCall.ass: AccountSession
+    set(value) = this.sessions.set(value)
+    get() = this.sessions.get<AccountSession>()?:throw AuthError("无效会话")
