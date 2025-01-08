@@ -45,6 +45,7 @@
     "mGui",
     "mLoadingOverlay",
     "mMcStart",
+    "mOptions",
     "mOptionsScreen",
     "mPauseScreen",
     "mSaveBandwidth",

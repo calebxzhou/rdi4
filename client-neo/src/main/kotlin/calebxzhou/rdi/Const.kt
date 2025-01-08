@@ -12,7 +12,7 @@ object Const {
 
     const val SERVER_PORT = 38430
     const val IHQ_PORT = 38411
-    val SERVER_ADDR = if(DEBUG)"127.0.0.1" else "nng2.calebxzhou.cn"
+    val SERVER_ADDR = if(DEBUG)"127.0.0.1" else "rdi.calebxzhou.cn"
     val SERVER_INET_ADDR = InetSocketAddress(SERVER_ADDR, SERVER_PORT)
     val IHQ_INET_ADDR = InetSocketAddress(SERVER_ADDR, IHQ_PORT)
     //版本号与协议号
@@ -20,7 +20,7 @@ object Const {
     const val IHQ_VERSION = 0x460
     val SEED = 11451400L
     //显示版本
-    const val VERSION_STR = "RDI 4R Demo4"
+    const val VERSION_STR = "RDI 4R Demo5"
     val SERVER_DATA
         get() = ServerData("RDI", VERSION_STR,false)
 }

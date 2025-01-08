@@ -17,7 +17,7 @@ class AboutScreen : RScreen("关于") {
         text("Mod建议：ForiLuSa 谋士兔 Caragan J4ckTh3R1pper Juliiee")
         ret()
         icon("test")
-        text("测试：wuhudsm66 狗查 Caragan Joon Alive")
+        text("测试：wuhudsm66 谋士兔 狗查 Caragan Joon Alive 木果小奶喵")
         ret()
         icon("qq")
         text("QQ群：1095925708")

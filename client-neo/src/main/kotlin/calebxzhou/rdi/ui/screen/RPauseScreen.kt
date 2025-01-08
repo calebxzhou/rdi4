@@ -39,6 +39,9 @@ class RPauseScreen : RScreen("暂停") {
             iconButton("map", text = "地图"){
                 mc goScreen xaero.map.gui.GuiMap(this@RPauseScreen,this@RPauseScreen,WorldMapSession.getCurrentSession().mapProcessor,mc.player!!)
             }
+            iconButton("camera", text = "视野") {
+                mc goScreen FovScreen()
+            }
             iconButton("settings",text = "设置"){
                 mc goScreen RSettingsScreen(this@RPauseScreen,mc.options)
             }
