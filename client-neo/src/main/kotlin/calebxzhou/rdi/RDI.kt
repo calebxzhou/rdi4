@@ -98,7 +98,7 @@ fun risSync(todo: () -> Unit) {
 //@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
     init {
-
+        System.setProperty("java.net.preferIPv6Addresses", "true")
         RDIEvents.init()
         STORAGE.mkdirs()
         RItems.REGISTER.register(FMLJavaModLoadingContext.get().modEventBus);
@@ -141,6 +141,7 @@ class RDI {
 
 object RDIEvents {
     fun init() {
+
         val bus = MinecraftForge.EVENT_BUS
         val busL = FMLJavaModLoadingContext.get().modEventBus
         busL.addListener(::load)

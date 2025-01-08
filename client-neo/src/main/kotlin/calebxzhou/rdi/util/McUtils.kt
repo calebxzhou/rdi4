@@ -12,6 +12,7 @@ import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.ChatFormatting
+import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -351,7 +352,9 @@ fun ServerLevel.loadStructure(name: String, pos: BlockPos): Boolean {
 
     return true
 }
-
+fun openLink(url: String){
+    Util.getPlatform().openUri(url)
+}
 fun LevelChunkSection.forEachBlock(todo: (BlockState) -> Unit) {
     for (x in 0..15)
         for (y in 0..15)

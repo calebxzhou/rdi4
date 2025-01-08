@@ -18,7 +18,7 @@ public class mProtocol {
 @Mixin(ServerboundHelloPacket.class)
 abstract class mLoginProtocol1 {
 
-    /*@Overwrite
+    @Overwrite
     public void write(FriendlyByteBuf buffer) {
         var account = Account.getNow();
         if (account != null) {
@@ -27,7 +27,7 @@ abstract class mLoginProtocol1 {
         }else{
             throw new IllegalStateException("账号为null,不允许登录");
         }
-    }*/
+    }
 
 
 }

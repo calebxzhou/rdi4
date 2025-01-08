@@ -13,6 +13,7 @@ import java.io.File
 import java.io.InputStream
 import java.lang.management.ManagementFactory
 import java.lang.management.OperatingSystemMXBean
+import java.net.NetworkInterface
 import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
@@ -37,6 +38,8 @@ fun bgTask(block: suspend CoroutineScope.() -> Unit){
     }
     }
 }
+val supportIPv6
+    get() = NetworkInterface.getNetworkInterfaces().toList().any { it.inetAddresses.toList().any { it.hostAddress.startsWith("240") } }
 fun timerDelay(delayMs: Long,action: TimerTask.() -> Unit){
     Timer().schedule(delayMs){
         action()
