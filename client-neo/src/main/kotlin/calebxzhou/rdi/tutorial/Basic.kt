@@ -95,7 +95,7 @@ val BASIC
             !it.foodData.needsFood()
         }
         step("按E键打开背包", { it give TFCItems.STRAW.get() * 8 }) { mc.screen is InventoryScreen }
-        step("在画面右下角的文本框中，输入干草块，查看它的合成方式") {
+        step("在画面右下角的文本框中，输入干草块，点击出现的干草块 查看它的合成方式") {
             mc.screen is IRecipesGui
         }
         step("记住这个配方图案，按ESC回到背包画面") {

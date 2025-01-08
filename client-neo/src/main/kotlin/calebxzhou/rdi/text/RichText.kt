@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -18,7 +19,7 @@ import net.minecraft.world.item.ItemStack
 //文字，以及插在文字中的小图标
 typealias RichTextRenderer = RichText.Context.() -> Unit
 
-class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
+class RichText(val x: Int, val y: Int, val plainText: MutableComponent,val renderers: List<RichTextRenderer>) {
     data class Context(
         val guiGraphics: GuiGraphics,
         var width: Int = 0,
@@ -33,6 +34,7 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
 
     class Builder(val startX: Int, val startY: Int) {
         val ren = arrayListOf<RichTextRenderer>()
+        var plainText = mcText()
 
         fun fill() {
             ren.add(0) {
@@ -41,6 +43,7 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
         }
 
         fun text(str: String, color: Int = WHITE) {
+            plainText += mcText(str)
             ren += {
                 val txt = mcText(str)
                 val width =
@@ -51,6 +54,7 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
         }
 
         fun text(txt: Component) {
+            plainText += txt
             ren += {
                 val width = MultiLineLabel.create(mcFont, txt, mcUIWidth)
                     .renderLeftAligned(guiGraphics, nowX, nowY, 10, txt.style.color?.value ?: WHITE)
@@ -135,7 +139,7 @@ class RichText(val x: Int, val y: Int, val renderers: List<RichTextRenderer>) {
         fun build(): RichText {
             //最后一行要换行才能正确计算高度+显示背景
             ret()
-            return RichText(startX, startY, ren)
+            return RichText(startX, startY, plainText,ren)
         }
     }
 

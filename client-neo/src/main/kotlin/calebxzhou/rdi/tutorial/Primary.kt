@@ -94,7 +94,7 @@ val T1_STONE = tutorial("1_stone", "石器") {
     step("搜索 石斧 的合成方法，做一个出来") {
         it.hasRockTool(RockCategory.ItemType.AXE)
     }
-    step("手持石斧，对准树的根部，长按鼠标左键给它砍断") {
+    step("手持石斧，对准树的根部，按住鼠标左键给它砍断") {
         it.bagHas(ItemTags.LOGS, 1)
     }
     step(richText {
@@ -116,7 +116,12 @@ val T1_STONE = tutorial("1_stone", "石器") {
         slot(0)
         airSlotContainer()
     }
-    step("用前面学习到的知识，去搜索 石刀 的合成方法，尝试做一个出来") { it.hasRockTool(RockCategory.ItemType.KNIFE) }
+    step(richText {
+        text("用前面学习到的知识，去搜索")
+        item(RockCategory.ItemType.KNIFE.item)
+        text("石刀的合成方法，尝试做一个出来")
+    }) { it.hasRockTool(RockCategory.ItemType.KNIFE) }
+
     step("手持石刀，去树下面割3个干草（对准-鼠标左键点击）")
     { it bagHas TFCItems.STRAW.get() * 3 }
     step("干掉面前这几头猪 （手持石刀-对准-鼠标左键狂点）", { player ->
@@ -154,7 +159,7 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
     step("去空旷地带，往地上丢3个树枝+1个原木") {
         it.lookingAtItemEntity?.item?.`is`(ItemTags.LOGS) == true
     }
-    step("手持起火器，对准这些树枝和原木，长按鼠标右键点燃（不成功就多试几次）") {
+    step("手持起火器，对准这些树枝和原木，按住鼠标右键直到点燃（不成功就多试几次）") {
         it isLooking TFCBlocks.FIREPIT.get()
     }
     step("鼠标右键点击 刚刚点燃的篝火", { it.give(TFCItems.FOOD[Food.PORK]!!.get()) }) {
@@ -169,7 +174,7 @@ val T1_FIRE = tutorial("1_fire", "钻木取火") {
             it.`is`(TFCItems.FOOD[Food.COOKED_PORK]!!.get())
         }
     }
-    step("手持猪肉，长按鼠标右键吃掉", {
+    step("手持猪肉，按住鼠标右键吃掉", {
         alert("把食物搞熟，可以延长保质期\n也会带来更强的饱腹感")
         it.foodData.foodLevel = 16
     }
@@ -272,7 +277,7 @@ val T1_CERA = tutorial("1_cera", "陶器") {
     }) {
         it isLooking TFCBlocks.PLANTS[Plant.ATHYRIUM_FERN]!!.get()
     }
-    step("手持石铲，挖掉蹄盖蕨下面的黏土草块（对准-鼠标左键长按）", { it giveRockTool RockCategory.ItemType.SHOVEL })
+    step("手持石铲，挖掉蹄盖蕨下面的黏土草块（对准-鼠标左键按住）", { it giveRockTool RockCategory.ItemType.SHOVEL })
     { it bagHas Items.CLAY_BALL * 12 }
 
 
@@ -290,28 +295,28 @@ val T1_CERA = tutorial("1_cera", "陶器") {
         airSlotContainer()
     }
     esc()
-    step("自行搜索大缸的合成方法，做一个大缸") {
+    step("自行搜索大缸的合成方法，做一个“未烧制的大缸”") {
         it bagHas TFCItems.UNFIRED_LARGE_VESSEL.get()
     }
     //坑里第几格是不是啥
-    step("手持陶罐，挖掉脚下的方块，对着下面按V键，把它平放进去") {
+    step("手持陶罐，挖掉一格脚下的方块，对着下面按V键，把它平放进去") {
         lookingPitKilnHas(it, TFCItems.UNFIRED_JUG.get())
     }
     step("手持小缸，对着坑里按V键，放进去") {
         lookingPitKilnHas(it, TFCItems.UNFIRED_VESSEL.get())
     }
     /**/
-    step("手持干草，放进坑里8个 （对准-连点鼠标右键）") {
+    step("手持干草，放进坑里8个 （对准坑-连点鼠标右键）") {
         it isLooking TFCBlocks.PIT_KILN.get()
                 &&
                 it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.STRAW_END
     }
-    step("手持原木，放进坑里8个（对准-连点鼠标右键）") {
+    step("手持原木，放进坑里8个（对准坑-连点鼠标右键）") {
         it isLooking TFCBlocks.PIT_KILN.get()
                 &&
                 it.lookingAtBlock?.getValue(PitKilnBlock.STAGE) == PitKilnBlock.LIT - 1
     }
-    step("制作并手持起火器，对准坑窑 长按右键点燃") {
+    step("制作并手持起火器，对准坑窑 按住右键点燃") {
         it isLooking Blocks.FIRE
     }
     step("等待30秒，然后按鼠标右键，取出烧制完成的熟陶器") {

@@ -80,6 +80,7 @@ data class Tutorial(
         val newStep = this.stepNow
         if (newStep != null) {
             logger.info("开始教程${stepIndex}")
+            mc.addChatMessage(newStep.text.plainText)
             player.playNote()
             newStep.beforeOpr(player)
         } else {
