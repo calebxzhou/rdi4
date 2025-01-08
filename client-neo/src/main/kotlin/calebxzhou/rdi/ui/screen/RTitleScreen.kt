@@ -1,10 +1,12 @@
 package calebxzhou.rdi.ui.screen
 
+import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
 import calebxzhou.rdi.serdes.serdesJson
+import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.text.richText
 import calebxzhou.rdi.tutorial.Chapter
 import calebxzhou.rdi.tutorial.T1_BUILD
@@ -16,8 +18,10 @@ import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
+import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
@@ -29,6 +33,7 @@ import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
+import java.net.InetAddress
 
 class RTitleScreen : RScreen("主页") {
     override var showTitle = false
@@ -40,21 +45,6 @@ class RTitleScreen : RScreen("主页") {
         ResourceLocation("rdi", "textures/screen_bg.png")
     var shiftMode = false
     var ctrlMode = false
-    val richtext
-        get() = richText(200, mcUIHeight - 20) {
-            text("123123")
-            icon("qq")
-            text("234456")
-            item(Items.STONE_BRICKS)
-            text("234456")
-            ret()
-            text("1231232")
-            icon("qq")
-            text("234456")
-            item(Items.STONE_BRICKS)
-            text("234456")
-
-        }
 
     companion object {
         val optScreen = { prevScreen: RScreen ->
@@ -64,6 +54,19 @@ class RTitleScreen : RScreen("主页") {
                 }
                 "登录已有账号" to {
                     mc goScreen loginScreen(it.mcScreen)
+                }
+            }
+        }
+        val ipv6Screen = { prevScreen: RScreen ->
+            optionScreen(prevScreen, title = "当前网络不支持IPv6，选择网络类型，查看解决方案") {
+                "家庭宽带" to {
+                    alert("把网线/wifi连在运营商给的光猫上\n或者在路由器设置中启用")
+                }
+                "校园网、公司" to {
+                    alert("问问网管，不行的话拿手机流量开热点")
+                }
+                "视频教程" to {
+                    openLink("https://www.bilibili.com/video/BV1oy4y1Y7Eb")
                 }
             }
         }
@@ -103,6 +106,19 @@ class RTitleScreen : RScreen("主页") {
             }
         }
 
+        val lanScreen = { prevScreen: RScreen ->
+            formScreen(prevScreen,"输入信息"){
+                text("name","你的游戏昵称",16, defaultValue = LocalStorage["guestName"])
+                submit {
+                    val name = it.formData["name"]!!
+                    LocalStorage["guestName"]=name
+                    Account.guestLogin(name)
+                    mc goScreen JoinMultiplayerScreen(RTitleScreen())
+                    alert("0.让你的朋友打开一个存档，输入/lan指令启动联机\n1.然后这个界面，就能搜到他了\n如果搜不到，可以手动输入他的ip跟端口添加")
+                }
+            }
+        }
+
         fun onRegister(it: RFormScreenSubmitHandler) {
             val pwd = it.formData["pwd"]!!
             val cpwd = it.formData["cpwd"]!!
@@ -115,7 +131,6 @@ class RTitleScreen : RScreen("主页") {
 
             IhqClient.send(RegisterSPacket(name, pwd, qq)) { resp ->
                 if (resp.ok) {
-
                     toastOk("注册成功")
                     LocalStorage += "usr" to qq
                     LocalStorage += "pwd" to pwd
@@ -127,18 +142,26 @@ class RTitleScreen : RScreen("主页") {
         }
 
         fun onLogin(it: RFormScreenSubmitHandler) {
-
             val usr = it.formData["usr"]!!
             val pwd = it.formData["pwd"]!!
             IhqClient.send(LoginSPacket(usr, pwd)) { resp ->
                 if (resp.ok) {
-
                     val account = serdesJson.decodeFromString<Account>(resp.data)
                     LocalStorage += "usr" to usr
                     LocalStorage += "pwd" to pwd
                     Account.now = account
                     toastOk("登录成功")
-                    mc goScreen RTitleScreen()
+                    RSoundPlayer.stopAll()
+                    mcMainThread {
+
+                    ConnectScreen.startConnecting(
+                        it.screen,
+                        mc,
+                        ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
+                        Const.SERVER_DATA,
+                        false
+                    )
+                    }
                 } else {
                     alertOs("密码错误")
                 }
@@ -165,30 +188,29 @@ class RTitleScreen : RScreen("主页") {
             x = mcUIWidth - (16 + accountNameWidth + 6)
             y = mcUIHeight- 17
         }.also { registerWidget(it) }*/
-
         gridLayout(this, 10, mcUIHeight - 16) {
-            iconButton("start", text = "开始") {
+            iconButton("smp", text = "多人模式"){
+                mc goScreen optionScreen(this.screen, "选择联机类型") {
+                    "局域网" to lanScreen(this.mcScreen)
+                    //"私服" to { alert("私服模式预计2025.1中开通") }
+                    "线上模式" to {
+
+                        if(!supportIPv6){
+
+                            mc goScreen ipv6Screen(this.mcScreen)
+                        }else{
+                            mc goScreen optScreen(this.mcScreen)
+                        }
+                    }
+
+                }
+            }
+            iconButton("ssp", text = "单人模式") {
+                mc goScreen SelectWorldScreen(this.screen)
                 /*Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
                     alertErr("请先完成教程 ${it.name} 章节")
                     return@imageButton
                 }*/
-                mc goScreen optionScreen(this@RTitleScreen, "选择游玩模式") {
-                    "单人模式" to SelectWorldScreen(this.mcScreen)
-                    "多人模式" to optionScreen(this.mcScreen, "选择联机类型") {
-                            "局域网" to formScreen(this.mcScreen,"输入信息"){
-                                text("name","你的游戏昵称",16, defaultValue = LocalStorage["guestName"])
-                                submit {
-                                    val name = it.formData["name"]!!
-                                    LocalStorage["guestName"]=name
-                                    Account.guestLogin(name)
-                                    mc goScreen JoinMultiplayerScreen(RTitleScreen())
-                                    alert("0.让你的朋友打开一个存档，输入/lan指令启动联机\n1.然后这个界面，就能搜到他了\n如果搜不到，可以手动输入他的ip跟端口添加")
-                                }
-                            }
-                            "私服" to { alert("私服模式预计2025.1中开通") }
-                            "线上模式" to { alert("线上多人模式预计2024.12中开通") }
-                        }
-                }
                 //start()
             }
             iconButton("tutorial", text = "互动教程") {
@@ -220,7 +242,6 @@ class RTitleScreen : RScreen("主页") {
                 false
             )
         }*/
-        T1_BUILD.start()
         //TUTORIAL_PRIMARY.start()
         /*if (!File("tutorial1_done").exists()) {
             Tutorial.stoneAge[0].start()

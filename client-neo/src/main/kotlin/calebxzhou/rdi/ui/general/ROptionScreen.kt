@@ -7,6 +7,7 @@ import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
+import java.awt.SystemColor.text
 
 /*
 optionScreen{
@@ -21,7 +22,7 @@ optionScreen{
     }
 }
  */
-data class ROption(val text:String,val action: (ROptionScreen) -> Unit)
+data class ROption(val text:String,val enabled: Boolean = true,val hoverText: String?=null,val action: (ROptionScreen) -> Unit)
 fun optionScreen(title: String = "请选择", init: ROptionScreen.() -> Unit){
     mc goScreen ROptionScreen(mc.screen,title).apply(init).mcScreen
 }
@@ -37,9 +38,11 @@ class ROptionScreen(
     val title: String,
 ) {
     val options = arrayListOf<ROption>()
-
+    operator fun plusAssign(option: ROption){
+        options += option
+    }
     infix fun String.to(action: (ROptionScreen) -> Unit) {
-        options += ROption(this,action)
+        options += ROption(this, action = action)
     }
     infix fun String.to(screen: Screen) {
         options += ROption(this){mc goScreen  screen}
@@ -51,8 +54,9 @@ class ROptionScreen(
             val startY = mcUIHeight / 2 - options.size * 10
             var nowY = startY
             override fun init() {
-                options.onEachIndexed { index, (text, opr) ->
-                    val btn = RButton(mcText("${index + 1}. $text"), 0, nowY) { opr(this@ROptionScreen) }
+                nowY = startY
+                options.onEachIndexed { index, option ->
+                    val btn = RButton(mcText("${index + 1}. ${option.text}"), 0, nowY) { option.action(this@ROptionScreen) }
                     btn.x = width/2-btn.width/2
                     registerWidget(btn)
                     nowY += btn.height

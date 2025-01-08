@@ -20,12 +20,19 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle' version '[6.0.18,6.2)'
+    id 'net.neoforged.gradle' version '6.0+'
     id 'org.spongepowered.mixin' version '0.7.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
+apply plugin: 'org.spongepowered.mixin'
 
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
+sourceSets.main {
+    ext["refMap"] = "rdi.mixins.refmap.json"
+}
+mixin {
+    add sourceSets.main, "rdi.mixins.refmap.json"
+    config "rdi.mixins.json"
+}
 
 
 repositories {
@@ -93,7 +100,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'info'
             property 'fml.earlyprogresswindow', 'true'
-            property 'mixin.env.disableRefMap', 'true'
+            //property 'mixin.env.disableRefMap', 'true'
 
             mods {
                 "rdi" {
@@ -102,19 +109,10 @@ minecraft {
             }
         }
 
-        client {
-            arg "-mixin.config=rdi.mixins.json"
-            properties 'mixin.env.remapRefMap': 'true'
-            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
-
-            property 'forge.logging.markers', 'REGISTRYDUMP'
-
-
-        }
-
         server {
             arg "-mixin.config=rdi.mixins.json"
             arg "nogui"
+            properties "rdi.debug":'true'
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
 
@@ -144,40 +142,85 @@ processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 jarJar.enable()
+configurations {
+    exportModJarsConfig {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
+def mods = [
+        //************前置类*********
+        "patchouli:1.20.1-84-forge",
+        "architectury-api:9.2.14+forge",
+        "do-api:1.2.15",
+        "cloth-config:11.1.136+forge",
+        "curios:5.10.0+1.20.1",
+        "titanium:1.20.1-3.8.32",
+        "jei:iNv5B1Zj",
+        "kotlin-for-forge:4.11.0",
+        //************优化类************
+        "ferrite-core:DG5Fn9Sz",
+        "modernfix:m83ZRQdk",
+        "memoryleakfix:3w0IxNtk",
+        "embeddium:0.3.31+mc1.20.1",
+        "canary:mc1.20.1-0.3.3",
+        "alternate-current:forge-mc1.20-1.7.0",
+        //*************辅助类************
+        //************真mod*************
+        "terrafirmacraft:3.2.7",
+        "functional-storage:1.20.1-1.2.12",
+        "firmalife:2.1.11",
+        "farmers-delight:1.20.1-1.2.4",
+        "oceans-delight:1.0.2-1.20",
+        "chefs-delight:1.0.3-forge-1.20.1",
+        "lets-do-vinery:1.4.28",
+        "aether:1.20.1-1.5.0-neoforge",
+        "the-aethers-delight:0.1.1",
+        "ae2:15.2.13",
+        "cc-tweaked:1.113.1",
+        "cuisine-delight:1.1.15",
+        "create:1.20.1-0.5.1.j",
+        "create-connected:0.9.1-mc1.20.1",
+        "createaddition:1.20.1-1.2.4e",
+        "slice-and-dice:3.3.0",
+        "interiors:0.5.6+forge-mc1.20.1",
+        "create-dreams-and-desires:1.20.1-0.1b.Release-Early-Dev",
+        "create-central-kitchen:1.3.12",
+        "create-deco:2.0.2-1.20.1-forge",
+
+
+]
+//只导出 不在开发环境运行
+def modsExportOnly = [
+        "create-steam-n-rails:1.6.7+forge-mc1.20.1",
+        "kotlin-for-forge:4.11.0",
+]
+
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-
-
     //重要：升级mod版本要同时升级src zip
+
     //前置类
     implementation "thedarkcolour:kotlinforforge:$kff_version"
-    implementation fg.deobf("curse.maven:patchouli-306770:4636277")
-    implementation fg.deobf("curse.maven:jei-238222:4712868")
-    implementation fg.deobf("curse.maven:patchouli-306770:4636277")
-    implementation fg.deobf("maven.modrinth:architectury-api:9.2.14+forge")
-    implementation fg.deobf("maven.modrinth:do-api:1.2.15")
-    implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
-    implementation fg.deobf("maven.modrinth:curios:5.10.0+1.20.1")
-    //优化类
-    implementation fg.deobf("maven.modrinth:ferrite-core:DG5Fn9Sz")
-    implementation fg.deobf("maven.modrinth:modernfix:m83ZRQdk")
-    implementation fg.deobf("maven.modrinth:canary:mc1.20.1-0.3.3")
-    implementation fg.deobf("maven.modrinth:alternate-current:forge-mc1.20-1.7.0")
-    //真mod
-    implementation fg.deobf("maven.modrinth:terrafirmacraft:3.2.7")
-    implementation fg.deobf("maven.modrinth:firmalife:2.1.11")
-    implementation fg.deobf("maven.modrinth:farmers-delight:1.20.1-1.2.4")
-    implementation fg.deobf("maven.modrinth:oceans-delight:1.0.2-1.20")
-    implementation fg.deobf("maven.modrinth:chefs-delight:1.0.3-forge-1.20.1")
-    implementation fg.deobf("maven.modrinth:lets-do-vinery:1.4.28")
-    implementation fg.deobf("maven.modrinth:aether:1.20.1-1.5.0-neoforge")
-    implementation fg.deobf("maven.modrinth:the-aethers-delight:0.1.1")
-    implementation fg.deobf("maven.modrinth:create:0.5.1.h")
-    implementation fg.deobf("maven.modrinth:ae2:15.2.13")
-    implementation fg.deobf("maven.modrinth:create-connected:0.9.1-mc1.20.1")
-    implementation fg.deobf("maven.modrinth:cuisine-delight:1.1.15")
-    implementation fg.deobf("maven.modrinth:cc-tweaked:1.113.1")
+    minecraftLibrary 'org.mongodb:bson:5.1.0'
+    implementation(jarJar("org.mongodb:bson:5.1.0")) {
+        jarJar.ranged(it, "[5.1.0,)")
+    }
+    //用jetbrains runtime jdk可以实现dcevm热重载
+    // https://mvnrepository.com/artifact/org.hotswapagent/hotswap-agent-core
+    minecraftLibrary 'org.hotswapagent:hotswap-agent-core:2.0.1'
+    implementation(jarJar("org.hotswapagent:hotswap-agent-core:2.0.1")) {
+        jarJar.ranged(it, "[2.0.1,)")
+    }
+    //重要：升级mod版本要同时升级src zip
+    mods.each { dep ->
+        implementation fg.deobf("maven.modrinth:$dep")
+        exportModJarsConfig "maven.modrinth:$dep"
+    }
+    modsExportOnly.each {
+        exportModJarsConfig "maven.modrinth:$it"
+    }
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -229,4 +272,35 @@ tasks.withType(ScalaCompile) {
 
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
+}
+def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/server/"
+def modsDir = shippingDir+"mods/"
+tasks.register('导别m') {
+    doFirst {
+        // Ensure the target directory exists
+        file(modsDir).deleteDir()
+        file(modsDir).mkdirs()
+    }
+
+    doLast {
+        configurations.exportModJarsConfig.files.each { file ->
+            println(file.name)
+            copy {
+                from file
+                into modsDir
+            }
+        }
+    }
+    dependsOn(configurations.exportModJarsConfig)
+}
+tasks.register('构移测'){
+    dependsOn(build)
+    doLast {
+        // Copy the built project JAR to userDocumentsDir
+        def builtJar = file("$buildDir/libs/${archivesBaseName}-${version}-all.jar")
+        copy {
+            from builtJar
+            into modsDir
+        }
+    }
 }

@@ -225,7 +225,7 @@ val T1_ARGI = tutorial("1_agri", "农业") {
     }
 
 }
-val T1_ANIMAL = tutorial("1_animal", "牧业") {
+val T1_ANIMAL get() = tutorial("1_animal", "牧业") {
 
 }
 val T1_PET = tutorial("1_pet", "宠物") {
