@@ -80,11 +80,11 @@ fun main() {
             }
         }
         install(Sessions) {
-            header<AccountSession>("rdi-ss", directorySessionStorage(File(".sessions")))
+            header<AccountSession>("rdi-ss", SessionStorageMemory( ))
         }
         routing {
             get("/core") {
-                val file = File("assets/rdi-1.0.0.jar")
+                val file = File("build/libs/fat.jar")
                 call.respondFile(file)
             }
             get("/skin") {
