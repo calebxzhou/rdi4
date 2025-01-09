@@ -7,9 +7,6 @@ import calebxzhou.rdi.serdes.serdesJson
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 
-/**
- * Created  on 2023-08-15,8:47.
- */
 @Serializable
 //处理成功&数据
 data class ResponseCPacket(

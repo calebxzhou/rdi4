@@ -1,8 +1,6 @@
 package calebxzhou.rdi.common
 
 import net.minecraft.core.BlockPos
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.minus
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 fun bos(x: Int = 0, y: Int = 0, z: Int = 0): SmartBlockPos {
     return SmartBlockPos(x, y, z)

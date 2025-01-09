@@ -1,30 +1,38 @@
 package calebxzhou.rdi.ui.component
 
+import appeng.libs.micromark.Types.label
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
+import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.dialog
+import calebxzhou.rdi.ui.layout.GridLayoutBuilder
+import calebxzhou.rdi.ui.layout.gridLayout
+import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
 import com.mojang.blaze3d.platform.InputConstants.KEY_RETURN
+import com.simibubi.create.content.kinetics.belt.item.BeltConnectorItem.maxLength
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
 
 
-fun formScreen(prevScreen: Screen, title: String, builder: RFormScreen.() -> Unit): RScreen {
+fun formScreen(prevScreen: Screen = RTitleScreen(), title: String, builder: RFormScreen.() -> Unit): RScreen {
     return RFormScreen(prevScreen, title).apply(builder).build()
 }
-data class RFormScreenSubmitHandler(val screen:Screen,val okBtn:RButton,val formData:Map<String, String>){
+data class RFormScreenSubmitHandler(val screen:Screen, val formData:Map<String, String>){
     fun finish(){
-        okBtn.active=true
     }
 }
 class RFormScreen(val prev: Screen, val title: String) {
     private val widgets = linkedMapOf<String, AbstractWidget>()
     private lateinit var handler: (RFormScreenSubmitHandler)->Unit
-
+    //关闭的时候做什么
+    var onClose: () -> Unit = {}
+    //底部按钮 gridlayout
+    var bottomLayoutBuilder: GridLayoutBuilder.() ->Unit = {}
     fun text(
         id: String,
         label: String,
@@ -51,14 +59,10 @@ class RFormScreen(val prev: Screen, val title: String) {
     fun submit(handler: (RFormScreenSubmitHandler)->Unit) {
         this.handler = (handler)
     }
-
     fun build(): RScreen {
         return object : RScreen(title) {
-            lateinit var okBtn : RButton
-            lateinit var cancelBtn : RButton
             override fun tick() {
                 if (mc pressingKey KEY_RETURN || mc pressingKey KEY_NUMPADENTER) {
-                    if (okBtn.visible && okBtn.active){
                         try {
                             onSubmit()
                         }
@@ -66,16 +70,20 @@ class RFormScreen(val prev: Screen, val title: String) {
                             alertErr(e.localizedMessage)
                             e.printStackTrace()
                         }
-                    }
-                }
-                if(okBtn.isHoveredOrFocused){
-                    okBtn.active = true
                 }
                 super.tick()
             }
+
+            override fun onClose() {
+                this@RFormScreen.onClose()
+                mc goScreen prev
+            }
             override fun init() {
-                okBtn = RButton(mcText("确定").withStyle(ChatFormatting.GREEN),width/2-50, height-20, 50, ) { onSubmit() }.also { registerWidget(it) }
-                cancelBtn = RButton(mcText("取消"),width/2, height-20, 50, ) { onClose() }.also { registerWidget(it) }
+
+                gridLayout(this, hAlign = HAlign.CENTER){
+                    iconButton("success", text = "提交") { onSubmit() }
+                    bottomLayoutBuilder()
+                }
                 var y = 50
                 widgets.forEach {
                     val widget = it.value
@@ -88,7 +96,6 @@ class RFormScreen(val prev: Screen, val title: String) {
             }
 
             fun onSubmit() {
-                okBtn.active = false
                 widgets.forEach { (id, widget) ->
                     if (widget is REditBox) {
                         val result = widget.validate()
@@ -115,7 +122,7 @@ class RFormScreen(val prev: Screen, val title: String) {
                     }
                     }
                     .toMap()
-                handler(RFormScreenSubmitHandler(this,okBtn, formData))
+                handler(RFormScreenSubmitHandler(this, formData))
             }
 
             override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {

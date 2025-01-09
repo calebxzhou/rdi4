@@ -19,7 +19,7 @@ class RPacketEncoder : MessageToMessageEncoder<SPacket>() {
             //写请求ID
             msg.writeByte(IhqClient.reqId.toInt())
             packet.write(msg)
-            out += DatagramPacket(msg.retain(), Const.IHQ_INET_ADDR)
+            //out += DatagramPacket(msg.retain(), Const.IHQ_INET_ADDR)
             IhqClient.reqId++
 
         } ?: logger.error("找不到包ID" + packet.javaClass)

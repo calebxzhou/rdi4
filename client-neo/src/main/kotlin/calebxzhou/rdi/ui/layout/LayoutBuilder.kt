@@ -39,6 +39,9 @@ class GridLayoutBuilder(
 ) {
     val children = arrayListOf<LayoutElement>()
 
+    fun widget(widget: LayoutElement){
+        children += widget
+    }
     fun button(text: String, onClick: (Button) -> Unit) {
         button(mcText(text), onClick)
     }

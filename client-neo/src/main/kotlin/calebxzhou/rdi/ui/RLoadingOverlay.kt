@@ -1,7 +1,6 @@
 package calebxzhou.rdi.ui
 
 import calebxzhou.rdi.util.*
-import calebxzhou.rdi.util.ServerConnector.ping
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Overlay
@@ -30,7 +29,6 @@ class RLoadingOverlay(
     private var progress = 0.0
 
     init {
-        ping()
     }
 
     override fun isPauseScreen(): Boolean {

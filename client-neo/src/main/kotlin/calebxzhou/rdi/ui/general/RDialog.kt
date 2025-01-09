@@ -100,7 +100,7 @@ class RDialog(
             }
         }
 
-        msgWidget = MultiLineTextWidget(startX + 3, startY + 18, msg, mcFont)
+        msgWidget = MultiLineTextWidget(startX + 3, startY + 18, msg, mcFont).apply { setMaxWidth(this@RDialog.width) }
         super.init()
 
     }

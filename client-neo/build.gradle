@@ -7,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath 'net.lingala.zip4j:zip4j:2.11.3'
     }
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile) {
@@ -84,10 +85,10 @@ repositories {
         }
     }
 }
- 
+
 
 version = '1.0.0'
- 
+
 
 group = 'calebxzhou.rdi' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'rdi'
@@ -118,7 +119,7 @@ minecraft {
 
         client {
             arg "-mixin.config=rdi.mixins.json"
-            properties "rdi.debug":'true'
+            properties "rdi.debug": 'true'
 
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
@@ -183,7 +184,7 @@ def mods = [
         "xaeros-minimap:24.5.0_Forge_1.20",
         "screenshot-to-clipboard:1.0.9+forge",
         //************图形************
-       // "distanthorizons:2.2.1-a-1.20.1",
+        // "distanthorizons:2.2.1-a-1.20.1",
         "oculus:1.20.1-1.8.0",
         //************真mod*************
         "terrafirmacraft:3.2.7",
@@ -216,25 +217,25 @@ def modsExportOnly = [
         "kotlin-for-forge:4.11.0",
 ]
 
+def mcLibs = [
+        'org.mongodb:bson:5.1.0',
+        'org.hotswapagent:hotswap-agent-core:2.0.1',
+        'com.googlecode.soundlibs:jorbis:0.0.17.4',
+]
+
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+    //ktor和kotlin for forge有冲突
     implementation "thedarkcolour:kotlinforforge:4.11.0"
-
-    minecraftLibrary 'org.mongodb:bson:5.1.0'
-    implementation(jarJar("org.mongodb:bson:5.1.0")) {
-        jarJar.ranged(it, "[5.1.0,)")
-    }
     //用jetbrains runtime jdk可以实现dcevm热重载
-    // https://mvnrepository.com/artifact/org.hotswapagent/hotswap-agent-core
-    minecraftLibrary 'org.hotswapagent:hotswap-agent-core:2.0.1'
-    implementation(jarJar("org.hotswapagent:hotswap-agent-core:2.0.1")) {
-        jarJar.ranged(it, "[2.0.1,)")
-    }
 
-    minecraftLibrary 'com.googlecode.soundlibs:jorbis:0.0.17.4'
-    implementation(jarJar('com.googlecode.soundlibs:jorbis:0.0.17.4')) {
-        jarJar.ranged(it, "[0.0.17.4,)")
+    // https://mvnrepository.com/artifact/org.hotswapagent/hotswap-agent-core
+    mcLibs.each { lib ->
+        minecraftLibrary lib
+        implementation(jarJar(lib)) {
+            jarJar.ranged(it, "[${lib.split(':')[2]},)")
+        }
     }
     //重要：升级mod版本要同时升级src zip
     mods.each { dep ->
@@ -252,14 +253,14 @@ jar {
     duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     manifest {
         attributes([
-                "Specification-Title": "rdi",
-                "Specification-Vendor": "calebxzhou",
-                "Specification-Version": mod_version, // We are version 1 of ourselves
-                "Implementation-Title": project.name,
-                "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"calebxzhou",
+                "Specification-Title"     : "rdi",
+                "Specification-Vendor"    : "calebxzhou",
+                "Specification-Version"   : mod_version, // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "calebxzhou",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs" : "rdi.mixins.json",
+                "MixinConfigs"            : "rdi.mixins.json",
         ])
     }
 }
@@ -300,10 +301,10 @@ tasks.withType(Javadoc) {
 import java.util.jar.JarFile
 
 def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/"
-def clientDir = shippingDir+"client/"
-def clientMcDir = clientDir+".minecraft/"
-def modsDir = clientMcDir+"mods/"
-tasks.register('删临'){
+def clientDir = shippingDir + "client/"
+def clientMcDir = clientDir + ".minecraft/"
+def modsDir = clientMcDir + "mods/"
+tasks.register('删临') {
     file("$buildDir/tmp").deleteDir()
 }
 tasks.register('导别m') {
@@ -324,7 +325,7 @@ tasks.register('导别m') {
     }
     dependsOn(configurations.exportModJarsConfig)
 }
-tasks.register('构移测'){
+tasks.register('构移测') {
     dependsOn(build)
     doLast {
         // Copy the built project JAR to userDocumentsDir
@@ -339,18 +340,34 @@ tasks.register('构移测'){
         }
     }
 }
-tasks.register('出包'){
-    dependsOn(导别m,构移测)
+tasks.register('出包') {
+    dependsOn(导别m, 构移测)
     doLast {
-        ant.zip(destfile: shippingDir+"rdi4r仅mods.zip", basedir: modsDir)
+        ant.zip(destfile: shippingDir + "rdi4r-mods.zip", basedir: modsDir)
     }
 }
 tasks.register('清端', Exec) {
     commandLine 'cmd', '/c', "cd ${clientMcDir} && python prepare4shipping.py"
 }
-tasks.register('出端'){
-    dependsOn(出包,清端)
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.CompressionLevel
+import net.lingala.zip4j.model.enums.CompressionMethod
+import net.lingala.zip4j.model.enums.EncryptionMethod
+
+tasks.register('出端') {
+    dependsOn(出包, 清端)
     doLast {
-        ant.zip(destfile: shippingDir+"rdi4r.zip", basedir: clientDir)
+        def zipFile = new File(shippingDir, "rdi4r密码123!@#.zip")
+        def sourceDir = new File(clientDir)
+        def password = "123!@#"
+
+        def zipParameters = new ZipParameters()
+        zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)
+        zipParameters.setCompressionLevel(CompressionLevel.NORMAL)
+        zipParameters.setEncryptFiles(true)
+        zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)
+
+        new ZipFile(zipFile, password.toCharArray()).addFolder(sourceDir, zipParameters)
     }
 }

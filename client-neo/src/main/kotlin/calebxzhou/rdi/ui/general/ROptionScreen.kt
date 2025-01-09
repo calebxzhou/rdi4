@@ -6,6 +6,7 @@ import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.screens.Screen
 import java.awt.SystemColor.text
 
@@ -23,8 +24,8 @@ optionScreen{
 }
  */
 data class ROption(val text:String,val enabled: Boolean = true,val hoverText: String?=null,val action: (ROptionScreen) -> Unit)
-fun optionScreen(title: String = "请选择", init: ROptionScreen.() -> Unit){
-    mc goScreen ROptionScreen(mc.screen,title).apply(init).mcScreen
+fun optionScreen(title: String = "请选择", init: ROptionScreen.() -> Unit): RScreen {
+    return ROptionScreen(mc.screen,title).apply(init).mcScreen
 }
 fun optionScreen(
     prev: Screen,
@@ -58,6 +59,8 @@ class ROptionScreen(
                 options.onEachIndexed { index, option ->
                     val btn = RButton(mcText("${index + 1}. ${option.text}"), 0, nowY) { option.action(this@ROptionScreen) }
                     btn.x = width/2-btn.width/2
+                    btn.tooltip = option.hoverText?.let { Tooltip.create(it.toMcText()) }
+                    btn.active = option.enabled
                     registerWidget(btn)
                     nowY += btn.height
                 }

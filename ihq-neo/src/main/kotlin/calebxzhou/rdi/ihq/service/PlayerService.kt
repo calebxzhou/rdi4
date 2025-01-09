@@ -9,6 +9,7 @@ import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Updates
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
 import io.netty.channel.ChannelHandlerContext
 import kotlinx.coroutines.flow.firstOrNull
@@ -115,9 +116,10 @@ object PlayerService {
     }
 
     suspend fun register(call: ApplicationCall) {
-        val name = call["name"]
-        val pwd = call["pwd"]
-        val qq = call["qq"]
+        val params = call.receiveParameters()
+        val name = params get "name"
+        val pwd = params get "pwd"
+        val qq = params get "qq"
         if (getByQQ(qq) != null || getByName(name) != null) {
             call.e400("QQ或昵称被占用")
             return
@@ -131,14 +133,15 @@ object PlayerService {
         call.ok()
     }
     suspend fun login(call: ApplicationCall){
-        val usr = call["usr"]
-        val pwd = call["pwd"]
+        val params = call.receiveParameters()
+        val usr = params get "usr"
+        val pwd = params get "pwd"
         validate(usr, pwd)?.let { account ->
             log.info { "${usr}登录成功" }
 
-            val session = AccountSession(account = account)
+            val session = AccountSession()
             call.ass= session
-            call.ok(session.id)
+            call.ok(serdesJson.encodeToString(account))
         }?:let {
             log.info { "${usr}登录失败" }
             call.e401("密码错误")

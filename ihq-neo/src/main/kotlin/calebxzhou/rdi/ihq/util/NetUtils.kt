@@ -7,6 +7,7 @@ import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.application.*
+import io.ktor.server.request.receiveParameters
 import io.ktor.server.sessions.*
 /**
  * calebxzhou @ 2024-06-07 16:54
@@ -211,8 +213,7 @@ suspend fun ApplicationCall.ok(msg: String? = null) {
     }
 }
 
-suspend operator fun ApplicationCall.get(paramKey: String): String {
-    return this.parameters[paramKey] ?: throw ParamError("参数不全")
+infix fun Parameters.get(param: String): String { return this[param] ?: throw ParamError("参数不全")
 }
 
 var ApplicationCall.ass: AccountSession

@@ -32,7 +32,6 @@ import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
 import java.io.File
-
 fun tutorial(
     id: String,
     name: String,

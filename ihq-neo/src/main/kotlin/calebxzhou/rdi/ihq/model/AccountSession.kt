@@ -7,6 +7,5 @@ import org.bson.types.ObjectId
 
 @Serializable
 data class AccountSession(
-    val id: String = ObjectId().toString(),
-    val account: Account
+    val id: String = ObjectId().toString()
 )

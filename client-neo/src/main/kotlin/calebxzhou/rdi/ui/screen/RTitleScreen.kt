@@ -5,6 +5,8 @@ import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.model.Account
+import calebxzhou.rdi.model.RServer
+import calebxzhou.rdi.model.RServer.Companion.lanScreen
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.text.richText
@@ -47,17 +49,8 @@ class RTitleScreen : RScreen("主页") {
     var ctrlMode = false
 
     companion object {
-        val optScreen = { prevScreen: RScreen ->
-            optionScreen(prevScreen) {
-                "注册新账号" to {
-                    mc goScreen regScreen(it.mcScreen)
-                }
-                "登录已有账号" to {
-                    mc goScreen loginScreen(it.mcScreen)
-                }
-            }
-        }
-        val ipv6Screen = { prevScreen: RScreen ->
+
+       /* val ipv6Screen = { prevScreen: RScreen ->
             optionScreen(prevScreen, title = "当前网络不支持IPv6，选择网络类型，查看解决方案") {
                 "家庭宽带" to {
                     alert("把网线/wifi连在运营商给的光猫上\n或者在路由器设置中启用")
@@ -69,104 +62,11 @@ class RTitleScreen : RScreen("主页") {
                     openLink("https://www.bilibili.com/video/BV1oy4y1Y7Eb")
                 }
             }
-        }
-        val loginScreen =
-            { prevScreen: RScreen ->
-                formScreen(prevScreen, "登录账号") {
-                    text("usr", "QQ号/昵称/ID", 16, defaultValue = LocalStorage["usr"])
-                    pwd("pwd", "密码", defaultValue = LocalStorage["pwd"])
-                    submit {
-                        onLogin(it)
-                    }
-                }
-            }
-        val regScreen = { prevScreen: RScreen ->
-            formScreen(prevScreen, "注册账号") {
-                text("name", "昵称", 16) {
-                    if (it.value.length in 3..16) {
-                        REditBoxValidationResult(true)
-                    } else {
-                        REditBoxValidationResult(false, "昵称长度必须3~16")
+        }*/
 
-                    }
-                }
-                text("qq", "QQ号", 10, true) {
-                    if (it.value.length in 5..10) {
-                        REditBoxValidationResult(true)
-                    } else {
-                        REditBoxValidationResult(false, "QQ格式错误")
-                    }
-                }
-                pwd("pwd", "密码")
-                pwd("cpwd", "确认密码")
-                submit {
-                    onRegister(it)
-                }
 
-            }
-        }
 
-        val lanScreen = { prevScreen: RScreen ->
-            formScreen(prevScreen,"输入信息"){
-                text("name","你的游戏昵称",16, defaultValue = LocalStorage["guestName"])
-                submit {
-                    val name = it.formData["name"]!!
-                    LocalStorage["guestName"]=name
-                    Account.guestLogin(name)
-                    mc goScreen JoinMultiplayerScreen(RTitleScreen())
-                    alert("0.让你的朋友打开一个存档，输入/lan指令启动联机\n1.然后这个界面，就能搜到他了\n如果搜不到，可以手动输入他的ip跟端口添加")
-                }
-            }
-        }
 
-        fun onRegister(it: RFormScreenSubmitHandler) {
-            val pwd = it.formData["pwd"]!!
-            val cpwd = it.formData["cpwd"]!!
-            if (pwd != cpwd) {
-                alertOs("确认密码与密码不一致")
-                return
-            }
-            val qq = it.formData["qq"]!!
-            val name = it.formData["name"]!!
-
-            IhqClient.send(RegisterSPacket(name, pwd, qq)) { resp ->
-                if (resp.ok) {
-                    toastOk("注册成功")
-                    LocalStorage += "usr" to qq
-                    LocalStorage += "pwd" to pwd
-                    mc goScreen RTitleScreen()
-                } else {
-                    alertOs(resp.data)
-                }
-            }
-        }
-
-        fun onLogin(it: RFormScreenSubmitHandler) {
-            val usr = it.formData["usr"]!!
-            val pwd = it.formData["pwd"]!!
-            IhqClient.send(LoginSPacket(usr, pwd)) { resp ->
-                if (resp.ok) {
-                    val account = serdesJson.decodeFromString<Account>(resp.data)
-                    LocalStorage += "usr" to usr
-                    LocalStorage += "pwd" to pwd
-                    Account.now = account
-                    toastOk("登录成功")
-                    RSoundPlayer.stopAll()
-                    mcMainThread {
-
-                    ConnectScreen.startConnecting(
-                        it.screen,
-                        mc,
-                        ServerAddress(Const.SERVER_ADDR, Const.SERVER_PORT),
-                        Const.SERVER_DATA,
-                        false
-                    )
-                    }
-                } else {
-                    alertOs("密码错误")
-                }
-            }
-        }
     }
 
 
@@ -190,20 +90,7 @@ class RTitleScreen : RScreen("主页") {
         }.also { registerWidget(it) }*/
         gridLayout(this, 10, mcUIHeight - 16) {
             iconButton("smp", text = "多人模式"){
-                mc goScreen optionScreen(this.screen, "选择联机类型") {
-                    "局域网" to lanScreen(this.mcScreen)
-                    //"私服" to { alert("私服模式预计2025.1中开通") }
-                    "线上模式" to {
-
-                        if(!supportIPv6){
-
-                            mc goScreen ipv6Screen(this.mcScreen)
-                        }else{
-                            mc goScreen optScreen(this.mcScreen)
-                        }
-                    }
-
-                }
+                mc goScreen RServer.serverSelectScreen
             }
             iconButton("ssp", text = "单人模式") {
                 mc goScreen SelectWorldScreen(this.screen)

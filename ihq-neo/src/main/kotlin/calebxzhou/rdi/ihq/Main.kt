@@ -9,12 +9,12 @@ import calebxzhou.rdi.ihq.service.PlayerService
 import calebxzhou.rdi.ihq.util.e400
 import calebxzhou.rdi.ihq.util.e401
 import calebxzhou.rdi.ihq.util.e500
+import calebxzhou.rdi.ihq.util.ok
 import com.mongodb.MongoClientSettings
 import com.mongodb.ServerAddress
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoClient
-import com.sun.tools.jdeprscan.Main.call
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
@@ -23,16 +23,13 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
-import io.ktor.util.*
-import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.header
-import jogamp.graph.font.typecast.ot.table.Table.post
 import kotlinx.coroutines.runBlocking
 import org.bson.UuidRepresentation
 import java.io.File
 
 val dbHost = System.getProperty("rdi.dbHost") ?: "127.0.0.1"
-val dbPort = System.getProperty("rdi.dbPort").toIntOrNull() ?: 27017
-val hqPort = System.getProperty("rdi.hqPort").toIntOrNull() ?: 38411
+val dbPort = System.getProperty("rdi.dbPort")?.toIntOrNull() ?: 27017
+val hqPort = System.getProperty("rdi.hqPort")?.toIntOrNull() ?: 38411
 val log = KotlinLogging.logger {}
 val db = MongoClient.create(
     MongoClientSettings.builder()
@@ -92,6 +89,9 @@ fun main() {
             }
             get("/skin") {
                 PlayerService.getSkin(call)
+            }
+            get("/version") {
+                call.ok(CORE_VERSION)
             }
             post("/register") {
                 PlayerService.register(call)

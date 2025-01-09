@@ -16,7 +16,7 @@ public class mWindowTitle {
 
     @Inject(method = "createTitle",at=@At("HEAD"), cancellable = true)
     private void createTitle(CallbackInfoReturnable<String> cir){
-        cir.setReturnValue(Const.VERSION_STR);
+        cir.setReturnValue(Const.VERSION_DISP);
     }
 
 }

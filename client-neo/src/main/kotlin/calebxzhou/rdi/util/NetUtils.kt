@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import io.netty.util.AttributeKey
+import org.apache.http.HttpEntity
+import org.apache.http.util.EntityUtils
 import org.bson.types.ObjectId
 import java.nio.charset.StandardCharsets
 
@@ -159,3 +161,5 @@ operator fun <T> ChannelHandlerContext.get(key: String): T? {
 operator fun <T> ChannelHandlerContext.set(key: String, value: T) {
     this.channel().attr<T>(AttributeKey.valueOf<T>(key)).set(value)
 }
+val HttpEntity.bodyText: String
+    get() =  EntityUtils.toString(this)
