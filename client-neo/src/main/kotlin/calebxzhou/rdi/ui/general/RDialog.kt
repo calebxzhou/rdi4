@@ -29,7 +29,9 @@ fun alertErr(msg: String) {
 fun alert(msg: String) {
     dialog(msg.toMcText())
 }
-
+fun confirm(msg:String, onYes: () -> Unit){
+    dialog(msg.toMcText(), RDialogType.CONFIRM, onYes=onYes)
+}
 fun dialog(
     msgBuilder: MutableComponent,
     diagType: RDialogType = RDialogType.ALERT,

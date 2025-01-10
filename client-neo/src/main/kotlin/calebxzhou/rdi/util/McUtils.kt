@@ -5,13 +5,13 @@ import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
+import calebxzhou.rdi.ui.screen.RTitleScreen
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.dries007.tfc.common.items.TFCItems
-import net.minecraft.ChatFormatting
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
@@ -49,7 +49,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import snownee.jade.overlay.RayTracing
-import java.awt.SystemColor.text
 import kotlin.math.roundToInt
 
 val mc: Minecraft
@@ -137,7 +136,9 @@ infix fun Minecraft.goScreen(screen: Screen?) {
         setScreen(screen)
     }
 }
-
+fun Minecraft.goHome(){
+    mc goScreen RTitleScreen()
+}
 infix fun Minecraft.titled(title: String) {
     mc.window.setTitle(title)
 }

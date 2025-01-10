@@ -2,11 +2,12 @@ package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.common.WHITE
+import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.general.HAlign
-import calebxzhou.rdi.ui.general.Icons
+import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.ui.screen.RPauseScreen.DisplayMode.*
 import calebxzhou.rdi.util.*
@@ -46,16 +47,24 @@ class RPauseScreen : RScreen("暂停") {
                 mc goScreen RSettingsScreen(this@RPauseScreen,mc.options)
             }
             iconButton("exit",text = "退出"){
+                Banner.reset()
+                OmniNavi.reset()
                 mc.level?.disconnect()
                 if(mc.isLocalServer){
                     mc.clearLevel(GenericDirtMessageScreen(mcText("存档中，请稍候")))
                     Tutorial.now?.quit()
+                    mc.goHome()
                 } else{
                     mc.clearLevel()
+                    RAccount.now?.let {
+                        mc goScreen RProfileScreen(it)
+                    }?:let {
+                        alert("账号信息为空，即将回到主页")
+                        mc.goHome()
+                    }
                 }
-                Banner.reset()
-                OmniNavi.reset()
-                mc goScreen RTitleScreen()
+
+
 
             }
         }

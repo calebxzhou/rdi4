@@ -16,6 +16,5 @@ object Const {
     //显示版本
     const val VERSION_DISP = "RDI 4R Beta1"
     const val VERSION_STR = "4.6"
-    val SERVER_DATA
-        get() = ServerData("RDI", VERSION_DISP,false)
+
 }

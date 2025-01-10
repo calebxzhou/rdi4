@@ -4,7 +4,7 @@ import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
-import calebxzhou.rdi.model.Account
+import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.model.RServer
 import calebxzhou.rdi.model.RServer.Companion.lanScreen
 import calebxzhou.rdi.serdes.serdesJson
@@ -72,7 +72,11 @@ class RTitleScreen : RScreen("主页") {
 
     public override fun init() {
 
-        Account.logout()
+        RAccount.now?.logout()
+        mc.level?.let {
+            it.disconnect()
+            mc.clearLevel()
+        }
         //关闭音乐
         //mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
 

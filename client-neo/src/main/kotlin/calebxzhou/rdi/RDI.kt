@@ -15,7 +15,7 @@ import calebxzhou.rdi.item.ItemInfo
 import calebxzhou.rdi.item.RItems
 import calebxzhou.rdi.lan.Lan
 import calebxzhou.rdi.lang.EnglishStorage.lang
-import calebxzhou.rdi.model.Account
+import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.tutorial.Tutorial
@@ -212,8 +212,8 @@ object RDIEvents {
             LocalStorage["pwd"]?.let { pwd ->
                 IhqClient.send(LoginSPacket(usr, pwd)) { resp ->
                     if (resp.ok) {
-                        val account = serdesJson.decodeFromString<Account>(resp.data)
-                        Account.now = account
+                        val account = serdesJson.decodeFromString<RAccount>(resp.data)
+                        RAccount.now = account
                         logger.info("自动登录成功")
                     } else {
                         logger.error("自动登录失败")

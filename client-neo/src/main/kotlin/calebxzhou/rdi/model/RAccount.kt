@@ -15,7 +15,7 @@ import org.bson.types.ObjectId
 import java.util.*
 
 @Serializable
-data class Account(
+data class RAccount(
     @Contextual
     @BsonId val id: ObjectId,
     var name: String,
@@ -32,9 +32,9 @@ data class Account(
     )
 
     companion object {
-        val DEFAULT = Account(ObjectId(),  "未登录","123456","12345",0,null, )
+        val DEFAULT = RAccount(ObjectId(),  "未登录","123456","12345",0,null, )
         @JvmStatic
-        var now: Account? = null
+        var now: RAccount? = null
 
         @JvmStatic
         val mcUserNow
@@ -48,9 +48,9 @@ data class Account(
         )
         val isLogin
             get() = now != null
-        fun logout() {now = null}
+
         fun guestLogin(name: String){
-            Account.now = Account(name.objectId,name,"","")
+            RAccount.now = RAccount(name.objectId,name,"","")
         }
     }
     @Contextual
@@ -62,4 +62,7 @@ data class Account(
     val mcUser = User(name,uuid.toString(), "", Optional.empty(), Optional.empty(), User.Type.MOJANG)
     val skinLocation
         get() = mc.skinManager.getInsecureSkinLocation(profile)
+    fun logout() {
+        now = null
+    }
 }

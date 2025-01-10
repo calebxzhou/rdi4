@@ -1,6 +1,6 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.rdi.model.Account
+import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.util.mcFont
 import calebxzhou.rdi.util.mcText
 import net.minecraft.ChatFormatting
@@ -9,7 +9,7 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 
 class RPlayerHeadButton(
-    private val account: Account,
+    private val account: RAccount,
     x: Int = 0,
     y: Int = 0,
     handler: (Button) -> Unit

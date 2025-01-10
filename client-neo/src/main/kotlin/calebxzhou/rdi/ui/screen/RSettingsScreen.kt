@@ -1,6 +1,6 @@
 package calebxzhou.rdi.ui.screen
 
-import calebxzhou.rdi.model.Account
+import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.formScreen
 import calebxzhou.rdi.ui.general.HAlign

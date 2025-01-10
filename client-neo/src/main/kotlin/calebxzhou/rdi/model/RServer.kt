@@ -1,6 +1,7 @@
 package calebxzhou.rdi.model
 
 import calebxzhou.rdi.Const
+import calebxzhou.rdi.Const.VERSION_DISP
 import calebxzhou.rdi.ihq.HttpMethod
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
@@ -16,9 +17,11 @@ import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.general.alertOs
 import calebxzhou.rdi.ui.general.optionScreen
+import calebxzhou.rdi.ui.screen.RProfileScreen
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.LocalStorage
 import calebxzhou.rdi.util.bodyText
+import calebxzhou.rdi.util.goHome
 import calebxzhou.rdi.util.goScreen
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcMainThread
@@ -30,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
+import net.minecraft.client.multiplayer.ServerData
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.CloseableHttpResponse
@@ -44,7 +48,7 @@ import org.apache.http.util.EntityUtils
 import kotlin.coroutines.CoroutineContext
 
 data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
-
+    val mcData= ServerData("RDI", ip,false)
     companion object {
         val OFFICIAL_KWL = RServer("kwl1.calebxzhou.cn", 28501, 28502)
         val OFFICIAL_DEBUG = RServer("127.0.0.1", 38430, 38411)
@@ -85,7 +89,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
                 submit {
                     val name = it.formData["name"]!!
                     LocalStorage["guestName"] = name
-                    Account.guestLogin(name)
+                    RAccount.guestLogin(name)
                     mc goScreen JoinMultiplayerScreen(RTitleScreen())
                     alert("0.让你的朋友打开一个存档，输入/lan指令启动联机\n1.然后这个界面，就能搜到他了\n如果搜不到，可以手动输入他的ip跟端口添加")
                 }
@@ -122,7 +126,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
 
     fun disconnect() {
         now = null
-        mc goScreen RTitleScreen()
+        mc.goHome()
     }
 
     fun connect() {
@@ -169,17 +173,12 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             "login",
             params = arrayOf( "usr" to usr, "pwd" to pwd ),
         ) {
-            val account = serdesJson.decodeFromString<Account>(it.entity.bodyText)
+            val account = serdesJson.decodeFromString<RAccount>(it.entity.bodyText)
             LocalStorage += "usr" to usr
             LocalStorage += "pwd" to pwd
-            Account.now = account
+            RAccount.now = account
             toastOk("登录成功")
-            RSoundPlayer.stopAll()
-            mcMainThread {
-                ConnectScreen.startConnecting(
-                    RTitleScreen(), mc, ServerAddress(ip, gamePort), Const.SERVER_DATA, false
-                )
-            }
+            mc goScreen RProfileScreen(account,this)
         }
     }
 
