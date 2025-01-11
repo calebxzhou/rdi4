@@ -11,6 +11,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
+import io.ktor.server.routing.RoutingCall
 import io.netty.channel.ChannelHandlerContext
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.encodeToString
@@ -58,34 +59,15 @@ object PlayerService {
         }
     }
 
-    suspend fun changeQQ(acc: Account, qq: String, ctx: ChannelHandlerContext) {
-        if (getByQQ(qq) != null) {
-            ctx.err("QQ用过了")
-            return
-        }
-        accountCol.updateOne(equalById(acc), Updates.set("qq", qq))
-        ctx.ok()
+
+    suspend fun clearCloth(call: ApplicationCall) {
+        accountCol.updateOne(equalById(call.uid), Updates.unset("cloth"))
+        call.ok()
     }
 
-    suspend fun changeName(acc: Account, name: String, ctx: ChannelHandlerContext) {
-        if (getByName(name) != null) {
-            ctx.err("名字用过了")
-            return
-        }
-        accountCol.updateOne(equalById(acc), Updates.set("name", name))
-        ctx.ok()
-    }
-
-    suspend fun changePwd(acc: Account, pwd: String, ctx: ChannelHandlerContext) {
-        accountCol.updateOne(equalById(acc), Updates.set("pwd", pwd))
-        ctx.ok()
-    }
-
-    suspend fun clearCloth(acc: Account, ctx: ChannelHandlerContext) {
-        accountCol.updateOne(equalById(acc), Updates.unset("cloth"))
-        ctx.ok()
-    }
-    suspend fun changeCloth(acc: Account, cloth: Account.Cloth, ctx: ChannelHandlerContext) {
+    suspend fun changeCloth(call: ApplicationCall) {
+        val params = call.receiveParameters()
+        val cloth = Account.Cloth(params["isSlim"].toBoolean(), params["skin"], params["cape"], params["elytra"])
         if (!cloth.cape.isValidHttpUrl()) {
             cloth.cape = null
         }
@@ -95,8 +77,8 @@ object PlayerService {
         if (!cloth.elytra.isValidHttpUrl()) {
             cloth.elytra = null
         }
-        accountCol.updateOne(equalById(acc), Updates.set("cloth", cloth))
-        ctx.ok()
+        accountCol.updateOne(equalById(call.uid), Updates.set("cloth", cloth))
+        call.ok()
     }
 
     suspend fun getSkin(call: ApplicationCall) {
@@ -125,14 +107,15 @@ object PlayerService {
             return
         }
         val account = Account(
-            name=name,
-            pwd=pwd,
-            qq =qq
+            name = name,
+            pwd = pwd,
+            qq = qq
         )
         accountCol.insertOne(account)
         call.ok()
     }
-    suspend fun login(call: ApplicationCall){
+
+    suspend fun login(call: ApplicationCall) {
         val params = call.receiveParameters()
         val usr = params get "usr"
         val pwd = params get "pwd"
@@ -140,14 +123,35 @@ object PlayerService {
             log.info { "${usr}登录成功" }
 
             val session = AccountSession()
-            call.ass= session
+            call.ass = session
             call.ok(serdesJson.encodeToString(account))
-        }?:let {
+        } ?: let {
             log.info { "${usr}登录失败" }
             call.e401("密码错误")
         }
     }
 
+    suspend fun changeProfile(call: ApplicationCall) {
+        val params = call.receiveParameters()
+        params["qq"]?.let { qq ->
+            if (getByQQ(qq) != null) {
+                call.e400("QQ用过了")
+                return
+            }
+            accountCol.updateOne(equalById(call.uid), Updates.set("qq", qq))
+        }
+        params["name"]?.let { name ->
+            if (getByName(name) != null) {
+                call.e400("名字用过了")
+                return
+            }
+            accountCol.updateOne(equalById(call.uid), Updates.set("name", name))
+        }
+        params["pwd"]?.let { pwd ->
+            accountCol.updateOne(equalById(call.uid), Updates.set("pwd", pwd))
+        }
+        call.ok()
+    }
 
 
 }

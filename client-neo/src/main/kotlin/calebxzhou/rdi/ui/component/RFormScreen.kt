@@ -22,17 +22,22 @@ import net.minecraft.client.gui.screens.Screen
 fun formScreen(prevScreen: Screen = RTitleScreen(), title: String, builder: RFormScreen.() -> Unit): RScreen {
     return RFormScreen(prevScreen, title).apply(builder).build()
 }
-data class RFormScreenSubmitHandler(val screen:Screen, val formData:Map<String, String>){
-    fun finish(){
+
+data class RFormScreenSubmitHandler(val screen: Screen, val formData: Map<String, String>) {
+    fun finish() {
     }
 }
+
 class RFormScreen(val prev: Screen, val title: String) {
     private val widgets = linkedMapOf<String, AbstractWidget>()
-    private lateinit var handler: (RFormScreenSubmitHandler)->Unit
+    private lateinit var handler: (RFormScreenSubmitHandler) -> Unit
+
     //关闭的时候做什么
     var onClose: () -> Unit = {}
+
     //底部按钮 gridlayout
-    var bottomLayoutBuilder: GridLayoutBuilder.() ->Unit = {}
+    var bottomLayoutBuilder: GridLayoutBuilder.() -> Unit = {}
+
     fun text(
         id: String,
         label: String,
@@ -40,7 +45,7 @@ class RFormScreen(val prev: Screen, val title: String) {
         numberOnly: Boolean = false,
         nullable: Boolean = false,
         defaultValue: String? = null,
-        validator: REditBoxValidator = if(nullable)DEFAULT_VALIDATOR else REQUIRED_VALIDATOR
+        validator: REditBoxValidator = if (nullable) DEFAULT_VALIDATOR else REQUIRED_VALIDATOR
     ) {
         widgets += id to REditBox(label, maxLength, validator).apply {
             isNullable = nullable
@@ -49,27 +54,28 @@ class RFormScreen(val prev: Screen, val title: String) {
         }
     }
 
-    fun pwd(id: String, label: String,defaultValue: String? = null,) {
-        widgets += id to RPasswordEditBox(label,defaultValue=defaultValue)
+    fun pwd(id: String, label: String, defaultValue: String? = null) {
+        widgets += id to RPasswordEditBox(label, defaultValue = defaultValue)
     }
+
     fun checkbox(id: String, label: String) {
         widgets += id to RCheckbox(label)
     }
 
-    fun submit(handler: (RFormScreenSubmitHandler)->Unit) {
+    fun submit(handler: (RFormScreenSubmitHandler) -> Unit) {
         this.handler = (handler)
     }
+
     fun build(): RScreen {
         return object : RScreen(title) {
             override fun tick() {
                 if (mc pressingKey KEY_RETURN || mc pressingKey KEY_NUMPADENTER) {
-                        try {
-                            onSubmit()
-                        }
-                        catch (e: Exception) {
-                            alertErr(e.localizedMessage)
-                            e.printStackTrace()
-                        }
+                    try {
+                        onSubmit()
+                    } catch (e: Exception) {
+                        alertErr(e.localizedMessage)
+                        e.printStackTrace()
+                    }
                 }
                 super.tick()
             }
@@ -78,9 +84,10 @@ class RFormScreen(val prev: Screen, val title: String) {
                 this@RFormScreen.onClose()
                 mc goScreen prev
             }
+
             override fun init() {
 
-                gridLayout(this, hAlign = HAlign.CENTER){
+                gridLayout(this, hAlign = HAlign.CENTER) {
                     iconButton("success", text = "提交") { onSubmit() }
                     bottomLayoutBuilder()
                 }
@@ -108,21 +115,26 @@ class RFormScreen(val prev: Screen, val title: String) {
                 //只要editbox
                 val formData = widgets
                     //.filter { it.value is REditBox }
-                    .map { it.key to it.value.let { widget ->
-                        when (widget) {
-                            is REditBox -> widget.value.trim()
-                            is RCheckbox -> {
-                                widget.selected().toString()
-                            }
-                            else -> {
-                                logger.error("不支持的控件类型：${widget.javaClass.name}")
-                                ""
+                    .map {
+                        it.key to it.value.let { widget ->
+                            when (widget) {
+                                is REditBox -> widget.value.trim()
+                                is RCheckbox -> {
+                                    widget.selected().toString()
+                                }
+
+                                else -> {
+                                    logger.error("不支持的控件类型：${widget.javaClass.name}")
+                                    ""
+                                }
                             }
                         }
                     }
-                    }
                     .toMap()
-                handler(RFormScreenSubmitHandler(this, formData))
+                val screen = this
+                bgTask {
+                    handler(RFormScreenSubmitHandler(screen, formData))
+                }
             }
 
             override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {

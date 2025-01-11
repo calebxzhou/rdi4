@@ -3,6 +3,7 @@ package calebxzhou.rdi.ui.screen
 import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.model.RAccount
+import calebxzhou.rdi.model.RServer
 import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.tutorial.Tutorial
 import calebxzhou.rdi.ui.component.RScreen
@@ -56,8 +57,10 @@ class RPauseScreen : RScreen("暂停") {
                     mc.goHome()
                 } else{
                     mc.clearLevel()
-                    RAccount.now?.let {
-                        mc goScreen RProfileScreen(it)
+                    RAccount.now?.let { ac->
+                        RServer.now?.let { sv->
+                        mc goScreen RProfileScreen(ac,sv)
+                        }
                     }?:let {
                         alert("账号信息为空，即将回到主页")
                         mc.goHome()

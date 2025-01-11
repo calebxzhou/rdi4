@@ -6,6 +6,7 @@ import calebxzhou.rdi.ihq.model.Account
 import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
+import calebxzhou.rdi.ihq.service.PlayerService
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
@@ -20,11 +21,10 @@ import io.netty.util.AttributeKey
 import org.bson.types.ObjectId
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.application.*
-import io.ktor.server.request.receiveParameters
+import io.ktor.server.auth.UserIdPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.sessions.*
+
 /**
  * calebxzhou @ 2024-06-07 16:54
  */
@@ -37,6 +37,7 @@ fun getVarLongSize(input: Long): Int {
     }
     return 10
 }
+
 fun getVarIntSize(input: Int): Int {
     for (i in 1..4) {
         if (input and (-1 shl i * 7) == 0) {
@@ -45,21 +46,25 @@ fun getVarIntSize(input: Int): Int {
     }
     return 5
 }
+
 private fun getMaxEncodedUtfLength(i: Int): Int {
     return i * 3
 }
-fun ByteBuf.writeObjectId(objectId: ObjectId) : ByteBuf {
+
+fun ByteBuf.writeObjectId(objectId: ObjectId): ByteBuf {
     writeBytes(objectId.toByteArray())
     return this
 }
+
 fun ByteBuf.readObjectId(): ObjectId = ObjectId(
     readBytes(12).nioBuffer()
 )
-fun ByteBuf.readString(): String  {
+
+fun ByteBuf.readString(): String {
     return this.readString(32767)
 }
 
-fun ByteBuf.readString(i: Int): String  {
+fun ByteBuf.readString(i: Int): String {
     val j: Int = getMaxEncodedUtfLength(i)
     val k = readVarInt()
     return if (k > j) {
@@ -112,6 +117,7 @@ fun ByteBuf.readVarInt(): Int {
     } while (b.toInt() and 0b10000000 == 0b10000000)
     return i
 }
+
 fun ByteBuf.writeVarInt(i: Int): ByteBuf {
     var input = i
     while (input and -128 != 0) {
@@ -146,6 +152,7 @@ fun ByteBuf.writeVarIntArray(array: IntArray): ByteBuf {
 fun ByteBuf.readVarIntArray(): IntArray {
     return readVarIntArray(readableBytes())
 }
+
 fun ByteBuf.readVarIntArray(maxLength: Int): IntArray {
     val i = readVarInt()
     return if (i > maxLength) {
@@ -158,15 +165,19 @@ fun ByteBuf.readVarIntArray(maxLength: Int): IntArray {
         `is`
     }
 }
-fun ChannelHandlerContext.send(packet: CPacket){
+
+fun ChannelHandlerContext.send(packet: CPacket) {
     this.channel().writeAndFlush(packet)
 }
-fun ChannelHandlerContext.ok(data: String=""){
-    this.channel().writeAndFlush(ResponseCPacket(reqId,true,data))
+
+fun ChannelHandlerContext.ok(data: String = "") {
+    this.channel().writeAndFlush(ResponseCPacket(reqId, true, data))
 }
-fun ChannelHandlerContext.err(msg: String){
-    this.channel().writeAndFlush(ResponseCPacket(reqId,false,msg))
+
+fun ChannelHandlerContext.err(msg: String) {
+    this.channel().writeAndFlush(ResponseCPacket(reqId, false, msg))
 }
+
 operator fun <T> ChannelHandlerContext.get(key: String): T? {
     return this.channel().attr<T>(AttributeKey.valueOf<T>(key)).get()
 }
@@ -177,34 +188,40 @@ operator fun <T> ChannelHandlerContext.set(key: String, value: T) {
 
 var ChannelHandlerContext.clientIp: InetSocketAddress
     get() = this["clientIp"]!!
-    set(value) = this.set("clientIp",value)
+    set(value) = this.set("clientIp", value)
 
 var ChannelHandlerContext.reqId: Byte
     get() = this["reqId"]!!
-    set(value) = this.set("reqId",value)
+    set(value) = this.set("reqId", value)
 
 var ChannelHandlerContext.account: Account?
     get() = this["account"]
-    set(value) = this.set("account",value)
-suspend fun ApplicationCall.e400(msg: String? = null){
-    err(HttpStatusCode.BadRequest,msg)
+    set(value) = this.set("account", value)
+
+suspend fun ApplicationCall.e400(msg: String? = null) {
+    err(HttpStatusCode.BadRequest, msg)
 }
-suspend fun ApplicationCall.e401(msg: String? = null){
-    err(HttpStatusCode.Unauthorized,msg)
+
+suspend fun ApplicationCall.e401(msg: String? = null) {
+    err(HttpStatusCode.Unauthorized, msg)
 }
-suspend fun ApplicationCall.e404(msg: String? = null){
-    err(HttpStatusCode.NotFound,msg)
+
+suspend fun ApplicationCall.e404(msg: String? = null) {
+    err(HttpStatusCode.NotFound, msg)
 }
-suspend fun ApplicationCall.e500(msg: String? = null){
-    err(HttpStatusCode.InternalServerError,msg)
+
+suspend fun ApplicationCall.e500(msg: String? = null) {
+    err(HttpStatusCode.InternalServerError, msg)
 }
-suspend fun ApplicationCall.err(status: HttpStatusCode,msg: String? = null) {
+
+suspend fun ApplicationCall.err(status: HttpStatusCode, msg: String? = null) {
     msg?.run {
         respondText(this, status = status)
     } ?: run {
         respond(status)
     }
 }
+
 suspend fun ApplicationCall.ok(msg: String? = null) {
     msg?.run {
         respondText(this, status = HttpStatusCode.OK)
@@ -213,9 +230,16 @@ suspend fun ApplicationCall.ok(msg: String? = null) {
     }
 }
 
-infix fun Parameters.get(param: String): String { return this[param] ?: throw ParamError("参数不全")
+infix fun Parameters.get(param: String): String {
+    return this[param] ?: throw ParamError("参数不全")
 }
+
+val ApplicationCall.uid
+    get() =
+
+        ObjectId(this.principal<UserIdPrincipal>()?.name ?: throw AuthError("无效会话"))
+
 
 var ApplicationCall.ass: AccountSession
     set(value) = this.sessions.set(value)
-    get() = this.sessions.get<AccountSession>()?:throw AuthError("无效会话")
+    get() = this.sessions.get<AccountSession>() ?: throw AuthError("无效会话")

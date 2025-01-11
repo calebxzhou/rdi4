@@ -15,8 +15,14 @@ import com.mongodb.ServerAddress
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.sun.tools.jdeprscan.Main.call
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.UserIdPrincipal
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.basic
+import io.ktor.server.auth.principal
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -79,8 +85,15 @@ fun main() {
                 call.e500(cause.message)
             }
         }
-        install(Sessions) {
-            header<AccountSession>("rdi-ss", SessionStorageMemory( ))
+        install(Authentication) {
+            basic("auth-basic") {
+                realm = "Access to the '/' path"
+                validate { credentials ->
+                    PlayerService.validate(credentials.name,credentials.password)?.let {
+                        UserIdPrincipal(it.id.toString())
+                    }
+                }
+            }
         }
         routing {
             get("/core") {
@@ -98,7 +111,20 @@ fun main() {
             }
             post("/login") {
                 PlayerService.login(call)
+
             }
+            authenticate("auth-basic") {
+                post("/skin"){
+                    PlayerService.changeCloth(call)
+                }
+                post("/profile"){
+                    PlayerService.changeProfile(call)
+                }
+                delete("/skin"){
+                    PlayerService.clearCloth(call)
+                }
+            }
+
 
         }
 
