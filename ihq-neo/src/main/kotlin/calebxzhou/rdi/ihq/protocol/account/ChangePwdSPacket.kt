@@ -11,7 +11,7 @@ data class ChangePwdSPacket(val pwd:String): SAuthedPacket{
     constructor(buf: ByteBuf): this(buf.readString())
 
     override suspend fun process(ctx: ChannelHandlerContext, account: Account) {
-        PlayerService.changePwd(account,pwd, ctx)
+        //PlayerService.changePwd(account,pwd, ctx)
     }
 }
 

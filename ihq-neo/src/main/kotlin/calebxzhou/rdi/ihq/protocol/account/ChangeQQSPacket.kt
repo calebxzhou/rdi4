@@ -11,7 +11,7 @@ data class ChangeQQSPacket(val qq:String): SAuthedPacket{
     constructor(buf: ByteBuf): this(buf.readString())
 
     override suspend fun process(ctx: ChannelHandlerContext, account: Account) {
-        PlayerService.changeQQ(account,qq, ctx)
+       // PlayerService.changeQQ(account,qq, ctx)
     }
 }
 

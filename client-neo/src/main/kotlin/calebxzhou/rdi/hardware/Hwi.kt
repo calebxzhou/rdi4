@@ -1,6 +1,5 @@
 package calebxzhou.rdi.hardware
 
-import jogamp.graph.font.typecast.ot.table.Table.name
 import oshi.SystemInfo
 import oshi.util.EdidUtil
 import java.awt.GraphicsDevice

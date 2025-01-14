@@ -3,7 +3,6 @@ package calebxzhou.rdi.ihq
 import calebxzhou.rdi.ihq.exception.AuthError
 import calebxzhou.rdi.ihq.exception.ParamError
 import calebxzhou.rdi.ihq.model.Account
-import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.model.Team
 import calebxzhou.rdi.ihq.service.PlayerService
 import calebxzhou.rdi.ihq.util.e400
@@ -15,7 +14,6 @@ import com.mongodb.ServerAddress
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoClient
-import com.sun.tools.jdeprscan.Main.call
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import io.ktor.server.auth.Authentication
@@ -28,7 +26,6 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.*
 import kotlinx.coroutines.runBlocking
 import org.bson.UuidRepresentation
 import java.io.File

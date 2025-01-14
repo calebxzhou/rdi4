@@ -239,7 +239,3 @@ val ApplicationCall.uid
 
         ObjectId(this.principal<UserIdPrincipal>()?.name ?: throw AuthError("无效会话"))
 
-
-var ApplicationCall.ass: AccountSession
-    set(value) = this.sessions.set(value)
-    get() = this.sessions.get<AccountSession>() ?: throw AuthError("无效会话")

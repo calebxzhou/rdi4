@@ -5,7 +5,6 @@ import calebxzhou.rdi.util.objectId
 import calebxzhou.rdi.util.toUUID
 import com.mojang.authlib.GameProfile
 import com.possible_triangle.sliceanddice.block.slicer.SlicerArmInteractionType.id
-import jogamp.graph.font.typecast.ot.table.Table.name
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -27,8 +26,8 @@ data class RAccount(
     @Serializable
     data class Cloth(
         val isSlim :Boolean = false,
-        var skin: String,
-        var cape: String
+        var skin: String?=null,
+        var cape: String?=null
     )
 
     companion object {

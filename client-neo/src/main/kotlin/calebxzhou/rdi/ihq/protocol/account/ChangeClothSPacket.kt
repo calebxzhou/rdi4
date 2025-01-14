@@ -9,7 +9,7 @@ data class ChangeClothSPacket(
     val cloth: RAccount.Cloth): SPacket{
 
     override fun write(buf: ByteBuf) {
-        buf.writeBoolean(cloth.isSlim).writeString(cloth.skin).writeString(cloth.cape)
+        //buf.writeBoolean(cloth.isSlim).writeString(cloth.skin).writeString(cloth.cape)
     }
 }
 

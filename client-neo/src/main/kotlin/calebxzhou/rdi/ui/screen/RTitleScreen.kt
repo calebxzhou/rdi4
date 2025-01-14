@@ -72,7 +72,6 @@ class RTitleScreen : RScreen("主页") {
 
     public override fun init() {
 
-        RAccount.now?.logout()
         mc.level?.let {
             it.disconnect()
             mc.clearLevel()

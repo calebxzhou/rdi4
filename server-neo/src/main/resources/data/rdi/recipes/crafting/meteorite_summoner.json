@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABC",
+    "DGD",
+    "FEF"
+  ],
+  "key": {
+    "A": {
+      "item": "tfc:metal/double_sheet/bismuth_bronze"
+    },
+    "B": {
+      "item": "tfc:metal/double_sheet/bronze"
+    },
+    "C": {
+      "item": "tfc:metal/double_sheet/black_bronze"
+    },
+    "D": {
+      "item": "minecraft:redstone_block"
+    },
+    "E": {
+      "item": "minecraft:glass"
+    },
+    "F": {
+      "item": "tfc:metal/block/black_bronze_stairs"
+    },
+    "G": {
+      "item": "aether:enchanted_gravitite"
+    }
+  },
+  "result": {
+    "item": "rdi:meteorite_summoner",
+    "count": 1
+  }
+}

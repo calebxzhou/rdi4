@@ -10,7 +10,7 @@ import io.netty.channel.ChannelHandlerContext
  */
  class ClearClothSPacket : SAuthedPacket {
     override suspend fun process(ctx: ChannelHandlerContext, account: Account) {
-        PlayerService.clearCloth(account,ctx)
+      //  PlayerService.clearCloth(account,ctx)
     }
 
 }

@@ -92,7 +92,8 @@ class RDialog(
         gridLayout(this, y = startY+height, hAlign = HAlign.CENTER) {
             iconButton("success", text = yesText) {
                 onYes()
-                mc goScreen prevScreen
+                if(diagType == RDialogType.ALERT)
+                    mc goScreen prevScreen
             }
             if (diagType == RDialogType.CONFIRM) {
                 iconButton("error", text = noText) {

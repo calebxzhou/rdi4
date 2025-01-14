@@ -11,7 +11,7 @@ data class ChangeNameSPacket(val name:String): SAuthedPacket{
     constructor(buf: ByteBuf): this(buf.readString())
 
     override suspend fun process(ctx: ChannelHandlerContext, account: Account) {
-        PlayerService.changeName(account,name, ctx)
+        //PlayerService.changeName(account,name, ctx)
     }
 }
 

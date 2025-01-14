@@ -74,9 +74,9 @@ class MeteoriteSummonerItem() : Item(Item.Properties().stacksTo(1)) {
                 player.sendSystemMessage(mcText("陨石已降落"))
                 player.connection.send(
                     ClientboundSoundPacket(
-                        Holder.direct(SoundEvents.GENERIC_EXPLODE), SoundSource.PLAYERS, pos.x.toDouble(),
+                        Holder.direct(SoundEvents.GENERIC_EXPLODE), SoundSource.AMBIENT, pos.x.toDouble(),
                         pos.y.toDouble(),
-                        pos.z.toDouble(), 200f, 1f, 0L
+                        pos.z.toDouble(), 32f, 2f, 0L
                     )
                 )
 

@@ -23,6 +23,8 @@
     "mServerProps",
     "mServerProps2",
     "ae2.mGenMeteoriteEverywhere",
+    "aether.mAetherPortalShape",
+    "aether.mFireStartPortal",
     "tfc.mFastPitKiln"
   ],
   "injectors": {

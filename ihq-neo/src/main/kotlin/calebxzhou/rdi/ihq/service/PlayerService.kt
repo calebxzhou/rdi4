@@ -122,8 +122,6 @@ object PlayerService {
         validate(usr, pwd)?.let { account ->
             log.info { "${usr}登录成功" }
 
-            val session = AccountSession()
-            call.ass = session
             call.ok(serdesJson.encodeToString(account))
         } ?: let {
             log.info { "${usr}登录失败" }

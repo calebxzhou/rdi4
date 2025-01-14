@@ -14,7 +14,7 @@ class AboutScreen : RScreen("关于") {
         text("服务器：科洛 wuhudsm66")
         ret()
         icon("plugin")
-        text("Mod建议：ForiLuSa 谋士兔 Caragan J4ckTh3R1pper Juliiee")
+        text("建议：ForiLuSa 谋士兔 Caragan J4ckTh3R1pper Juliiee ouhehe0 xiao_yan_t")
         ret()
         icon("test")
         text("测试：wuhudsm66 谋士兔 狗查 Caragan Joon Alive 木果小奶喵")

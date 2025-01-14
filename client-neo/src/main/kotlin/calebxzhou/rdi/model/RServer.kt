@@ -30,6 +30,7 @@ import calebxzhou.rdi.util.toastOk
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
@@ -45,6 +46,7 @@ import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
+import java.util.Base64
 import kotlin.coroutines.CoroutineContext
 
 data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
@@ -126,7 +128,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
 
     fun disconnect() {
         now = null
-        mc.goHome()
+
     }
 
     fun connect() {
@@ -153,9 +155,10 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
         hqSend(
             HttpMethod.POST,
             "register",
+            params = listOf(
             "name" to name,
             "pwd" to pwd,
-            "qq" to qq
+            "qq" to qq)
         ) {
             toastOk("注册成功")
             LocalStorage += "usr" to qq
@@ -171,7 +174,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
         hqSend(
             HttpMethod.POST,
             "login",
-            params = arrayOf( "usr" to usr, "pwd" to pwd ),
+            params = listOf( "usr" to usr, "pwd" to pwd ),
         ) {
             val account = serdesJson.decodeFromString<RAccount>(it.entity.bodyText)
             LocalStorage += "usr" to usr
@@ -183,18 +186,19 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
     }
 
     val scope = CoroutineScope(Dispatchers.IO)
-    val hqClient = HttpClients.createDefault()
+
 
     fun hqSend(
         method: HttpMethod = HttpMethod.GET,
         path: String,
-        vararg params: Pair<String, String>,
+        params: List<Pair<String, String>> = listOf(),
         onOk: (CloseableHttpResponse) -> Unit
-    ) = scope.launch(CoroutineExceptionHandler { _, exception ->
+    ) = GlobalScope.launch(CoroutineExceptionHandler { _, exception ->
         alertErr(exception.message ?: "未知错误")
         exception.printStackTrace()
     }) {
         val fullUrl = "http://${ip}:${hqPort}/${path}"
+
         val request: HttpUriRequest = when (method) {
             HttpMethod.POST -> {
                 val post = HttpPost(fullUrl)
@@ -213,9 +217,15 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
 
             else -> throw IllegalArgumentException("Unsupported request type $method")
         }
+        RAccount.now?.let {
+            val usr = it.id
+            val pwd = it.pwd
+            val auth = "$usr:$pwd"
+            val encodedAuth = Base64.getEncoder().encodeToString(auth.toByteArray(Charsets.UTF_8))
+            request.addHeader("Authorization", "Basic $encodedAuth")
+        }
 
-
-        hqClient.execute(request).use { response ->
+        HttpClients.createDefault().execute(request).use { response ->
             if (response.statusLine.statusCode in 200..299) {
                 onOk(response)
             } else {
@@ -223,5 +233,6 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             }
         }
     }
+
 
 }

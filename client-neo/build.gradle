@@ -166,6 +166,10 @@ def mods = [
         "titanium:1.20.1-3.8.32",
         "jei:iNv5B1Zj",
         "libipn:forge-1.20-4.0.2",
+        "sophisticated-core:1.20.1-1.1.3.835",
+        "kubejs:2001.6.5-build.16+forge",
+        "kubejs-tfc:1.2.3",
+        "rhino:2001.2.3-build.6+forge",
         //************优化类************
         "entityculling:dlg7nMa6",
         "ferrite-core:DG5Fn9Sz",
@@ -187,31 +191,42 @@ def mods = [
         // "distanthorizons:2.2.1-a-1.20.1",
         "oculus:1.20.1-1.8.0",
         //************真mod*************
-        "terrafirmacraft:3.2.7",
+        "terrafirmacraft:3.2.12",
+        "beneath:1.0.3",
         "functional-storage:1.20.1-1.2.12",
-        "firmalife:2.1.11",
-        "farmers-delight:1.20.1-1.2.4",
-        "oceans-delight:1.0.2-1.20",
-        "chefs-delight:1.0.3-forge-1.20.1",
-        "lets-do-vinery:1.4.28",
-        "aether:1.20.1-1.5.0-neoforge",
-        "the-aethers-delight:0.1.1",
-        "ae2:15.2.13",
-        "cc-tweaked:1.113.1",
-        "cuisine-delight:1.1.15",
+        "firmalife:2.1.15",
+        "aether:1.20.1-1.5.1-neoforge",
+        "ae2:RRBDfS9L",
+        "cc-tweaked:1.114.2",
         "create:1.20.1-0.5.1.j",
         "create-connected:0.9.1-mc1.20.1",
         "createaddition:1.20.1-1.2.4e",
         "slice-and-dice:3.3.0",
         "interiors:0.5.6+forge-mc1.20.1",
-        "create-dreams-and-desires:1.20.1-0.1b.Release-Early-Dev",
-        "create-central-kitchen:1.3.12",
-        "create-deco:2.0.2-1.20.1-forge",
-
-
+        "sophisticated-backpacks:1.20.1-3.22.1.1167",
+        "polymorph:f95jImsh",
+        "polymorphic-energistics:forge-0.1.1-1.20.1",
+        "water-flasks:3.0.5",
+        "tfc-ambiental-second-edition:1.20.1-3.3.0",
+        "tfc-canes:2.0.2",
+        "tfc-weld-button:1.1",
 ]
 //只导出 不在开发环境运行
 def modsExportOnly = [
+        //能跑
+
+        "farmers-delight:1.20.1-1.2.4",
+        "the-aethers-delight:0.1.1",
+        "cuisine-delight:1.1.15",
+        "oceans-delight:1.0.2-1.20",
+        "chefs-delight:1.0.3-forge-1.20.1",
+        "lets-do-vinery:1.4.28",
+        "create-dreams-and-desires:1.20.1-0.1b.Release-Early-Dev",
+        "create-central-kitchen:1.3.12",
+        //不能跑
+        "man-of-many-planes:uZNB5Zrk",
+        "immersive-aircraft:BuPtsmaI",
+        "create-big-cannons:5.8.2",
         "create-steam-n-rails:1.6.7+forge-mc1.20.1",
         "i18nupdatemod:3.6.0",
         "kotlin-for-forge:4.11.0",
@@ -261,9 +276,21 @@ jar {
                 "Implementation-Vendor"   : "calebxzhou",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConfigs"            : "rdi.mixins.json",
+
         ])
     }
+
 }
+/*reobfJar {
+    dependsOn jar
+    doLast {
+        copy {
+            from jar.archiveFile
+            into "$buildDir/reobfJar"
+            rename { "output.jar" }
+        }
+    }
+}*/
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file

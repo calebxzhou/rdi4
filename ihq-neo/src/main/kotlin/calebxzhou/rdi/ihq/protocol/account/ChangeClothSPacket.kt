@@ -12,7 +12,7 @@ data class ChangeClothSPacket(
     constructor(buf: ByteBuf): this(Account.Cloth(buf.readBoolean(),buf.readString(),buf.readString(),buf.readString()))
 
     override suspend fun process(ctx: ChannelHandlerContext, account: Account) {
-        PlayerService.changeCloth(account,cloth, ctx)
+        //PlayerService.changeCloth(account,cloth, ctx)
     }
 }
 

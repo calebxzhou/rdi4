@@ -1,6 +1,8 @@
 package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.Const
+import calebxzhou.rdi.ihq.HqClient
+import calebxzhou.rdi.ihq.HttpMethod
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.ChangeClothSPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
@@ -19,7 +21,9 @@ import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.bgTask
 import calebxzhou.rdi.util.decodeBase64
+import calebxzhou.rdi.util.drawTextAtCenter
 import calebxzhou.rdi.util.extractDomain
+import calebxzhou.rdi.util.goHome
 import calebxzhou.rdi.util.goScreen
 import calebxzhou.rdi.util.isValidHttpUrl
 import calebxzhou.rdi.util.mc
@@ -30,7 +34,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.gui.screens.ConnectScreen
+import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.server.packs.PackType.SERVER_DATA
 import org.apache.http.client.methods.HttpGet
@@ -59,7 +66,7 @@ class RProfileScreen(
                 }
             }
             iconButton("basic_info", text = "修改信息") {
-
+                alert("开发中，周末前上线")
             }
             iconButton("clothes", text = "皮肤") {
                 mc goScreen picServerSkinScreen
@@ -75,9 +82,22 @@ class RProfileScreen(
        confirm ("确定要登出吗？"){
            RServer.now?.disconnect()
            RAccount.now?.logout()
+           mc.goHome()
        }
     }
-
+    override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        PlayerFaceRenderer.draw(guiGraphics, account.skinLocation, width / 2 - 10, height / 5, 20)
+        drawTextAtCenter(guiGraphics, "昵称：${account.name}", height / 2 - 20)
+        drawTextAtCenter(guiGraphics, "RDID：${account.id}", height / 2)
+        drawTextAtCenter(guiGraphics, "UUID：${account.uuid}", height / 2 + 20)
+        drawTextAtCenter(guiGraphics, "QQ：${account.qq}", height / 2 + 40)
+        mc.player?.let {
+            InventoryScreen.renderEntityInInventoryFollowsMouse(
+                guiGraphics, 200, 200, 30, mouseX.toFloat(), mouseY.toFloat(),
+                it
+            )
+        }
+    }
     private val picServerSkinScreen
         get() = formScreen(this, "设定皮肤披风") {
             bottomLayoutBuilder = {
@@ -136,7 +156,16 @@ class RProfileScreen(
         EntityUtils.consume(entity)
         return true
     }
-
+    //设定服饰
+    private fun setCloth(cloth: RAccount.Cloth){
+        val params = arrayListOf<Pair<String, String>>()
+        params += "isSlim" to cloth.isSlim.toString()
+        params += "skin" to cloth.skin.toString()
+        params += "cape" to cloth.cape.toString()
+        server.hqSend(HttpMethod.POST,"skin", params) {
+            alert("换皮成功 重新登录看新皮肤")
+        }
+    }
     //从图床导入服饰
     private fun setPicServerCloth(handler: RFormScreenSubmitHandler) {
         val skin = handler.formData["skin"] ?: ""
@@ -155,9 +184,7 @@ class RProfileScreen(
                 return
             }
         }
-        val packet = ChangeClothSPacket(RAccount.Cloth(isSlim, skin, cape))
-        IhqClient.send(packet) { skinResponseHandler(packet, it) }
-
+        setCloth(RAccount.Cloth(isSlim, skin, cape))
     }
 
     //blessing skin皮肤站,通过链接获取皮肤hash从而得到图片
@@ -224,9 +251,7 @@ class RProfileScreen(
         }
 
 
-        val packet = ChangeClothSPacket(RAccount.Cloth(isSlim, skin, cape))
-        IhqClient.send(packet) { skinResponseHandler(packet, it) }
-
+        setCloth(RAccount.Cloth(isSlim, skin, cape))
     }
 
     private fun setMojangSkinCape(handler: RFormScreenSubmitHandler) {
@@ -283,17 +308,8 @@ class RProfileScreen(
                     texture?.jsonObject?.get("CAPE")?.jsonObject?.get(
                         "url"
                     )?.jsonPrimitive?.content
-                val params = mutableListOf<Pair<String, String>>()
-                if (skinURL != null && importSkin) {
-                    params += "skin" to skinURL
 
-                }
-                if (capeURL != null && importCape) {
-                    params += "cape" to capeURL
-
-                }
-                val packet = ChangeClothSPacket(RAccount.Cloth(isSlim, skinURL ?: "", capeURL ?: ""))
-                IhqClient.send(packet) { skinResponseHandler(packet, it) }
+                setCloth(RAccount.Cloth(isSlim, skinURL ?: "", capeURL ?: ""))
             } else {
                 alertOs("获取皮肤失败")
                 logger.error(response2.statusLine)
@@ -303,14 +319,5 @@ class RProfileScreen(
             logger.error(response.statusLine)
         }
     }
-    val skinResponseHandler: (ChangeClothSPacket, ResponseCPacket) -> Unit =
-        { cloth: ChangeClothSPacket, packet: ResponseCPacket ->
-            if (!packet.ok) {
-                alertOs(packet.data)
-            } else {
-                toastOk("换皮成功")
-                RAccount.now?.cloth = cloth.cloth
-                mc.screen?.onClose()
-            }
-        }
+
 }

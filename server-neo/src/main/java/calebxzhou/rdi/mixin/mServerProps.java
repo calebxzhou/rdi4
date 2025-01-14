@@ -37,6 +37,7 @@ class mServerProps2  {
     public final int serverPort = Const.SERVER_PORT;
     @Redirect(method = "<init>",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/WorldOptions;parseSeed(Ljava/lang/String;)Ljava/util/OptionalLong;"))
     private OptionalLong rdiSeed(String numberformatexception){
+
         return WorldOptions.parseSeed(String.valueOf(Const.SEED));
     }
 }
