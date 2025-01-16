@@ -1,19 +1,14 @@
 package calebxzhou.rdi.ui.component
 
-import appeng.libs.micromark.Types.label
 import calebxzhou.rdi.logger
-import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.alertErr
-import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.ui.layout.GridLayoutBuilder
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
 import com.mojang.blaze3d.platform.InputConstants.KEY_RETURN
-import com.simibubi.create.content.kinetics.belt.item.BeltConnectorItem.maxLength
-import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
@@ -82,7 +77,7 @@ class RFormScreen(val prev: Screen, val title: String) {
 
             override fun onClose() {
                 this@RFormScreen.onClose()
-                mc goScreen prev
+                mc go prev
             }
 
             override fun init() {

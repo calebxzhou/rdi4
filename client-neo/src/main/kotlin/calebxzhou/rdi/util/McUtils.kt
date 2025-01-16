@@ -131,13 +131,13 @@ fun PoseStack.matrixOp(handler: PoseStack.() -> Unit) {
     popPose()
 }
 
-infix fun Minecraft.goScreen(screen: Screen?) {
+infix fun Minecraft.go(screen: Screen?) {
     execute {
         setScreen(screen)
     }
 }
 fun Minecraft.goHome(){
-    mc goScreen RTitleScreen()
+    mc go RTitleScreen()
 }
 infix fun Minecraft.titled(title: String) {
     mc.window.setTitle(title)

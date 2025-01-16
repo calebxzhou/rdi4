@@ -1,11 +1,6 @@
 package calebxzhou.rdi.ui.screen
 
-import calebxzhou.rdi.Const
-import calebxzhou.rdi.ihq.HqClient
 import calebxzhou.rdi.ihq.HttpMethod
-import calebxzhou.rdi.ihq.IhqClient
-import calebxzhou.rdi.ihq.protocol.account.ChangeClothSPacket
-import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.model.RServer
@@ -17,18 +12,15 @@ import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.general.alertOs
 import calebxzhou.rdi.ui.general.confirm
-import calebxzhou.rdi.ui.general.dialog
 import calebxzhou.rdi.ui.layout.gridLayout
-import calebxzhou.rdi.util.bgTask
 import calebxzhou.rdi.util.decodeBase64
 import calebxzhou.rdi.util.drawTextAtCenter
 import calebxzhou.rdi.util.extractDomain
 import calebxzhou.rdi.util.goHome
-import calebxzhou.rdi.util.goScreen
+import calebxzhou.rdi.util.go
 import calebxzhou.rdi.util.isValidHttpUrl
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcMainThread
-import calebxzhou.rdi.util.mcText
 import calebxzhou.rdi.util.toastOk
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -39,7 +31,6 @@ import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
-import net.minecraft.server.packs.PackType.SERVER_DATA
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ContentType
@@ -69,7 +60,7 @@ class RProfileScreen(
                 alert("开发中，周末前上线")
             }
             iconButton("clothes", text = "皮肤") {
-                mc goScreen picServerSkinScreen
+                mc go picServerSkinScreen
             }
             iconButton("smp", text = "团队") {
                 alert("开发中，2月前上线")
@@ -101,10 +92,10 @@ class RProfileScreen(
         get() = formScreen(this, "设定皮肤披风") {
             bottomLayoutBuilder = {
                 iconButton("mojang",text="从正版账号导入") {
-                    mc goScreen mojangSkinScreen
+                    mc go mojangSkinScreen
                 }
                 iconButton("blessing_skin",text="从皮肤站导入") {
-                    mc goScreen blessingSkinScreen
+                    mc go blessingSkinScreen
                 }
 
             }

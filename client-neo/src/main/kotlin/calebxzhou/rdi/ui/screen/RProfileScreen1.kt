@@ -264,7 +264,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
 
             }
             button("改QQ") {
-                mc goScreen formScreen(this@RProfileScreen1, "换QQ") {
+                mc go formScreen(this@RProfileScreen1, "换QQ") {
                     text("qq", "新QQ", 10, defaultValue = account.qq)
                     submit {
                         val qq = it.formData["qq"]!!
@@ -273,7 +273,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                                 showToast("成功修改qq为${qq}")
                                 RAccount.now?.qq = qq
                                 LocalStorage["usr"] = qq
-                                mc goScreen RProfileScreen1(RAccount.now!!)
+                                mc go RProfileScreen1(RAccount.now!!)
                             } else {
                                  alertOs(resp.data, )
                             }
@@ -282,7 +282,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                 }
             }
             button("改密码") {
-                mc goScreen formScreen(this@RProfileScreen1, "修改密码") {
+                mc go formScreen(this@RProfileScreen1, "修改密码") {
                     pwd("opwd", "旧密码")
                     pwd("pwd", "新密码")
                     pwd("cpwd", "确认密码")
@@ -304,7 +304,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                                 LocalStorage += "pwd" to pwd
                                 RAccount.now?.pwd = pwd
                                 LocalStorage["pwd"] = pwd
-                                mc goScreen RProfileScreen1(RAccount.now!!)
+                                mc go RProfileScreen1(RAccount.now!!)
                             } else {
                                  alertOs(resp.data, )
                             }
@@ -313,7 +313,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                 }
             }
             button("皮肤披风") {
-                mc goScreen optionScreen(this@RProfileScreen1) {
+                mc go optionScreen(this@RProfileScreen1) {
                     "从正版玩家导入" to mojangSkinScreen
                     "从皮肤站导入" to blessingSkinScreen
                     "从图床导入" to picServerSkinScreen
@@ -321,7 +321,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
 
             }
             button("改昵称") {
-                mc goScreen formScreen(this@RProfileScreen1, "修改昵称") {
+                mc go formScreen(this@RProfileScreen1, "修改昵称") {
                     text("name", "昵称", 16, defaultValue = account.name)
                     submit {
                         val name = it.formData["name"]!!
@@ -329,7 +329,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                             if (resp.ok) {
                                 showToast("成功修改昵称为${name}")
                                 RAccount.now?.name = name
-                                mc goScreen RProfileScreen1(RAccount.now!!)
+                                mc go RProfileScreen1(RAccount.now!!)
                             } else {
                                 alertOs(resp.data, )
                             }
@@ -341,7 +341,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                 //confirm("真的要退出账号${account.name}吗？", this@RProfileScreen) {
                     RAccount.now = null
                     toastOk("成功退出登录！")
-                    mc goScreen RTitleScreen()
+                    mc go RTitleScreen()
                // }
             }
         }

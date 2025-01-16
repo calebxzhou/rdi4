@@ -2,8 +2,6 @@ package calebxzhou.rdi.ui.general
 
 import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.ui.RMessageLevel
-import calebxzhou.rdi.ui.component.RButton
-import calebxzhou.rdi.ui.component.RIconButton
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
@@ -49,7 +47,7 @@ fun dialog(
             RMessageLevel.WARN -> "警告"
         }
     )
-    mc goScreen RDialog(mc.screen, title, diagType, msglvl, msgBuilder, yesText, noText, onYes, onNo)
+    mc go RDialog(mc.screen, title, diagType, msglvl, msgBuilder, yesText, noText, onYes, onNo)
 }
 
 enum class RDialogType {
@@ -93,12 +91,12 @@ class RDialog(
             iconButton("success", text = yesText) {
                 onYes()
                 if(diagType == RDialogType.ALERT)
-                    mc goScreen prevScreen
+                    mc go prevScreen
             }
             if (diagType == RDialogType.CONFIRM) {
                 iconButton("error", text = noText) {
                     onNo()
-                    mc goScreen prevScreen
+                    mc go prevScreen
                 }
             }
         }

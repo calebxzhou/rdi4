@@ -1,41 +1,22 @@
 package calebxzhou.rdi.ui.screen
 
-import calebxzhou.rdi.Const
-import calebxzhou.rdi.ihq.IhqClient
-import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
-import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
-import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.model.RServer
-import calebxzhou.rdi.model.RServer.Companion.lanScreen
-import calebxzhou.rdi.serdes.serdesJson
-import calebxzhou.rdi.sound.RSoundPlayer
-import calebxzhou.rdi.text.richText
-import calebxzhou.rdi.tutorial.Chapter
-import calebxzhou.rdi.tutorial.T1_BUILD
-import calebxzhou.rdi.tutorial.T1_CERA
 import calebxzhou.rdi.ui.component.*
-import calebxzhou.rdi.ui.general.*
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.screens.ConnectScreen
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
-import net.minecraft.client.multiplayer.resolver.ServerAddress
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.sounds.SoundSource
 import net.minecraft.world.Difficulty
-import net.minecraft.world.item.Items
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.LevelSettings
 import net.minecraft.world.level.WorldDataConfiguration
 import net.minecraft.world.level.levelgen.WorldOptions
 import net.minecraft.world.level.levelgen.presets.WorldPresets
-import java.net.InetAddress
 
 class RTitleScreen : RScreen("主页") {
     override var showTitle = false
@@ -93,10 +74,10 @@ class RTitleScreen : RScreen("主页") {
         }.also { registerWidget(it) }*/
         gridLayout(this, 10, mcUIHeight - 16) {
             iconButton("smp", text = "多人模式"){
-                mc goScreen RServer.serverSelectScreen
+                mc go RServer.serverSelectScreen
             }
             iconButton("ssp", text = "单人模式") {
-                mc goScreen SelectWorldScreen(this.screen)
+                mc go SelectWorldScreen(this.screen)
                 /*Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
                     alertErr("请先完成教程 ${it.name} 章节")
                     return@imageButton
@@ -104,14 +85,14 @@ class RTitleScreen : RScreen("主页") {
                 //start()
             }
             iconButton("tutorial", text = "互动教程") {
-                mc goScreen RTutorialScreen(this@RTitleScreen)
+                mc go RTutorialScreen(this@RTitleScreen)
                 //start()
             }
             iconButton("settings", text = "设置") {
-                mc goScreen RSettingsScreen(this@RTitleScreen, mc.options)
+                mc go RSettingsScreen(this@RTitleScreen, mc.options)
             }
             iconButton("partner", text = "关于") {
-                mc goScreen AboutScreen()
+                mc go AboutScreen()
             }
         }
 
@@ -207,7 +188,7 @@ class RTitleScreen : RScreen("主页") {
              start()
          }*/
         if (mc pressingKey InputConstants.KEY_0) {
-            mc goScreen SelectWorldScreen(this)
+            mc go SelectWorldScreen(this)
         }
     }
 

@@ -4,7 +4,7 @@ import calebxzhou.rdi.tutorial.Chapter
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.RTextButton
 import calebxzhou.rdi.ui.layout.gridLayout
-import calebxzhou.rdi.util.goScreen
+import calebxzhou.rdi.util.go
 import calebxzhou.rdi.util.mc
 import calebxzhou.rdi.util.mcText
 import net.minecraft.ChatFormatting
@@ -38,6 +38,6 @@ class RTutorialScreen(private val prevScreen: Screen) : RScreen("互动教程") 
     }
 
     override fun onClose() {
-        mc goScreen prevScreen
+        mc go prevScreen
     }
 }

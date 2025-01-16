@@ -3,7 +3,6 @@ package calebxzhou.rdi.tutorial
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.STORAGE
 import calebxzhou.rdi.banner.Banner
-import calebxzhou.rdi.banner.Banner.plusAssign
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.blockguide.blockGuide
 import calebxzhou.rdi.logger
@@ -11,13 +10,9 @@ import calebxzhou.rdi.text.RichText
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
-import com.mojang.blaze3d.platform.InputConstants
-import mezz.jei.api.runtime.IRecipesGui
 import net.dries007.tfc.TerraFirmaCraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.core.registries.Registries
 import net.minecraft.server.MinecraftServer
@@ -115,7 +110,7 @@ data class Tutorial(
     }
 
     fun start() {
-        mc goScreen GenericDirtMessageScreen(mcText("请稍候"))
+        mc go GenericDirtMessageScreen(mcText("请稍候"))
         //关闭mc原版教程
         mc.options.tutorialStep = TutorialSteps.NONE
         mc.tutorial.setStep(TutorialSteps.NONE)

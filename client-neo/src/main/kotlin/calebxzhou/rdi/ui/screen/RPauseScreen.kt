@@ -39,13 +39,13 @@ class RPauseScreen : RScreen("暂停") {
                 displayMode = BASIC_INFO
             }*/
             iconButton("map", text = "地图"){
-                mc goScreen xaero.map.gui.GuiMap(this@RPauseScreen,this@RPauseScreen,WorldMapSession.getCurrentSession().mapProcessor,mc.player!!)
+                mc go xaero.map.gui.GuiMap(this@RPauseScreen,this@RPauseScreen,WorldMapSession.getCurrentSession().mapProcessor,mc.player!!)
             }
             iconButton("camera", text = "视野") {
-                mc goScreen FovScreen()
+                mc go FovScreen()
             }
             iconButton("settings",text = "设置"){
-                mc goScreen RSettingsScreen(this@RPauseScreen,mc.options)
+                mc go RSettingsScreen(this@RPauseScreen,mc.options)
             }
             iconButton("exit",text = "退出"){
                 Banner.reset()
@@ -59,7 +59,7 @@ class RPauseScreen : RScreen("暂停") {
                     mc.clearLevel()
                     RAccount.now?.let { ac->
                         RServer.now?.let { sv->
-                        mc goScreen RProfileScreen(ac,sv)
+                        mc go RProfileScreen(ac,sv)
                         }
                     }?:let {
                         alert("账号信息为空，即将回到主页")

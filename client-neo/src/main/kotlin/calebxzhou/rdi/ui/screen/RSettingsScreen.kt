@@ -1,10 +1,7 @@
 package calebxzhou.rdi.ui.screen
 
-import calebxzhou.rdi.model.RAccount
 import calebxzhou.rdi.ui.component.RScreen
-import calebxzhou.rdi.ui.component.formScreen
 import calebxzhou.rdi.ui.general.HAlign
-import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -32,28 +29,28 @@ class RSettingsScreen(val prevScreen: Screen, val options: Options): RScreen("�
         gridLayout(this, hAlign = HAlign.CENTER,y=120, maxColumns = 4) {
 
             iconButton("plugin",text = "模组"){
-                mc goScreen ModListScreen(this@RSettingsScreen)
+                mc go ModListScreen(this@RSettingsScreen)
             }
             iconButton("resources",text = "资源包"){
-                mc goScreen PackSelectionScreen(mc.resourcePackRepository,{
+                mc go PackSelectionScreen(mc.resourcePackRepository,{
                     options.updateResourcePacks(it)
-                    mc goScreen this@RSettingsScreen
+                    mc go this@RSettingsScreen
                 },mc.resourcePackDirectory, mcText("选择资源包"))
             }
             iconButton("video",text = "画质"){
-                mc goScreen SodiumOptionsGUI(this@RSettingsScreen)
+                mc go SodiumOptionsGUI(this@RSettingsScreen)
             }
 
         }
         gridLayout(this, hAlign = HAlign.CENTER,y=160){
             iconButton("sound",text = "音频"){
-                mc goScreen SoundOptionsScreen(this@RSettingsScreen,options)
+                mc go SoundOptionsScreen(this@RSettingsScreen,options)
             }
             iconButton("controller",text = "键位"){
-                mc goScreen ControlsScreen(this@RSettingsScreen,options)
+                mc go ControlsScreen(this@RSettingsScreen,options)
             }
             iconButton("accessibility",text = "辅助"){
-                mc goScreen AccessibilityOptionsScreen(this@RSettingsScreen,options)
+                mc go AccessibilityOptionsScreen(this@RSettingsScreen,options)
             }
         }
 
@@ -62,7 +59,7 @@ class RSettingsScreen(val prevScreen: Screen, val options: Options): RScreen("�
     }
 
     override fun onClose() {
-        mc goScreen prevScreen
+        mc go prevScreen
     }
 
     override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -70,7 +67,7 @@ class RSettingsScreen(val prevScreen: Screen, val options: Options): RScreen("�
     }
     override fun tick() {
         if(mc pressingKey InputConstants.KEY_L){
-            mc goScreen ChatOptionsScreen(this@RSettingsScreen,options)
+            mc go ChatOptionsScreen(this@RSettingsScreen,options)
         }
         super.tick()
     }

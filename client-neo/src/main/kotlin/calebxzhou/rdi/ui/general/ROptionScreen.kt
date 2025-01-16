@@ -8,7 +8,6 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.screens.Screen
-import java.awt.SystemColor.text
 
 /*
 optionScreen{
@@ -46,7 +45,7 @@ class ROptionScreen(
         options += ROption(this, action = action)
     }
     infix fun String.to(screen: Screen) {
-        options += ROption(this){mc goScreen  screen}
+        options += ROption(this){mc go  screen}
     }
 
     val mcScreen
@@ -104,7 +103,7 @@ class ROptionScreen(
                 }
             }
             override fun onClose() {
-                mc goScreen prev
+                mc go prev
             }
         }
 }

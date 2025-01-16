@@ -1,13 +1,8 @@
 package calebxzhou.rdi.model
 
 import calebxzhou.rdi.Const
-import calebxzhou.rdi.Const.VERSION_DISP
 import calebxzhou.rdi.ihq.HttpMethod
-import calebxzhou.rdi.ihq.IhqClient
-import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
-import calebxzhou.rdi.ihq.protocol.account.RegisterSPacket
 import calebxzhou.rdi.serdes.serdesJson
-import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.ui.component.REditBoxValidationResult
 import calebxzhou.rdi.ui.component.RFormScreenSubmitHandler
 import calebxzhou.rdi.ui.component.RScreen
@@ -21,10 +16,8 @@ import calebxzhou.rdi.ui.screen.RProfileScreen
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.LocalStorage
 import calebxzhou.rdi.util.bodyText
-import calebxzhou.rdi.util.goHome
-import calebxzhou.rdi.util.goScreen
+import calebxzhou.rdi.util.go
 import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcMainThread
 import calebxzhou.rdi.util.supportIPv6
 import calebxzhou.rdi.util.toastOk
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -32,22 +25,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.multiplayer.ServerData
-import net.minecraft.client.multiplayer.resolver.ServerAddress
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.utils.URIBuilder
-import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
 import java.util.Base64
-import kotlin.coroutines.CoroutineContext
 
 data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
     val mcData= ServerData("RDI", ip,false)
@@ -78,8 +67,8 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
                 text("usr", "QQ号/昵称/ID", 16, defaultValue = LocalStorage["usr"])
                 pwd("pwd", "密码", defaultValue = LocalStorage["pwd"])
                 bottomLayoutBuilder = {
-                    iconButton("ssp", text = "注册新号") { mc goScreen regScreen }
-                    iconButton("ethernet", text = "局域网") { mc goScreen lanScreen }
+                    iconButton("ssp", text = "注册新号") { mc go regScreen }
+                    iconButton("ethernet", text = "局域网") { mc go lanScreen }
                 }
                 submit {
                     now?.playerLogin(it)
@@ -92,7 +81,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
                     val name = it.formData["name"]!!
                     LocalStorage["guestName"] = name
                     RAccount.guestLogin(name)
-                    mc goScreen JoinMultiplayerScreen(RTitleScreen())
+                    mc go JoinMultiplayerScreen(RTitleScreen())
                     alert("0.让你的朋友打开一个存档，输入/lan指令启动联机\n1.然后这个界面，就能搜到他了\n如果搜不到，可以手动输入他的ip跟端口添加")
                 }
             }
@@ -136,7 +125,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             if (it.entity.bodyText == Const.VERSION_STR) {
 
                 now = this
-                mc goScreen loginScreen
+                mc go loginScreen
             } else {
                 error("版本不符，你${Const.VERSION_STR}，服务端${it.entity.bodyText}")
             }
@@ -163,7 +152,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             toastOk("注册成功")
             LocalStorage += "usr" to qq
             LocalStorage += "pwd" to pwd
-            mc goScreen loginScreen
+            mc go loginScreen
         }
 
     }
@@ -181,7 +170,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             LocalStorage += "pwd" to pwd
             RAccount.now = account
             toastOk("登录成功")
-            mc goScreen RProfileScreen(account,this)
+            mc go RProfileScreen(account,this)
         }
     }
 
