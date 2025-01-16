@@ -1,5 +1,6 @@
 
-ServerEvents.recipes(event => {
+ServerEvents.recipes(event => { 
+
   // 原版铁锭不合成
   event.remove({ output: 'minecraft:iron_ingot' })
   //mc铜锭全都换成tfc铜
@@ -70,21 +71,22 @@ ServerEvents.recipes(event => {
     event.recipes.tfc.loom('8x minecraft:white_wool', '4x tfc:silk_cloth', 24, 'minecraft:block/white_wool')
     //陶锅煮盐
     event.recipes.tfc.pot(
-      ['#forge:rods', '#forge:rods'],
+      [],
        Fluid.of('tfc:salt_water', 125), 1800, 750)
     .itemOutput(['tfc:powder/salt'])
     //16线做丝绸
     event.remove({type: 'tfc:loom',input:'minecraft:string',output:'tfc:silk_cloth' })
     event.recipes.tfc.loom('1x tfc:silk_cloth', '16x minecraft:string', 24, 'minecraft:string')
+    
   }
 )
 
 ServerEvents.tags('item', event => {
-  //tfc锻铁可作铁锭
-  //bug: 锻铁焊接会变成铸铁双锭
-  //event.add('forge:ingots/iron', 'tfc:metal/ingot/wrought_iron')
+  //tfc锻铁可作铁锭 
+  event.add('forge:ingots/iron', 'tfc:metal/ingot/wrought_iron')
   //tfc胶水可作粘液球
   event.add('forge:slimeballs', 'tfc:glue')
-
+  //mc铁锭不作为#铸铁，防止锻铁焊接会变成铸铁双锭的bug
+  event.remove('forge:ingots/cast_iron', 'minecraft:iron_ingot')
 }
 )
