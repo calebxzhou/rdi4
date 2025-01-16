@@ -76,7 +76,7 @@ ServerEvents.recipes(event => {
     .itemOutput(['tfc:powder/salt'])
     //16线做丝绸
     event.remove({type: 'tfc:loom',input:'minecraft:string',output:'tfc:silk_cloth' })
-    event.recipes.tfc.loom('1x tfc:silk_cloth', '16x minecraft:string', 24, 'minecraft:string')
+    event.recipes.tfc.loom('1x tfc:silk_cloth', '16x minecraft:string', 16, 'minecraft:block/white_wool')
     
   }
 )

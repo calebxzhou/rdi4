@@ -1,7 +1,7 @@
 package calebxzhou.rdi.ui.screen
 
 import calebxzhou.rdi.model.RServer
-import calebxzhou.rdi.ui.component.*
+import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -85,7 +85,8 @@ class RTitleScreen : RScreen("主页") {
                 //start()
             }
             iconButton("tutorial", text = "互动教程") {
-                mc go RTutorialScreen(this@RTitleScreen)
+                mc go LoadingScreen(this@RTitleScreen)
+            //mc go RTutorialScreen(this@RTitleScreen)
                 //start()
             }
             iconButton("settings", text = "设置") {
@@ -141,7 +142,7 @@ class RTitleScreen : RScreen("主页") {
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //guiGraphics.blit(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128)
         guiGraphics.blit(SCREEN_BG, 0, 0, 0f, 0f, mcUIWidth, mcUIHeight, mcUIWidth, mcUIHeight)
-        guiGraphics.blit(LOGO, mcUIWidth / 2 - 60, mcUIHeight / 2 - 25, -0.0625f, 0.0f, 120, 60, 120, 120)
+        guiGraphics.blit(LOGO, mcUIWidth / 2 - 60, mcUIHeight / 2 - 25, -0.0625f, 0.0f, 128, 64, 128,64)
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //下方的灰条
         guiGraphics.fill(0, height - 20, width, height, 0xAA000000.toInt())

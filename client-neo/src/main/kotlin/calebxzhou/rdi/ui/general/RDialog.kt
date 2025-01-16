@@ -4,6 +4,7 @@ import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.layout.gridLayout
+import calebxzhou.rdi.ui.screen.LoadingScreen
 import calebxzhou.rdi.util.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineTextWidget
@@ -90,8 +91,14 @@ class RDialog(
         gridLayout(this, y = startY+height, hAlign = HAlign.CENTER) {
             iconButton("success", text = yesText) {
                 onYes()
-                if(diagType == RDialogType.ALERT)
-                    mc go prevScreen
+                if(diagType == RDialogType.ALERT) {
+                    val mcs = mc.screen
+                    if(mcs is LoadingScreen){
+                        mc go mcs.prevScreen
+                    }else{
+                        mc go prevScreen
+                    }
+                }
             }
             if (diagType == RDialogType.CONFIRM) {
                 iconButton("error", text = noText) {
