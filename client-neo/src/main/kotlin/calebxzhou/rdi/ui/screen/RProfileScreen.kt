@@ -89,7 +89,6 @@ class RProfileScreen(
         PlayerFaceRenderer.draw(guiGraphics, account.skinLocation, width / 2 - 10, height / 5, 20)
         drawTextAtCenter(guiGraphics, "昵称：${account.name}", height / 2 - 20)
         drawTextAtCenter(guiGraphics, "RDID：${account.id}", height / 2)
-        drawTextAtCenter(guiGraphics, "UUID：${account.uuid}", height / 2 + 20)
         drawTextAtCenter(guiGraphics, "QQ：${account.qq}", height / 2 + 40)
         mc.player?.let {
             InventoryScreen.renderEntityInInventoryFollowsMouse(
