@@ -9,7 +9,6 @@ import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.math.Axis
 import net.minecraft.Util
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.util.Mth
 
 class LoadingScreen(val prevScreen: RScreen) : RScreen("请求中") {
     var startX = 0
@@ -30,14 +29,12 @@ class LoadingScreen(val prevScreen: RScreen) : RScreen("请求中") {
         val angle = (millis / 1000.0) * 360 // Map the time to a range of 0 to 360 degrees
 
         guiGraphics.matrixOp {
-            val f = 0.5F + 1.5F * (1.0F + Mth.cos(angle.toFloat() * (Math.PI.toFloat() / 180F)))
-            val scaledF = f * 100.0F / 80f.toFloat()
+            // Translate to center the logo scale(scaledF, scaledF, scaledF)
+            translate(mouseX.toFloat(), mouseY.toFloat() , 1f)
             mulPose(Axis.ZP.rotationDegrees(angle.toFloat()))
             // Adjust translation to account for scaling
-            translate(mouseX.toFloat() - 8 * scaledF, mouseY.toFloat() - 8 * scaledF, 1f)
-            scale(scaledF, scaledF, scaledF)
-
-            guiGraphics.blit(ICON_RL, 0, 0, 0f, 0f, 16, 16, 16, 16)
+            translate(-16f, -16f, 0f)
+            guiGraphics.blit(ICON_RL, 0, 0, 0f, 0f, 32, 32, 32, 32)
         }
         guiGraphics.drawCenteredString(mcFont, "载入中，请稍候...", mcUIWidth / 2, startY + 12, WHITE)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
