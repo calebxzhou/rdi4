@@ -5,6 +5,7 @@ import calebxzhou.rdi.ui.general.HAlign
 import calebxzhou.rdi.ui.general.alertErr
 import calebxzhou.rdi.ui.layout.GridLayoutBuilder
 import calebxzhou.rdi.ui.layout.gridLayout
+import calebxzhou.rdi.ui.screen.LoadingScreen
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER
@@ -98,6 +99,7 @@ class RFormScreen(val prev: Screen, val title: String) {
             }
 
             fun onSubmit() {
+                mc go LoadingScreen(this)
                 widgets.forEach { (id, widget) ->
                     if (widget is REditBox) {
                         val result = widget.validate()

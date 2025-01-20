@@ -7,24 +7,13 @@ import calebxzhou.rdi.ui.component.REditBoxValidationResult
 import calebxzhou.rdi.ui.component.RFormScreenSubmitHandler
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.component.formScreen
-import calebxzhou.rdi.ui.general.ROption
-import calebxzhou.rdi.ui.general.alert
-import calebxzhou.rdi.ui.general.alertErr
-import calebxzhou.rdi.ui.general.alertOs
-import calebxzhou.rdi.ui.general.optionScreen
+import calebxzhou.rdi.ui.general.*
+import calebxzhou.rdi.ui.screen.LoadingScreen
 import calebxzhou.rdi.ui.screen.RProfileScreen
 import calebxzhou.rdi.ui.screen.RTitleScreen
+import calebxzhou.rdi.util.*
 import calebxzhou.rdi.util.LocalStorage
-import calebxzhou.rdi.util.bodyText
-import calebxzhou.rdi.util.go
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.supportIPv6
-import calebxzhou.rdi.util.toastOk
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.multiplayer.ServerData
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -36,7 +25,7 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
-import java.util.Base64
+import java.util.*
 
 data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
     val mcData= ServerData("RDI", ip,false)
@@ -218,6 +207,8 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             if (response.statusLine.statusCode in 200..299) {
                 onOk(response)
             } else {
+                if(mc.screen is LoadingScreen)
+                    mc.screen!!.onClose()
                 alertErr("${response.statusLine.statusCode}:${EntityUtils.toString(response.entity)}")
             }
         }

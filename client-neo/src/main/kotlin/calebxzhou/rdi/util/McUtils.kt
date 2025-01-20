@@ -130,7 +130,10 @@ fun PoseStack.matrixOp(handler: PoseStack.() -> Unit) {
     handler(this)
     popPose()
 }
-
+//全屏填充
+infix fun GuiGraphics.fill(color: Int){
+    fill(0,0,mcUIWidth,mcUIHeight,color)
+}
 infix fun Minecraft.go(screen: Screen?) {
     execute {
         setScreen(screen)

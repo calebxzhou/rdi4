@@ -1,14 +1,15 @@
 package calebxzhou.rdi.ui.screen
 
+import calebxzhou.rdi.common.TL_BLACK
 import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.general.Icons
-import calebxzhou.rdi.ui.general.RDialog.Companion.BG_RL
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.math.Axis
 import net.minecraft.Util
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.resources.ResourceLocation
 
 class LoadingScreen(val prevScreen: RScreen) : RScreen("请求中") {
     var startX = 0
@@ -18,9 +19,16 @@ class LoadingScreen(val prevScreen: RScreen) : RScreen("请求中") {
     override var closeable = false
     companion object {
         val ICON_RL = Icons["loading"]
+        val BG_RL = ResourceLocation("textures/block/dirt.png")
     }
 
+    override fun init() {
+
+        super.init()
+    }
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        prevScreen.render(guiGraphics,mouseX,mouseY,partialTick)
+        guiGraphics fill TL_BLACK
         guiGraphics.blit(
             BG_RL, startX,
             startY, 0, 0.0F, 0.0F, width, 32, 32, 32
@@ -46,5 +54,9 @@ class LoadingScreen(val prevScreen: RScreen) : RScreen("请求中") {
             mc go prevScreen
         }
         super.tick()
+    }
+
+    override fun onClose() {
+        mc go prevScreen
     }
 }

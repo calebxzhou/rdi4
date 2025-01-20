@@ -150,7 +150,7 @@ configurations {
         canBeConsumed = false
     }
 }
-def mods = [
+def modrinthMods = [
         //************前置类*********
         "patchouli:1.20.1-84-forge",
         "architectury-api:9.2.14+forge",
@@ -163,6 +163,7 @@ def mods = [
         "sophisticated-core:1.20.1-1.1.3.835",
         "kubejs:2001.6.5-build.16+forge",
         "kubejs-tfc:1.2.3",
+        "kubejs-create:2001.2.5-build.2+forge",
         "rhino:2001.2.3-build.6+forge",
         //************优化类************
         "ferrite-core:DG5Fn9Sz",
@@ -193,11 +194,14 @@ def mods = [
         "tfc-canes:2.0.2",
         "tfc-weld-button:1.1",
 ]
-def cfMods = [
-      //  "tfc-casting-with-channels-820815:5046696"
+def curseMods = [
+        //"tfc-casting-with-channels-820815:5046696"
+]
+def curseExportOnly = [
+      "tfc-casting-with-channels-820815:5046696"
 ]
 //只导出 不在开发环境运行
-def modsExportOnly = [
+def modrinthExportOnly = [
         //能跑
 
         "farmers-delight:1.20.1-1.2.4",
@@ -234,15 +238,18 @@ dependencies {
         jarJar.ranged(it, "[2.0.1,)")
     }
     //重要：升级mod版本要同时升级src zip
-    mods.each { dep ->
+    modrinthMods.each { dep ->
         implementation fg.deobf("maven.modrinth:$dep")
         exportModJarsConfig "maven.modrinth:$dep"
     }
-    cfMods.each { dep ->
+    curseMods.each { dep ->
         implementation "curse.maven:$dep-deobf"
         exportModJarsConfig "curse.maven:$dep"
     }
-    modsExportOnly.each {
+    curseExportOnly.each { dep ->
+        exportModJarsConfig "curse.maven:$dep"
+    }
+    modrinthExportOnly.each {
         exportModJarsConfig "maven.modrinth:$it"
     }
 }

@@ -12,3 +12,5 @@ const val LIGHT_YELLOW = 0xff_deb72a.toInt()
 const val KLEIN_BLUE = 0xFF_002FA7.toInt()
 const val PINE_GREEN = 0xFF_223a22.toInt()
 const val OLIVE_GREEN = 0xFF_052e05.toInt()
+//半透明颜色
+const val TL_BLACK = 0xAA_000000.toInt()

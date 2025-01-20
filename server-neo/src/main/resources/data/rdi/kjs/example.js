@@ -1,6 +1,26 @@
+ 
+ServerEvents.tags('block', event => {
+  
+}
+)
+ServerEvents.tags('item', event => {
+  //tfc锻铁可作铁锭 
+  event.add('forge:ingots/iron', 'tfc:metal/ingot/wrought_iron')
+  //tfc胶水可作粘液球
+  event.add('forge:slimeballs', 'tfc:glue')
+  //mc铁锭不作为#铸铁，防止锻铁焊接会变成铸铁双锭的bug
+  event.remove('forge:ingots/cast_iron', 'minecraft:iron_ingot') 
+  //天境 天根木木板-mc木板
+  event.add('minecraft:planks', 'aether:skyroot_planks')
+  event.add('minecraft:stairs', 'aether:skyroot_stairs')
+  event.add('minecraft:slabs', 'aether:skyroot_slabs')
+}
+)
 
 ServerEvents.recipes(event => { 
-
+  //群峦
+  const tfc = event.recipes.tfc
+  
   // 原版铁锭不合成
   event.remove({ output: 'minecraft:iron_ingot' })
   //mc铜锭全都换成tfc铜
@@ -11,12 +31,20 @@ ServerEvents.recipes(event => {
     'tfc:metal/ingot/copper'         // Arg 3: the item to replace it with
     // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
   )
-  //原版铁锭全都换成铁矿辞
+  //原版铁锭全都换成tfc
     event.replaceInput(
 
       { input: 'minecraft:iron_ingot' }, // Arg 1: the filter
       'minecraft:iron_ingot',            // Arg 2: the item to replace
       'tfc:metal/ingot/wrought_iron'         // Arg 3: the item to replace it with
+      // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+    )
+    //mc钻石-矿词
+    event.replaceInput(
+
+      { input: 'minecraft:diamond' }, // Arg 1: the filter
+      'minecraft:diamond',            // Arg 2: the item to replace
+      '#forge:gems/diamond'         // Arg 3: the item to replace it with
       // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
     )
   //mc铁块-tfc锻铁块
@@ -25,6 +53,27 @@ ServerEvents.recipes(event => {
     { input: 'minecraft:iron_block' }, // Arg 1: the filter
     'minecraft:iron_block',            // Arg 2: the item to replace
     'tfc:metal/block/wrought_iron'         // Arg 3: the item to replace it with
+    // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+  )
+  //mc海泡菜、tfc
+  event.replaceInput(
+
+    { input: 'minecraft:sea_pickle' }, // Arg 1: the filter
+    'minecraft:sea_pickle',            // Arg 2: the item to replace
+    'tfc:sea_pickle'         // Arg 3: the item to replace it with
+    // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+  )
+  //mc沙子/红沙 - 矿词
+  event.replaceInput(
+    { input: 'minecraft:sand' }, // Arg 1: the filter
+    'minecraft:sand',            // Arg 2: the item to replace
+    '#forge:sand'         // Arg 3: the item to replace it with
+    // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+  )
+  event.replaceInput(
+    { input: 'minecraft:red_sand' }, // Arg 1: the filter
+    'minecraft:red_sand',            // Arg 2: the item to replace
+    '#forge:sand'         // Arg 3: the item to replace it with
     // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
   )
   //原版金锭全都换成tfc
@@ -43,6 +92,23 @@ ServerEvents.recipes(event => {
       'tfc:ore/small_sphalerite'         // Arg 3: the item to replace it with
       // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
     )
+    //mc下届合金锭-tfc黑钢锭
+    event.replaceInput(
+
+      { input: 'minecraft:netherite_ingot' }, // Arg 1: the filter
+      'minecraft:netherite_ingot',            // Arg 2: the item to replace
+      'tfc:metal/ingot/black_steel'         // Arg 3: the item to replace it with
+      // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+    )
+    
+    //mc下届合金块-tfc黑钢块
+    event.replaceInput(
+
+      { input: 'minecraft:netherite_block' }, // Arg 1: the filter
+      'minecraft:netherite_block',            // Arg 2: the item to replace
+      'tfc:metal/block/black_steel'         // Arg 3: the item to replace it with
+      // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+    )
   //原料mc海带换成tfc海带
     event.replaceInput(
 
@@ -51,6 +117,7 @@ ServerEvents.recipes(event => {
       'tfc:plant/leafy_kelp'         // Arg 3: the item to replace it with
       // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
     )
+     
     //原版高炉换成tfc高炉
     event.replaceInput(
 
@@ -61,7 +128,6 @@ ServerEvents.recipes(event => {
     )
     //原版熔炉换成tfc坩埚
     event.replaceInput(
-
       { input: 'minecraft:furnace' }, // Arg 1: the filter
       'minecraft:furnace',            // Arg 2: the item to replace
       'tfc:crucible'         // Arg 3: the item to replace it with
@@ -77,16 +143,51 @@ ServerEvents.recipes(event => {
     //16线做丝绸
     event.remove({type: 'tfc:loom',input:'minecraft:string',output:'tfc:silk_cloth' })
     event.recipes.tfc.loom('1x tfc:silk_cloth', '16x minecraft:string', 16, 'minecraft:block/white_wool')
-    
+    //机动 压 做精铁方坯
+    event.recipes.create.pressing(
+      [{ item: "tfc:refined_iron_bloom" }],
+      [
+        {
+          type: "tfc:heatable",
+          min_temp: 921,
+          ingredient: {
+            item: "tfc:raw_iron_bloom"
+          }
+        }
+      ]
+    )
+    //机动 压 做锻铁锭
+    event.recipes.create.pressing(
+      [{ item: "tfc:metal/ingot/wrought_iron" }],
+      [
+        {
+          type: "tfc:heatable",
+          min_temp: 921,
+          ingredient: {
+            item: "tfc:refined_iron_bloom"
+          }
+        }
+      ]
+    ) 
+    //传送带
+    event.shaped("2x create:belt_connector", ["   ", "LLL", "MRM"], {
+      L: "#tfc:leather_knapping",
+      M: "tfc:brass_mechanisms",
+      R: "#forge:rods/wrought_iron"
+    })  
+    //机动树肥料
+    event.shapeless("2x create:tree_fertilizer", [
+      "#minecraft:small_flowers",
+      "#minecraft:small_flowers",
+      "tfc:compost", 
+      "tfc:rotten_compost", 
+    ])   
+    //背包 堆叠t4
+    event.shaped("1x sophisticatedbackpacks:stack_upgrade_tier_4", ["ABA", "BCB", "ABA"], {
+      A: "tfc:metal/block/black_steel",
+      B: "tfc:metal/ingot/black_steel",
+      C: "sophisticatedbackpacks:stack_upgrade_tier_3"
+    }) 
   }
 )
 
-ServerEvents.tags('item', event => {
-  //tfc锻铁可作铁锭 
-  event.add('forge:ingots/iron', 'tfc:metal/ingot/wrought_iron')
-  //tfc胶水可作粘液球
-  event.add('forge:slimeballs', 'tfc:glue')
-  //mc铁锭不作为#铸铁，防止锻铁焊接会变成铸铁双锭的bug
-  event.remove('forge:ingots/cast_iron', 'minecraft:iron_ingot')
-}
-)
