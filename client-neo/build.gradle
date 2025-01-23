@@ -241,11 +241,12 @@ def modrinthExportOnly = [
         "i18nupdatemod:3.6.0",
         "kotlin-for-forge:4.11.0",
 ]
-
+//三方库
 def mcLibs = [
         'org.mongodb:bson:5.1.0',
         'org.hotswapagent:hotswap-agent-core:2.0.1',
         'com.googlecode.soundlibs:jorbis:0.0.17.4',
+        'com.squareup.okhttp3:okhttp:4.12.0'
 ]
 
 dependencies {
@@ -349,10 +350,15 @@ def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/"
 def clientDir = shippingDir + "client/"
 def clientMcDir = clientDir + ".minecraft/"
 def modsDir = clientMcDir + "mods/"
+//出现mixin refmap报错用
 tasks.register('删临') {
     file("$buildDir/tmp").deleteDir()
 }
-tasks.register('导别m') {
+//出现kotlin构建异常fir2ir时用
+tasks.register('删out') {
+    file("out").deleteDir()
+}
+tasks.register('导别mods') {
     doFirst {
         // Ensure the target directory exists
         file(modsDir).deleteDir()
@@ -370,7 +376,7 @@ tasks.register('导别m') {
     }
     dependsOn(configurations.exportModJarsConfig)
 }
-tasks.register('构移测') {
+tasks.register('出core') {
     dependsOn(build)
     doLast {
         // Copy the built project JAR to userDocumentsDir
@@ -385,8 +391,8 @@ tasks.register('构移测') {
         }
     }
 }
-tasks.register('出包') {
-    dependsOn(导别m, 构移测)
+tasks.register('出mods') {
+    dependsOn(导别mods, 出core)
     doLast {
         ant.zip(destfile: shippingDir + "rdi4r-mods.zip", basedir: modsDir)
     }
@@ -396,7 +402,7 @@ tasks.register('清端', Exec) {
 }
 
 tasks.register('出端') {
-    dependsOn(出包, 清端)
+    dependsOn(出core,清端)
     doLast {
         def zipFile = new File(shippingDir, "rdi4r密码123!@#.zip")
         def sourceDir = new File(clientDir)

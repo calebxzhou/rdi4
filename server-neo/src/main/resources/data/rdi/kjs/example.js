@@ -22,7 +22,7 @@ ServerEvents.recipes(event => {
   const tfc = event.recipes.tfc
   
   // 原版铁锭不合成
-  event.remove({ output: 'minecraft:iron_ingot' })
+  //event.remove({ output: 'minecraft:iron_ingot' })
   //mc铜锭全都换成tfc铜
   event.replaceInput(
 
@@ -133,6 +133,13 @@ ServerEvents.recipes(event => {
       'tfc:crucible'         // Arg 3: the item to replace it with
       // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
     )
+    //mc绿宝石换成tfc
+    event.replaceInput(
+      { input: 'minecraft:emerald' }, // Arg 1: the filter
+      'minecraft:emerald',            // Arg 2: the item to replace
+      'tfc:gem/emerald'         // Arg 3: the item to replace it with
+      // Note: tagged fluid ingredients do not work on Fabric, but tagged items do.
+    )
     //丝绸做羊毛
     event.recipes.tfc.loom('8x minecraft:white_wool', '4x tfc:silk_cloth', 24, 'minecraft:block/white_wool')
     //陶锅煮盐
@@ -188,6 +195,26 @@ ServerEvents.recipes(event => {
       B: "tfc:metal/ingot/black_steel",
       C: "sophisticatedbackpacks:stack_upgrade_tier_3"
     }) 
+    //精密构件
+    event.remove({ output: 'create:precision_mechanism' })
+    event.recipes.create.sequenced_assembly([
+      Item.of('create:precision_mechanism').withChance(100.0), // this is the item that will appear in JEI as the result
+      Item.of('create:golden_sheet').withChance(8.0), // the rest of these items will be part of the scrap
+      Item.of('create:andesite_alloy').withChance(8.0),
+      Item.of('create:cogwheel').withChance(5.0),
+      Item.of('create:shaft').withChance(2.0),
+      Item.of('create:crushed_gold_ore').withChance(2.0),
+      Item.of('2x minecraft:gold_nugget').withChance(2.0),
+      'tfc:metal/rod/cast_iron',
+      'minecraft:clock'
+    ], 'create:golden_sheet', [ // 'create:golden_sheet' is the input
+      // the transitional item set by `transitionalItem('create:incomplete_large_cogwheel')` is the item used during the intermediate stages of the assembly
+      event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'create:cogwheel']),
+      // like a normal recipe function, is used as a sequence step in this array. Input and output have the transitional item
+      event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'create:large_cogwheel']),
+      event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'tfc:metal/ingot/wrought_iron'])
+    ]).transitionalItem('create:incomplete_precision_mechanism').loops(8) // set the transitional item and the number of loops
+  
   }
 )
 

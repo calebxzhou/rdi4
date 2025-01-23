@@ -5,16 +5,22 @@ import calebxzhou.rdi.item.RItems
 import calebxzhou.rdi.net.RPacketDecoder
 import calebxzhou.rdi.net.RPacketEncoder
 import calebxzhou.rdi.net.RPacketReceiver
+import calebxzhou.rdi.util.mcText
 import calebxzhou.rdi.util.mcs
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioDatagramChannel
+import net.minecraft.core.registries.Registries
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.Items
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.server.ServerStartingEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
+import net.minecraftforge.registries.DeferredRegister
+import net.minecraftforge.registries.ForgeRegistries
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -24,12 +30,14 @@ val log: Logger = LoggerFactory.getLogger(MODID)
 @Mod(MODID)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
+
+
     init {
         MinecraftForge.EVENT_BUS.addListener(::serverStart)
         MinecraftForge.EVENT_BUS.addListener(::onTick)
-        RItems.REGISTER.register(FMLJavaModLoadingContext. get().modEventBus);
+        RItems.REGISTER.register(FMLJavaModLoadingContext.get().modEventBus);
+
     }
-    //todo 陨石召唤器
     companion object {
         private var tickTime1 = 0L
 

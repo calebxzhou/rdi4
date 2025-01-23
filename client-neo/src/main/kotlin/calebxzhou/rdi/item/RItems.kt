@@ -7,4 +7,5 @@ import net.minecraftforge.registries.ForgeRegistries
 object RItems {
     val REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, Const.MODID)
     val METEORITE_SUMMONER = REGISTER.register<MeteoriteSummonerItem>("meteorite_summoner", ::MeteoriteSummonerItem)
+
 }

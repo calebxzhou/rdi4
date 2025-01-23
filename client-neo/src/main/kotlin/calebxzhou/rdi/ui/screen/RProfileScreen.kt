@@ -13,15 +13,7 @@ import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.general.alertOs
 import calebxzhou.rdi.ui.general.confirm
 import calebxzhou.rdi.ui.layout.gridLayout
-import calebxzhou.rdi.util.decodeBase64
-import calebxzhou.rdi.util.drawTextAtCenter
-import calebxzhou.rdi.util.extractDomain
-import calebxzhou.rdi.util.goHome
-import calebxzhou.rdi.util.go
-import calebxzhou.rdi.util.isValidHttpUrl
-import calebxzhou.rdi.util.mc
-import calebxzhou.rdi.util.mcMainThread
-import calebxzhou.rdi.util.toastOk
+import calebxzhou.rdi.util.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -37,10 +29,6 @@ import org.apache.http.entity.ContentType
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
-import kotlin.collections.plusAssign
-import kotlin.text.contains
-import kotlin.text.isNotBlank
-import kotlin.text.substringAfterLast
 
 class RProfileScreen(
     val account: RAccount,
@@ -48,21 +36,17 @@ class RProfileScreen(
     ): RScreen("我的信息") {
     override fun init() {
         gridLayout (this, hAlign = HAlign.CENTER){
-            iconButton("start", text = "开始") {
+            button("start", text = "开始") {
                 RSoundPlayer.stopAll()
-                mcMainThread {
-                    ConnectScreen.startConnecting(
-                        this@RProfileScreen, mc, ServerAddress(server.ip, server.gamePort), server.mcData, false
-                    )
-                }
+                connect()
             }
-            iconButton("basic_info", text = "修改信息") {
+            button("basic_info", text = "修改信息") {
                 alert("开发中，周末前上线")
             }
-            iconButton("clothes", text = "皮肤") {
+            button("clothes", text = "皮肤") {
                 mc go picServerSkinScreen
             }
-            iconButton("smp", text = "团队") {
+            button("smp", text = "团队") {
                 alert("开发中，2月前上线")
             }
         }
@@ -75,6 +59,19 @@ class RProfileScreen(
            RAccount.now?.logout()
            mc.goHome()
        }
+    }
+    private fun connect(){
+        mcMainThread {
+            ConnectScreen.startConnecting(
+                this@RProfileScreen, mc, ServerAddress(server.ip, server.gamePort), server.mcData, false
+            )
+        }
+    }
+    override fun tick() {
+        if (mc.pressingEnter) {
+            connect()
+        }
+        super.tick()
     }
     override fun doRender(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         PlayerFaceRenderer.draw(guiGraphics, account.skinLocation, width / 2 - 10, height / 5, 20)
@@ -91,10 +88,10 @@ class RProfileScreen(
     private val picServerSkinScreen
         get() = formScreen(this, "设定皮肤披风") {
             bottomLayoutBuilder = {
-                iconButton("mojang",text="从正版账号导入") {
+                button("mojang",text="从正版账号导入") {
                     mc go mojangSkinScreen
                 }
-                iconButton("blessing_skin",text="从皮肤站导入") {
+                button("blessing_skin",text="从皮肤站导入") {
                     mc go blessingSkinScreen
                 }
 
@@ -102,7 +99,7 @@ class RProfileScreen(
             text("skin", "皮肤链接", 256, defaultValue = account.cloth?.skin, nullable = true)
             text("cape", "披风链接", 256, defaultValue = account.cloth?.cape, nullable = true)
             checkbox("slim", "Alex瘦版皮肤")
-            submit {
+            submit = {
                 setPicServerCloth(it)
 
             }
@@ -112,7 +109,7 @@ class RProfileScreen(
             text("name", "正版玩家名", 16)
             checkbox("skin", "导入皮肤")
             checkbox("cape", "导入披风")
-            submit {
+            submit = {
                     setMojangSkinCape(it)
 
             }
@@ -121,7 +118,7 @@ class RProfileScreen(
         get() = formScreen(this, "导入皮肤站皮肤披风") {
             text("skin", "皮肤链接", 256, nullable = true)
             text("cape", "披风链接", 256, nullable = true)
-            submit {
+            submit = {
                     setBlessingServerSkinCape(it)
 
             }
@@ -249,7 +246,7 @@ class RProfileScreen(
         val importSkin = handler.formData["skin"] == "true"
         val importCape = handler.formData["cape"] == "true"
         if (!importSkin && !importCape) {
-            alertOs("请选择皮肤或披风",  )
+            alert("请选择皮肤或披风",  )
             handler.finish()
             return
         }

@@ -30,7 +30,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
     val skinResponseHandler: (ChangeClothSPacket, ResponseCPacket) -> Unit =
         { cloth: ChangeClothSPacket, packet: ResponseCPacket ->
             if (!packet.ok) {
-                 alertOs(packet.data)
+                alertOs(packet.data)
             } else {
                 toastOk("换皮成功")
                 RAccount.now?.cloth = cloth.cloth
@@ -42,7 +42,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             text("name", "正版玩家名", 16)
             checkbox("skin", "导入皮肤")
             checkbox("cape", "导入披风")
-            submit {
+            submit = {
                 bgTask {
                     setMojangSkinCape(it)
                 }
@@ -53,7 +53,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             text("skin", "皮肤链接", 256, defaultValue = account.cloth?.skin, nullable = true)
             text("cape", "披风链接", 256, defaultValue = account.cloth?.cape, nullable = true)
             checkbox("slim", "Alex瘦版皮肤")
-            submit {
+            submit = {
                 bgTask {
                     setPicServerCloth(it)
                 }
@@ -63,7 +63,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
         get() = formScreen(this, "导入皮肤站皮肤披风") {
             text("skin", "皮肤链接", 256, nullable = true)
             text("cape", "披风链接", 256, nullable = true)
-            submit {
+            submit = {
                 bgTask {
                     setBlessingServerSkinCape(it)
                 }
@@ -73,7 +73,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
     //验证服饰链接（有效url，并且能够获取png图片）
     private fun validateClothUrl(url: String, handler: RFormScreenSubmitHandler): Boolean {
         if (!url.isValidHttpUrl()) {
-             alertOs("链接必须http开头",  )
+            alertOs("链接必须http开头")
             return false
         }
 
@@ -83,7 +83,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
         val contentType = ContentType.getOrDefault(entity)
 
         if (contentType != ContentType.IMAGE_PNG) {
-             alertOs("不是PNG图片",  )
+            alertOs("不是PNG图片")
             return false
         }
 
@@ -121,11 +121,11 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
         val isSlim = handler.formData["slim"] == "true"
         if (skin.isNotBlank()) {
             if (!skin.isValidHttpUrl()) {
-                 alertOs("皮肤链接格式错误",  )
+                alertOs("皮肤链接格式错误")
                 return
             }
             if (!skin.contains("/skinlib/show/")) {
-                 alertOs("仅支持blessing skin架构的皮肤站",  )
+                alertOs("仅支持blessing skin架构的皮肤站")
                 return
             }
             val url = skin.extractDomain() + "texture/" + skin.substringAfterLast('/')
@@ -134,7 +134,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             val statusCode = response.statusLine.statusCode
 
             if (statusCode !in 200..299) {
-                 alertOs("获取皮肤失败：$statusCode\n",  )
+                alertOs("获取皮肤失败：$statusCode\n")
                 logger.error("$statusCode ${EntityUtils.toString(entity)}")
                 return
             }
@@ -142,7 +142,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             val hash = Json.parseToJsonElement(EntityUtils.toString(entity).also { logger.info(it) })
                 .jsonObject["hash"]?.jsonPrimitive?.content
                 ?: let {
-                     alertOs("无法获取皮肤hash数据",  )
+                    alertOs("无法获取皮肤hash数据")
                     return
                 }
 
@@ -151,11 +151,11 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
 
         if (cape.isNotBlank()) {
             if (!cape.isValidHttpUrl()) {
-                 alertOs("披风链接格式错误",  )
+                alertOs("披风链接格式错误")
                 return
             }
             if (!cape.contains("/skinlib/show/")) {
-                 alertOs("仅支持blessing skin架构的皮肤站",  )
+                alertOs("仅支持blessing skin架构的皮肤站")
                 return
             }
             val url = cape.extractDomain() + "texture/" + cape.substringAfterLast('/')
@@ -164,16 +164,17 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             val statusCode = response.statusLine.statusCode
 
             if (statusCode !in 200..299) {
-                 alertOs("获取披风失败：$statusCode\n",  )
+                alertOs("获取披风失败：$statusCode\n")
                 logger.error("$statusCode ${EntityUtils.toString(entity)}")
                 return
             }
 
             val hash = Json.parseToJsonElement(
-                EntityUtils.toString(entity).also { logger.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content ?: let {
-                 alertOs("无法获取披风hash数据",  )
-                return
-            }
+                EntityUtils.toString(entity).also { logger.info(it) }).jsonObject["hash"]?.jsonPrimitive?.content
+                ?: let {
+                    alertOs("无法获取披风hash数据")
+                    return
+                }
             cape = cape.extractDomain() + "textures/" + hash
         }
 
@@ -188,7 +189,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
         val importSkin = handler.formData["skin"] == "true"
         val importCape = handler.formData["cape"] == "true"
         if (!importSkin && !importCape) {
-             alertOs("请选择皮肤或披风",  )
+            alertOs("请选择皮肤或披风")
             handler.finish()
             return
         }
@@ -206,7 +207,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             val id = Json.parseToJsonElement(body1)
                 .jsonArray.getOrNull(0)?.jsonObject?.get("id")?.jsonPrimitive?.content
                 ?: let {
-                     alertOs("找不到对应玩家",)
+                    alertOs("找不到对应玩家")
                     handler.finish()
                     return
                 }
@@ -249,24 +250,24 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                 val packet = ChangeClothSPacket(RAccount.Cloth(isSlim, skinURL ?: "", capeURL ?: ""))
                 IhqClient.send(packet) { skinResponseHandler(packet, it) }
             } else {
-                 alertOs("获取皮肤失败")
+                alertOs("获取皮肤失败")
                 logger.error(response2.statusLine)
             }
         } else {
-             alertOs("找不到对应玩家")
+            alertOs("找不到对应玩家")
             logger.error(response.statusLine)
         }
     }
 
     override fun init() {
-        gridLayout (this, hAlign = HAlign.CENTER){
-            iconButton("basic_info", text = "修改信息") {
+        gridLayout(this, hAlign = HAlign.CENTER) {
+            button("basic_info", text = "修改信息") {
 
             }
             button("改QQ") {
                 mc go formScreen(this@RProfileScreen1, "换QQ") {
                     text("qq", "新QQ", 10, defaultValue = account.qq)
-                    submit {
+                    submit = {
                         val qq = it.formData["qq"]!!
                         IhqClient.send(ChangeQQSPacket(qq)) { resp ->
                             if (resp.ok) {
@@ -275,7 +276,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                                 LocalStorage["usr"] = qq
                                 mc go RProfileScreen1(RAccount.now!!)
                             } else {
-                                 alertOs(resp.data, )
+                                alertOs(resp.data)
                             }
                         }
                     }
@@ -286,27 +287,28 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                     pwd("opwd", "旧密码")
                     pwd("pwd", "新密码")
                     pwd("cpwd", "确认密码")
-                    submit {
+                    submit = {
                         val opwd = it.formData["opwd"]!!
                         if (account.pwd != opwd) {
-                             alertOs("旧密码错误")
-                            return@submit
-                        }
-                        val pwd = it.formData["pwd"]!!
-                        val cpwd = it.formData["cpwd"]!!
-                        if (pwd != cpwd) {
-                             alertOs("确认密码与密码不一致")
-                            return@submit
-                        }
-                        IhqClient.send(ChangePwdSPacket(pwd)) { resp ->
-                            if (resp.ok) {
-                                showToast("成功修改密码为${pwd}")
-                                LocalStorage += "pwd" to pwd
-                                RAccount.now?.pwd = pwd
-                                LocalStorage["pwd"] = pwd
-                                mc go RProfileScreen1(RAccount.now!!)
+                            alertOs("旧密码错误")
+                        } else {
+
+                            val pwd = it.formData["pwd"]!!
+                            val cpwd = it.formData["cpwd"]!!
+                            if (pwd != cpwd) {
+                                alertOs("确认密码与密码不一致")
                             } else {
-                                 alertOs(resp.data, )
+                                IhqClient.send(ChangePwdSPacket(pwd)) { resp ->
+                                    if (resp.ok) {
+                                        showToast("成功修改密码为${pwd}")
+                                        LocalStorage += "pwd" to pwd
+                                        RAccount.now?.pwd = pwd
+                                        LocalStorage["pwd"] = pwd
+                                        mc go RProfileScreen1(RAccount.now!!)
+                                    } else {
+                                        alertOs(resp.data)
+                                    }
+                                }
                             }
                         }
                     }
@@ -323,7 +325,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             button("改昵称") {
                 mc go formScreen(this@RProfileScreen1, "修改昵称") {
                     text("name", "昵称", 16, defaultValue = account.name)
-                    submit {
+                    submit = {
                         val name = it.formData["name"]!!
                         IhqClient.send(ChangeNameSPacket(name)) { resp ->
                             if (resp.ok) {
@@ -331,7 +333,7 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
                                 RAccount.now?.name = name
                                 mc go RProfileScreen1(RAccount.now!!)
                             } else {
-                                alertOs(resp.data, )
+                                alertOs(resp.data)
                             }
                         }
                     }
@@ -339,10 +341,10 @@ class RProfileScreen1(val account: RAccount) : RScreen("个人信息") {
             }
             button("登出") {
                 //confirm("真的要退出账号${account.name}吗？", this@RProfileScreen) {
-                    RAccount.now = null
-                    toastOk("成功退出登录！")
-                    mc go RTitleScreen()
-               // }
+                RAccount.now = null
+                toastOk("成功退出登录！")
+                mc go RTitleScreen()
+                // }
             }
         }
 

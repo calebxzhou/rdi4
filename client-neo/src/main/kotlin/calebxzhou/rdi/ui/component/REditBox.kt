@@ -31,6 +31,7 @@ open class REditBox(
     init {
         setHint(Component.literal(label))
         setMaxLength(length)
+        height = 12
     }
 
     var isNumberOnly = false
@@ -59,4 +60,5 @@ open class REditBox(
     fun validate(): REditBoxValidationResult{
         return validator(this)
     }
+
 }

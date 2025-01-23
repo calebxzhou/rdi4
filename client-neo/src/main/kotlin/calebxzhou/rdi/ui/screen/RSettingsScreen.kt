@@ -28,28 +28,28 @@ class RSettingsScreen(val prevScreen: Screen, val options: Options): RScreen("�
         }*/
         gridLayout(this, hAlign = HAlign.CENTER,y=120, maxColumns = 4) {
 
-            iconButton("plugin",text = "模组"){
+            button("plugin",text = "模组"){
                 mc go ModListScreen(this@RSettingsScreen)
             }
-            iconButton("resources",text = "资源包"){
+            button("resources",text = "资源包"){
                 mc go PackSelectionScreen(mc.resourcePackRepository,{
                     options.updateResourcePacks(it)
                     mc go this@RSettingsScreen
                 },mc.resourcePackDirectory, mcText("选择资源包"))
             }
-            iconButton("video",text = "画质"){
+            button("video",text = "画质"){
                 mc go SodiumOptionsGUI(this@RSettingsScreen)
             }
 
         }
         gridLayout(this, hAlign = HAlign.CENTER,y=160){
-            iconButton("sound",text = "音频"){
+            button("sound",text = "音频"){
                 mc go SoundOptionsScreen(this@RSettingsScreen,options)
             }
-            iconButton("controller",text = "键位"){
+            button("controller",text = "键位"){
                 mc go ControlsScreen(this@RSettingsScreen,options)
             }
-            iconButton("accessibility",text = "辅助"){
+            button("accessibility",text = "辅助"){
                 mc go AccessibilityOptionsScreen(this@RSettingsScreen,options)
             }
         }

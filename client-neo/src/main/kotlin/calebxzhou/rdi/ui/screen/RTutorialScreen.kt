@@ -27,7 +27,7 @@ class RTutorialScreen(private val prevScreen: Screen) : RScreen("互动教程") 
                         else
                             ChatFormatting.WHITE
                     )
-                    iconButton(item=tutorial.icon,cpnt=cpnt) {
+                    button(item=tutorial.icon,comp=cpnt) {
                         tutorial.start()
                     }
                 }

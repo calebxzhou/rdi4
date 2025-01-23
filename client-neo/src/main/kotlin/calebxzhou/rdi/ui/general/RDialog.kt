@@ -89,19 +89,16 @@ class RDialog(
 
     override fun init() {
         gridLayout(this, y = startY+height, hAlign = HAlign.CENTER) {
-            iconButton("success", text = yesText) {
+            button("success", text = yesText) {
                 onYes()
-                if(diagType == RDialogType.ALERT) {
-                    val mcs = mc.screen
-                    if(mcs is LoadingScreen){
-                        mc go mcs.prevScreen
-                    }else{
-                        mc go prevScreen
-                    }
+                if(prevScreen is LoadingScreen){
+                    mc go (prevScreen as LoadingScreen).prevScreen
+                }else if(diagType == RDialogType.ALERT) {
+                    mc go prevScreen
                 }
             }
             if (diagType == RDialogType.CONFIRM) {
-                iconButton("error", text = noText) {
+                button("error", text = noText) {
                     onNo()
                     mc go prevScreen
                 }

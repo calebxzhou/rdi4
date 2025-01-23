@@ -1,20 +1,17 @@
 package calebxzhou.rdi.util
 
 import calebxzhou.rdi.Const
-import calebxzhou.rdi.common.WHITE
+import calebxzhou.rdi.lang.EnglishStorage
 import calebxzhou.rdi.logger
 import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import com.mojang.blaze3d.platform.InputConstants
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
 import net.dries007.tfc.common.blocks.rock.RockCategory
 import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
@@ -27,13 +24,11 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.tags.TagKey
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -44,8 +39,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
-import net.minecraft.world.phys.shapes.CollisionContext
-import net.minecraft.world.phys.shapes.VoxelShape
+import org.anti_ad.mc.common.vanilla.alias.ForgeRegistries
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import snownee.jade.overlay.RayTracing
@@ -64,16 +58,7 @@ fun mcMainThread(run: () -> Unit) {
     mc.execute(run)
 }
 
-val mcFont
-    get() = mc.font
-val mcWindowHandle
-    get() = mc.window.window
-val mcUIWidth
-    get() = mc.window.guiScaledWidth
-val mcUIHeight
-    get() = mc.window.guiScaledHeight
-val mcUIScale
-    get() = mc.window.guiScale
+
 val Player.thrist: Float
     get() {
         val d = foodData
@@ -120,20 +105,6 @@ fun MutableComponent.clickBrowse(url: String) : MutableComponent{
     return this
 }
 
-fun GuiGraphics.matrixOp(handler: PoseStack.() -> Unit) {
-    val stack = pose()
-    stack.matrixOp(handler)
-}
-
-fun PoseStack.matrixOp(handler: PoseStack.() -> Unit) {
-    pushPose()
-    handler(this)
-    popPose()
-}
-//全屏填充
-infix fun GuiGraphics.fill(color: Int){
-    fill(0,0,mcUIWidth,mcUIHeight,color)
-}
 infix fun Minecraft.go(screen: Screen?) {
     execute {
         setScreen(screen)
@@ -149,6 +120,8 @@ infix fun Minecraft.titled(title: String) {
 infix fun Minecraft.pressingKey(keyCode: Int): Boolean {
     return InputConstants.isKeyDown(mcWindowHandle, keyCode)
 }
+val Minecraft.pressingEnter
+    get() =  this pressingKey InputConstants.KEY_RETURN || this pressingKey InputConstants.KEY_NUMPADENTER
 
 operator fun MutableComponent.plus(component: Component): MutableComponent {
     return append(component)
@@ -158,67 +131,10 @@ operator fun MutableComponent.plus(component: String): MutableComponent {
     return append(component)
 }
 
-fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String) {
-    drawTextAtCenter(gr, text, height / 2)
-}
+
 
 val Entity.isJumping
     get() = deltaMovement.y > 0
-
-fun BlockGetter.renderBlockOutline(
-    stack: PoseStack,
-    vConsumer: VertexConsumer,
-    entity: Entity,
-    camX: Double, camY: Double, camZ: Double, pos: BlockPos, state: BlockState,
-    red: Float, green: Float, blue: Float, alpha: Float
-) {
-    renderShape(
-        stack,
-        vConsumer,
-        state.getShape(this, pos, CollisionContext.of(entity)),
-        pos.x.toDouble() - camX,
-        pos.y.toDouble() - camY,
-        pos.z.toDouble() - camZ,
-        red, green, blue, alpha
-    )
-
-}
-
-fun renderShape(
-    poseStack: PoseStack,
-    consumer: VertexConsumer,
-    shape: VoxelShape,
-    x: Double,
-    y: Double,
-    z: Double,
-    red: Float,
-    green: Float,
-    blue: Float,
-    alpha: Float
-) {
-    val pose = poseStack.last()
-    shape.forAllEdges { x1, y1, z1, x2, y2, z2 ->
-        var dx = (x2 - x1).toFloat()
-        var dy = (y2 - y1).toFloat()
-        var dz = (z2 - z1).toFloat()
-        val f3 = Mth.sqrt(dx * dx + dy * dy + dz * dz)
-        dx /= f3
-        dy /= f3
-        dz /= f3
-        consumer.vertex(
-            pose.pose(),
-            (x1 + x).toFloat(),
-            (y1 + y).toFloat(),
-            (z1 + z).toFloat()
-        ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
-        consumer.vertex(
-            pose.pose(),
-            (x2 + x).toFloat(),
-            (y2 + y).toFloat(),
-            (z2 + z).toFloat()
-        ).color(red, green, blue, alpha).normal(pose.normal(), dx, dy, dz).endVertex()
-    }
-}
 
 fun Entity.teleportTo(entity: Entity) {
     teleportTo(entity.x, entity.y, entity.z)
@@ -321,6 +237,8 @@ fun Minecraft.addChatMessage(msg: String) {
 fun Minecraft.addChatMessage(msg: Component) {
     gui.chat.addMessage(msg)
 }
+val Item.id
+    get() = ForgeRegistries.ITEMS.getKey(this)
 
 fun Minecraft.addHudMessage(msg: String) {
     gui.setOverlayMessage(mcText(msg), false);
@@ -329,7 +247,10 @@ fun Minecraft.addHudMessage(msg: String) {
 fun Level.setBlock(pos: BlockPos, state: BlockState) {
     setBlock(pos, state, 2)
 }
-
+val Item.chineseName
+    get() = this.getName(defaultInstance) as MutableComponent
+val Item.englishName
+    get() = EnglishStorage[descriptionId].toMcText()
 fun Level.setBlock(pos: BlockPos, block: Block) {
     setBlock(pos, block.defaultBlockState())
 }
@@ -401,26 +322,7 @@ fun mcButton(text: Component, x: Int, y: Int, w: Int, h: Int, onPress: Button.On
     return Button.builder(text, onPress).bounds(x, y, w, h).build();
 }
 
-fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String, height: Int) {
-    drawTextAtCenter(gr, text, height, WHITE)
-}
 
-fun Screen.drawTextAt(gr: GuiGraphics, text: String, x: Int, y: Int) {
-    val font = mcFont
-    gr.drawString(font, text, x, y, 0xFFFFFF, false);
-}
-
-fun Screen.drawTextAtCenter(gr: GuiGraphics, text: String, height: Int, color: Int) {
-
-    val font = mcFont
-    gr.drawString(font, text, width / 2 - font.width(text) / 2, height, color, false);
-}
-
-fun Screen.drawTextAtCenter(gr: GuiGraphics, text: Component, height: Int) {
-
-    val font = mcFont
-    gr.drawString(font, text, width / 2 - font.width(text) / 2, height, 0xFFFFFF, false);
-}
 
 fun popupInfo(msg: String) {
     TinyFileDialogs.tinyfd_notifyPopup(msg, "RDI提示您", "info");

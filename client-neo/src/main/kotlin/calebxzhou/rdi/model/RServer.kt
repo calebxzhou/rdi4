@@ -2,6 +2,7 @@ package calebxzhou.rdi.model
 
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.ihq.HttpMethod
+import calebxzhou.rdi.rAsync
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.ui.component.REditBoxValidationResult
 import calebxzhou.rdi.ui.component.RFormScreenSubmitHandler
@@ -16,6 +17,7 @@ import calebxzhou.rdi.util.LocalStorage
 import kotlinx.coroutines.*
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.multiplayer.ServerData
+import net.minecraft.client.multiplayer.ServerStatusPinger
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
@@ -28,7 +30,7 @@ import org.apache.http.util.EntityUtils
 import java.util.*
 
 data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
-    val mcData= ServerData("RDI", ip,false)
+    val mcData= ServerData("RDI", "$ip:$gamePort",false)
     companion object {
         val OFFICIAL_KWL = RServer("kwl1.calebxzhou.cn", 28501, 28502)
         val OFFICIAL_DEBUG = RServer("127.0.0.1", 38430, 38411)
@@ -36,7 +38,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
 
         var now: RServer? = null
 
-        val serverSelectScreen: RScreen
+        /*val serverSelectScreen: RScreen
             get() = optionScreen(RTitleScreen(), "选择服务器") {
                 this += ROption("KWL", true, "桂林联通\n感谢科洛提供的服务器") {
                     OFFICIAL_KWL.connect()
@@ -49,24 +51,33 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
                         OFFICIAL_DEBUG.connect()
                     }
                 }
-            }
+            }*/
 
         val loginScreen: RScreen
-            get() = formScreen(serverSelectScreen, "登录账号") {
+            get() = formScreen(RTitleScreen(), "登录账号") {
+                init = {
+                    LocalStorage["usr"]?.let { usr->
+                        LocalStorage["pwd"]?.let { pwd->
+                            now?.playerLogin(usr,pwd)
+                        }
+                    }
+                }
                 text("usr", "QQ号/昵称/ID", 16, defaultValue = LocalStorage["usr"])
                 pwd("pwd", "密码", defaultValue = LocalStorage["pwd"])
                 bottomLayoutBuilder = {
-                    iconButton("ssp", text = "注册新号") { mc go regScreen }
-                    iconButton("ethernet", text = "局域网") { mc go lanScreen }
+                    button("ssp", text = "注册新号") { mc go regScreen }
+                    button("ethernet", text = "局域网") { mc go lanScreen }
                 }
-                submit {
-                    now?.playerLogin(it)
+                submit = {
+                    val usr = it.formData["usr"]!!
+                    val pwd = it.formData["pwd"]!!
+                    now?.playerLogin(usr,pwd)
                 }
             }
         val lanScreen: RScreen
             get() = formScreen(loginScreen, "输入信息") {
                 text("name", "你的游戏昵称", 16, defaultValue = LocalStorage["guestName"])
-                submit {
+                submit = {
                     val name = it.formData["name"]!!
                     LocalStorage["guestName"] = name
                     RAccount.guestLogin(name)
@@ -95,7 +106,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
                 }
                 pwd("pwd", "密码")
                 pwd("cpwd", "确认密码")
-                submit {
+                submit = {
                     now?.playerRegister(it)
                 }
 
@@ -108,11 +119,12 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
         now = null
 
     }
-
+    fun ping() = rAsync{
+        ServerStatusPinger().pingServer(mcData) {  }
+    }
     fun connect() {
         hqSend(path = "version") {
             if (it.entity.bodyText == Const.VERSION_STR) {
-
                 now = this
                 mc go loginScreen
             } else {
@@ -146,9 +158,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
 
     }
 
-    fun playerLogin(it: RFormScreenSubmitHandler) {
-        val usr = it.formData["usr"]!!
-        val pwd = it.formData["pwd"]!!
+    fun playerLogin(usr:String,pwd:String) {
         hqSend(
             HttpMethod.POST,
             "login",
@@ -158,7 +168,6 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
             LocalStorage += "usr" to usr
             LocalStorage += "pwd" to pwd
             RAccount.now = account
-            toastOk("登录成功")
             mc go RProfileScreen(account,this)
         }
     }

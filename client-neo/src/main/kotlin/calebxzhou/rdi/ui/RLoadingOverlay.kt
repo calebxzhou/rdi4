@@ -1,5 +1,6 @@
 package calebxzhou.rdi.ui
 
+import calebxzhou.rdi.lang.MultiLangStorage
 import calebxzhou.rdi.util.*
 import com.mojang.math.Axis
 import net.minecraft.Util
@@ -53,6 +54,7 @@ class RLoadingOverlay(
         if (this.reload.isDone) {
             try {
                 this.reload.checkExceptions()
+                MultiLangStorage.load()
                 onFinish.accept(Optional.empty())
             } catch (throwable: Throwable) {
                 onFinish.accept(Optional.of(throwable))

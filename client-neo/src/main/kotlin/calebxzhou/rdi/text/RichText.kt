@@ -3,10 +3,7 @@ package calebxzhou.rdi.text
 import calebxzhou.rdi.common.WHITE
 import calebxzhou.rdi.tutorial.full
 import calebxzhou.rdi.ui.general.Icons
-import calebxzhou.rdi.ui.general.KeyboardIcons
-import calebxzhou.rdi.ui.general.renderItemStack
 import calebxzhou.rdi.util.*
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.MultiLineLabel
 import net.minecraft.client.gui.components.PlayerFaceRenderer
@@ -14,7 +11,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
 
 //文字，以及插在文字中的小图标
 typealias RichTextRenderer = RichText.Context.() -> Unit
@@ -80,7 +76,7 @@ class RichText(val x: Int, val y: Int, val plainText: MutableComponent,val rende
                 guiGraphics.matrixOp {
                     pose.translate(nowX.toFloat(), nowY.toFloat() + 4, 0f)
                     guiGraphics.matrixOp {
-                        guiGraphics.renderItemStack(item.full, 12, 12)
+                        guiGraphics.renderItemStack(itemStack = item.full, width = 12, height = 12)
                     }
                     //渲染数量
                     if (item.second > 1) {

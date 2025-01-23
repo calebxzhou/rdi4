@@ -4,20 +4,19 @@ import calebxzhou.rdi.ui.component.RButton
 import calebxzhou.rdi.ui.component.RIconButton
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.general.HAlign
-import calebxzhou.rdi.ui.general.Icons
-import calebxzhou.rdi.ui.general.renderItemStack
-import calebxzhou.rdi.util.*
-import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripRenderHandler.pose
-import net.minecraft.client.gui.components.AbstractWidget
+import calebxzhou.rdi.util.mcText
+import calebxzhou.rdi.util.mcUIHeight
+import calebxzhou.rdi.util.mcUIWidth
+import calebxzhou.rdi.util.toMcText
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.layouts.Layout
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.layouts.LinearLayout
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
+fun GridLayout.clear(){
+}
 
 fun gridLayout(
     screen: RScreen,
@@ -25,9 +24,11 @@ fun gridLayout(
     y: Int = mcUIHeight - 20,
     hAlign: HAlign = HAlign.LEFT,
     maxColumns: Int = 0,
+    rowSpacing: Int=0,
+    colSpacing: Int=0,
     builder: GridLayoutBuilder.() -> Unit,
 ): GridLayout {
-    return GridLayoutBuilder(screen,maxColumns, x, y,hAlign).apply(builder).build()
+    return GridLayoutBuilder(screen,maxColumns, x, y,hAlign,rowSpacing,colSpacing).apply(builder).build()
 }
 
 class GridLayoutBuilder(
@@ -35,7 +36,9 @@ class GridLayoutBuilder(
     val maxColumns: Int,
     val x: Int,
     val y: Int,
-    val hAlign: HAlign
+    val hAlign: HAlign,
+    val rowSpacing: Int=0,
+    val colSpacing: Int=0,
 ) {
     val children = arrayListOf<LayoutElement>()
 
@@ -50,21 +53,25 @@ class GridLayoutBuilder(
         children += RButton(text, onClick = onClick)
     }
 
-    fun iconButton(
+    fun button(
         icon: String?=null,
         item: Item?=null,
         text: String = "",
-        cpnt: MutableComponent = text.toMcText(),
+        comp: MutableComponent = text.toMcText(),
+        hoverText: String = "",
         x: Int = 0,
         y: Int = 0,
-        onClick: (Button) -> Unit
-    ) = RIconButton(icon,item, text,cpnt, x, y, onClick).also{ children += it }
+        size: Int = 64,
+        onClick: (Button) -> Unit = {}
+    ) = RIconButton(icon,item, text,comp, hoverText,x, y, size,onClick).also{ children += it }
 
 
     fun build(): GridLayout{
         val layout = GridLayout(x, y)
 
         val rowHelper = layout.createRowHelper(if (maxColumns > 0) maxColumns else children.size)
+        layout.rowSpacing(rowSpacing)
+        layout.columnSpacing(colSpacing)
         children.forEach { rowHelper.addChild(it) }
         layout.arrangeElements()
         when(hAlign){

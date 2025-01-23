@@ -1,6 +1,8 @@
 package calebxzhou.rdi.ui.screen
 
-import calebxzhou.rdi.model.RServer
+import calebxzhou.rdi.Const
+import calebxzhou.rdi.model.RServer.Companion.OFFICIAL_DEBUG
+import calebxzhou.rdi.model.RServer.Companion.OFFICIAL_KWL
 import calebxzhou.rdi.ui.component.RScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
@@ -31,21 +33,19 @@ class RTitleScreen : RScreen("主页") {
 
     companion object {
 
-       /* val ipv6Screen = { prevScreen: RScreen ->
-            optionScreen(prevScreen, title = "当前网络不支持IPv6，选择网络类型，查看解决方案") {
-                "家庭宽带" to {
-                    alert("把网线/wifi连在运营商给的光猫上\n或者在路由器设置中启用")
-                }
-                "校园网、公司" to {
-                    alert("问问网管，不行的话拿手机流量开热点")
-                }
-                "视频教程" to {
-                    openLink("https://www.bilibili.com/video/BV1oy4y1Y7Eb")
-                }
-            }
-        }*/
-
-
+        /* val ipv6Screen = { prevScreen: RScreen ->
+             optionScreen(prevScreen, title = "当前网络不支持IPv6，选择网络类型，查看解决方案") {
+                 "家庭宽带" to {
+                     alert("把网线/wifi连在运营商给的光猫上\n或者在路由器设置中启用")
+                 }
+                 "校园网、公司" to {
+                     alert("问问网管，不行的话拿手机流量开热点")
+                 }
+                 "视频教程" to {
+                     openLink("https://www.bilibili.com/video/BV1oy4y1Y7Eb")
+                 }
+             }
+         }*/
 
 
     }
@@ -57,6 +57,7 @@ class RTitleScreen : RScreen("主页") {
             it.disconnect()
             mc.clearLevel()
         }
+
         //关闭音乐
         //mc.options.getSoundSourceOptionInstance(SoundSource.MUSIC).set(0.0)
 
@@ -73,10 +74,10 @@ class RTitleScreen : RScreen("主页") {
             y = mcUIHeight- 17
         }.also { registerWidget(it) }*/
         gridLayout(this, 10, mcUIHeight - 16) {
-            iconButton("smp", text = "多人模式"){
-                mc go RServer.serverSelectScreen
+            button("smp", text = "多人模式") {
+                startMulti()
             }
-            iconButton("ssp", text = "单人模式") {
+            button("ssp", text = "单人模式") {
                 mc go SelectWorldScreen(this.screen)
                 /*Chapter.ALL.firstOrNull { cpt -> cpt.must && cpt.tutorials.any { !it.isDone } }?.let {
                     alertErr("请先完成教程 ${it.name} 章节")
@@ -84,21 +85,32 @@ class RTitleScreen : RScreen("主页") {
                 }*/
                 //start()
             }
-            iconButton("tutorial", text = "互动教程") {
+            button("tutorial", text = "互动教程") {
                 //mc go LoadingScreen(this@RTitleScreen)
-            mc go RTutorialScreen(this@RTitleScreen)
+                mc go RTutorialScreen(this@RTitleScreen)
                 //start()
             }
-            iconButton("settings", text = "设置") {
+            button("settings", text = "设置") {
                 mc go RSettingsScreen(this@RTitleScreen, mc.options)
             }
-            iconButton("partner", text = "关于") {
+            button("partner", text = "关于") {
                 mc go AboutScreen()
             }
         }
 
 
         super.init()
+    }
+
+    fun startMulti() {
+
+        if (Const.DEBUG) {
+            OFFICIAL_DEBUG.ping()
+            OFFICIAL_DEBUG.connect()
+        } else {
+            OFFICIAL_KWL.ping()
+            OFFICIAL_KWL.connect()
+        }
     }
 
     fun start() {
@@ -142,7 +154,7 @@ class RTitleScreen : RScreen("主页") {
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //guiGraphics.blit(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128)
         guiGraphics.blit(SCREEN_BG, 0, 0, 0f, 0f, mcUIWidth, mcUIHeight, mcUIWidth, mcUIHeight)
-        guiGraphics.blit(LOGO, mcUIWidth / 2 - 60, mcUIHeight / 2 - 25, -0.0625f, 0.0f, 128, 64, 128,64)
+        guiGraphics.blit(LOGO, mcUIWidth / 2 - 60, mcUIHeight / 2 - 25, -0.0625f, 0.0f, 128, 64, 128, 64)
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)
         //下方的灰条
         guiGraphics.fill(0, height - 20, width, height, 0xAA000000.toInt())
@@ -185,9 +197,9 @@ class RTitleScreen : RScreen("主页") {
                 }
             }
         }*/
-        /* if (mc pressingKey InputConstants.KEY_RETURN || mc pressingKey InputConstants.KEY_NUMPADENTER) {
-             start()
-         }*/
+         if (mc.pressingEnter) {
+             startMulti()
+         }
         if (mc pressingKey InputConstants.KEY_0) {
             mc go SelectWorldScreen(this)
         }

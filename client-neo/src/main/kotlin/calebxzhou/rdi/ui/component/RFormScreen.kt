@@ -26,10 +26,10 @@ data class RFormScreenSubmitHandler(val screen: Screen, val formData: Map<String
 
 class RFormScreen(val prev: Screen, val title: String) {
     private val widgets = linkedMapOf<String, AbstractWidget>()
-    private lateinit var handler: (RFormScreenSubmitHandler) -> Unit
-
+    var submit: (RFormScreenSubmitHandler) -> Unit = {}
+    var init: () -> Unit = {}
     //关闭的时候做什么
-    var onClose: () -> Unit = {}
+    var close: () -> Unit = {}
 
     //底部按钮 gridlayout
     var bottomLayoutBuilder: GridLayoutBuilder.() -> Unit = {}
@@ -58,10 +58,6 @@ class RFormScreen(val prev: Screen, val title: String) {
         widgets += id to RCheckbox(label)
     }
 
-    fun submit(handler: (RFormScreenSubmitHandler) -> Unit) {
-        this.handler = (handler)
-    }
-
     fun build(): RScreen {
         return object : RScreen(title) {
             override fun tick() {
@@ -77,14 +73,14 @@ class RFormScreen(val prev: Screen, val title: String) {
             }
 
             override fun onClose() {
-                this@RFormScreen.onClose()
+                this@RFormScreen.close()
                 mc go prev
             }
 
             override fun init() {
-
+                this@RFormScreen.init()
                 gridLayout(this, hAlign = HAlign.CENTER) {
-                    iconButton("success", text = "提交") { onSubmit() }
+                    button("success", text = "提交") { onSubmit() }
                     bottomLayoutBuilder()
                 }
                 var y = 50
@@ -130,7 +126,7 @@ class RFormScreen(val prev: Screen, val title: String) {
                     .toMap()
                 val screen = this
                 bgTask {
-                    handler(RFormScreenSubmitHandler(screen, formData))
+                    submit(RFormScreenSubmitHandler(screen, formData))
                 }
             }
 

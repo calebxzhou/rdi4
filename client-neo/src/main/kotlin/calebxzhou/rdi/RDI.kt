@@ -8,14 +8,14 @@ import calebxzhou.rdi.banner.Banner
 import calebxzhou.rdi.blockguide.BlockGuide
 import calebxzhou.rdi.chunkstats.ChunkStats
 import calebxzhou.rdi.common.PINE_GREEN
-import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.ihq.IhqClient
 import calebxzhou.rdi.ihq.protocol.account.LoginSPacket
 import calebxzhou.rdi.item.ItemInfo
 import calebxzhou.rdi.item.RItems
 import calebxzhou.rdi.lan.Lan
-import calebxzhou.rdi.lang.EnglishStorage.lang
+import calebxzhou.rdi.lang.EnglishStorage
 import calebxzhou.rdi.model.RAccount
+import calebxzhou.rdi.nav.OmniNavi
 import calebxzhou.rdi.serdes.serdesJson
 import calebxzhou.rdi.sound.RSoundPlayer
 import calebxzhou.rdi.tutorial.Tutorial
@@ -37,22 +37,18 @@ import net.minecraft.client.gui.components.toasts.AdvancementToast
 import net.minecraft.client.gui.components.toasts.RecipeToast
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.resources.language.ClientLanguage
+import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.BlockTags
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.InteractionResult
-import net.minecraftforge.client.event.RecipesUpdatedEvent
-import net.minecraftforge.client.event.RegisterClientCommandsEvent
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
-import net.minecraftforge.client.event.RenderGuiEvent
-import net.minecraftforge.client.event.RenderGuiOverlayEvent
-import net.minecraftforge.client.event.RenderLevelStageEvent
-import net.minecraftforge.client.event.ScreenEvent
-import net.minecraftforge.client.event.TextureStitchEvent
-import net.minecraftforge.client.event.ToastAddEvent
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.Items
+import net.minecraftforge.client.event.*
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.AddReloadListenerEvent
 import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
@@ -64,12 +60,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.fml.loading.FMLConfig
+import net.minecraftforge.registries.DeferredRegister
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.lwjgl.glfw.GLFW
 import java.io.File
-import java.io.FileOutputStream
-import java.io.ObjectOutputStream
 import java.util.concurrent.Executors
 
 
@@ -97,11 +92,22 @@ fun risSync(todo: () -> Unit) {
 @Mod(MOD_ID)
 //@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class RDI {
+    val CREATIVE_TAB_REGISTRAR = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Const.MODID)
+    val CREATIVE_TAB = CREATIVE_TAB_REGISTRAR.register(Const.MODID){
+        CreativeModeTab.builder()
+            .title(mcText("rdi"))
+            .icon{Items.REDSTONE.defaultInstance}
+            .displayItems { params, output ->
+                output.accept(RItems.METEORITE_SUMMONER.get())
+            }
+            .build()
+    }
     init {
         System.setProperty("java.net.preferIPv6Addresses", "true")
         RDIEvents.init()
         STORAGE.mkdirs()
         RItems.REGISTER.register(FMLJavaModLoadingContext.get().modEventBus);
+        CREATIVE_TAB_REGISTRAR.register(FMLJavaModLoadingContext.get().modEventBus)
     }
 
     companion object {
@@ -150,6 +156,7 @@ object RDIEvents {
         busL.addListener(::registerOverlays)
 
         bus.addListener(::onLevelTick)
+        bus.addListener(::onReload)
         bus.addListener(::checkGuiOverlays)
         bus.addListener(::onPlayerLogin)
         bus.addListener(::onRecipeUpdated)
@@ -274,11 +281,15 @@ object RDIEvents {
         modIdChineseName += "cuisinedelight" to "料理乐事"
         modIdChineseName += "computercraft" to "电脑"
         modIdChineseName += "minecraft" to "原版"
-        lang = ClientLanguage.loadFrom(mc.resourceManager, listOf("en_us"), false)
+
+        EnglishStorage.lang = ClientLanguage.loadFrom(mc.resourceManager, listOf("en_us"), false)
 
     }
+    fun onReload(e: AddReloadListenerEvent){
 
+    }
     fun allLoadComplete(e: TextureStitchEvent.Post) {
+
         //mc.overlay=null
     }
 
