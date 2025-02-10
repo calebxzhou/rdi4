@@ -1,6 +1,5 @@
 package calebxzhou.rdi.ui.component
 
-import calebxzhou.rdi.ui.general.Icons
 import calebxzhou.rdi.util.drawTextAtCenter
 import calebxzhou.rdi.util.mcText
 import net.minecraft.client.gui.GuiGraphics
@@ -40,7 +39,10 @@ abstract class RScreen(open val title: MutableComponent) : Screen(title) {
         widgets += widget
     }
     operator fun plusAssign(widget: AbstractWidget) {
-        widgets += widget
+        addRenderableWidget(widget)
+    }
+    operator fun minusAssign(widget: AbstractWidget) {
+        removeWidget(widget)
     }
 
     override fun clearWidgets() {
