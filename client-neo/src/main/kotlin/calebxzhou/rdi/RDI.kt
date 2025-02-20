@@ -29,10 +29,6 @@ import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.runtime.IJeiRuntime
 import mezz.jei.api.runtime.IRecipesGui
-import net.dries007.tfc.common.blocks.TFCBlocks
-import net.dries007.tfc.config.FoodExpiryTooltipStyle
-import net.dries007.tfc.config.TFCConfig
-import net.dries007.tfc.config.TimeDeltaTooltipStyle
 import net.minecraft.client.gui.components.toasts.AdvancementToast
 import net.minecraft.client.gui.components.toasts.RecipeToast
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -41,8 +37,6 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.BlockTags
-import net.minecraft.tags.ItemTags
-import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.Items
 import net.minecraftforge.client.event.*
@@ -229,9 +223,7 @@ object RDIEvents {
             }
         }
         FMLConfig.updateConfig(FMLConfig.ConfigValue.VERSION_CHECK, false)
-        TFCConfig.CLIENT.timeDeltaTooltipStyle.set(TimeDeltaTooltipStyle.DAYS)
-        TFCConfig.CLIENT.foodExpiryTooltipStyle.set(FoodExpiryTooltipStyle.TIME_LEFT)
-        File("saves").listFiles()?.forEach { subDir ->
+         File("saves").listFiles()?.forEach { subDir ->
             if (subDir.isDirectory && subDir.name.startsWith("__rdi_tutorial")) {
                 subDir.deleteRecursively()
                 println("删除教程存档: ${subDir.name}")
@@ -384,14 +376,8 @@ object RDIEvents {
     }
 
     fun rightClickBlock(e: RightClickBlock) {
-        //原木堆
-        if (e.level.getBlockState(e.hitVec.blockPos).`is`(TFCBlocks.LOG_PILE.get())) {
-            //只有手持原木or空手 才能打开原木堆画面
-            if (!(e.entity handHas ItemTags.LOGS) && !e.entity.handsAir) {
-                e.cancellationResult = InteractionResult.PASS
-                //e.isCanceled = true
-            }
-        }
+
+
         BlockGuide.now?.onRightClick(e.level)
     }
 

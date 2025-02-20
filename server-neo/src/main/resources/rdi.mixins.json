@@ -20,12 +20,12 @@
     "mNoQuitNotify",
     "mProtocolVersion",
     "mSaveBandwidth",
+    "mServerLoginPacketListener",
     "mServerProps",
     "mServerProps2",
     "ae2.mGenMeteoriteEverywhere",
     "aether.mAetherPortalShape",
-    "aether.mFireStartPortal",
-    "tfc.mFastPitKiln"
+    "aether.mFireStartPortal"
   ],
   "injectors": {
     "defaultRequire": 1

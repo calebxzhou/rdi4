@@ -7,9 +7,6 @@ import calebxzhou.rdi.ui.RMessageLevel
 import calebxzhou.rdi.ui.general.RToast
 import calebxzhou.rdi.ui.screen.RTitleScreen
 import com.mojang.blaze3d.platform.InputConstants
-import net.dries007.tfc.common.blocks.rock.RockCategory
-import net.dries007.tfc.common.capabilities.food.TFCFoodData
-import net.dries007.tfc.common.items.TFCItems
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.Button
@@ -43,7 +40,6 @@ import org.anti_ad.mc.common.vanilla.alias.ForgeRegistries
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import snownee.jade.overlay.RayTracing
-import kotlin.math.roundToInt
 
 val mc: Minecraft
     get() = Minecraft.getInstance() ?: run {
@@ -58,14 +54,6 @@ fun mcMainThread(run: () -> Unit) {
     mc.execute(run)
 }
 
-
-val Player.thrist: Float
-    get() {
-        val d = foodData
-        return if (d is TFCFoodData)
-            d.thirst
-        else 0f
-    }
 
 fun asset(path: String) = ResourceLocation(Const.MODID, path)
 fun MinecraftServer.executeCommand(cmd: String) {
@@ -203,10 +191,6 @@ infix fun Player.isLooking(item: Item): Boolean = lookingAtItemEntity?.item?.`is
 
 
 infix fun Minecraft.justChatted(text: String): Boolean = mc.gui.chat.recentChat.lastOrNull()?.contains(text) == true
-val Player.waterLevel
-    get() = (foodData as? TFCFoodData)?.thirst?:0f
-val Player.waterPercent
-    get() = (waterLevel / TFCFoodData.MAX_THIRST * 100).roundToInt()
 val Player.lookingAtItemEntity: ItemEntity?
     get() {
         val entity = lookingAtEntity
@@ -351,8 +335,6 @@ fun mcTextWidthOf(text: Component): Int {
 fun copyToClipboard(s: String) {
     GLFW.glfwSetClipboardString(mcWindowHandle, s)
 }
-val RockCategory.ItemType.item
-    get() =     TFCItems.ROCK_TOOLS[RockCategory.METAMORPHIC]!![this]!!.get()
 
 object McUtils {
     @JvmStatic

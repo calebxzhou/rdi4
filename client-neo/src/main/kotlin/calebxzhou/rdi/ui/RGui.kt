@@ -4,10 +4,6 @@ import calebxzhou.rdi.MOD_ID
 import calebxzhou.rdi.lang.EnglishStorage
 import calebxzhou.rdi.service.NetMetrics
 import calebxzhou.rdi.util.*
-import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.systems.RenderSystem
-import net.dries007.tfc.client.IngameOverlays
-import net.dries007.tfc.common.capabilities.food.TFCFoodData
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
@@ -24,7 +20,7 @@ object RGui {
     val MC_ICONS = ResourceLocation("textures/gui/icons.png")
     val THIRST_ICONS = ResourceLocation(MOD_ID, "textures/gui/thirst_icons.png")
     private fun setupForSurvival(gui: ForgeGui, minecraft: Minecraft): Boolean {
-        return gui.shouldDrawSurvivalElements() && IngameOverlays.setup(gui, minecraft)
+        return gui.shouldDrawSurvivalElements()
     }
     @JvmStatic
     fun renderSelectedItemEnglishName(
@@ -76,8 +72,6 @@ object RGui {
         stack.popPose()*/
 
         // Health modifier affects both max and current health equally. All we do is draw different numbers as a result.
-        val healthModifier =
-            if (entity is Player && entity.foodData is TFCFoodData) (entity.foodData as TFCFoodData).getHealthModifier() else 1f
 
         val text = mcText("HP" + (percentHealth * 100).roundToInt())
         stack.pushPose()
@@ -104,7 +98,7 @@ object RGui {
             val player = checkNotNull(minecraft.getCameraEntity() as Player?)
             val x = width / 2 - 17
             val y = height - gui.leftHeight+2
-            val percentFood = player.foodData.foodLevel.toFloat() / TFCFoodData.MAX_HUNGER
+            val percentFood = player.foodData.foodLevel.toFloat() / 20
 
             stack.pushPose()
             stack.translate(x.toFloat(), y.toFloat(), 0f)
@@ -122,42 +116,7 @@ object RGui {
         }
     }
 
-    @JvmStatic
-    fun renderThirst(gui: ForgeGui, graphics: GuiGraphics, partialTicks: Float, width: Int, height: Int) {
-        val stack = graphics.pose()
-        val minecraft = Minecraft.getInstance()
-        if (setupForSurvival(gui, minecraft)) {
-            val player = checkNotNull(minecraft.getCameraEntity() as Player?)
-            val x = width / 2
-            val y = height - gui.rightHeight
-            var percentThirst = 0f
-            var overheat = 0f
-            val data = player.foodData
-            if (data is TFCFoodData) {
-                percentThirst = data.thirst / TFCFoodData.MAX_THIRST
-                overheat = data.getThirstContributionFromTemperature(player)
-            }
-
-            stack.pushPose()
-            stack.translate((x + 10).toFloat(), (y + 2).toFloat(), 0f)
-            val comp = mcText("WP${player.waterPercent}")
-            /*  if (overheat > 0) {
-                  comp + mcText(" ↓${String.format("%.2f",1+overheat)}x")
-              }*/
-            graphics.drawString(
-                gui.font,
-                comp,
-                -35,
-                0,
-                Color.WHITE.rgb,
-                true
-            )
-            graphics.blit(THIRST_ICONS, -45, 0, 16F, 0f, 9, 9, 25, 9)
-            stack.popPose()
-
-        }
-    }
-    @JvmStatic
+     @JvmStatic
     fun renderXp(){
 
     }

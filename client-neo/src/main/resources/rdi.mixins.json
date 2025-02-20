@@ -23,15 +23,7 @@
     "gameplay.mPlayer",
     "jade.mModNameChineseDisplay",
     "jade.mNoDisplayModName",
-    "jech.mDevPreventConfig",
-    "tfc.AInventoryBlockEntity",
-    "tfc.mDryingBricksTooltip",
-    "tfc.mFastPitKiln",
-    "tfc.mTfcDryingBricks",
-    "tfc.mTfcFastCharcoal",
-    "tfc.mTfcNoInventoryTabs",
-    "tfc.mTfcOverlay",
-    "tfc.mTfcSizeTooltip"
+    "jech.mDevPreventConfig"
   ],
   "client": [
     "AClientLanguage",
@@ -57,7 +49,6 @@
     "mTitleScreen",
     "mTooltip",
     "mWidgetMouseCursor",
-    "mWindowTitle",
-    "tfc.mTfcKnappingScreen"
+    "mWindowTitle"
   ]
 }

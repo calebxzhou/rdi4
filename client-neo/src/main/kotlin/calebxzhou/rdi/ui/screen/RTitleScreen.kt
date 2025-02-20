@@ -87,11 +87,6 @@ class RTitleScreen : RScreen("主页") {
                 }*/
                 //start()
             }
-            button("tutorial", text = "互动教程") {
-                //mc go LoadingScreen(this@RTitleScreen)
-                mc go RTutorialScreen(this@RTitleScreen)
-                //start()
-            }
             button("settings", text = "设置") {
                 mc go RSettingsScreen(this@RTitleScreen, mc.options)
             }

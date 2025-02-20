@@ -12,7 +12,7 @@ object Const {
     const val IHQ_VERSION = 0x460
     val SEED = 11451400L
     //显示版本
-    const val VERSION_DISP = "RDI 4R Beta2"
+    const val VERSION_DISP = "RDI 4E"
     const val VERSION_STR = "4.6"
 
 }

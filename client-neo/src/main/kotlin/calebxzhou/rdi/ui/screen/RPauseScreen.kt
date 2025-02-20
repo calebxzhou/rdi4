@@ -12,18 +12,9 @@ import calebxzhou.rdi.ui.general.alert
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.ui.screen.RPauseScreen.DisplayMode.BASIC_INFO
 import calebxzhou.rdi.util.*
-import net.dries007.tfc.client.ClimateRenderCache
-import net.dries007.tfc.common.capabilities.food.Nutrient
-import net.dries007.tfc.common.capabilities.food.NutritionData
-import net.dries007.tfc.common.capabilities.food.TFCFoodData
-import net.dries007.tfc.util.calendar.Calendars
-import net.dries007.tfc.util.calendar.ICalendar
-import net.dries007.tfc.util.calendar.Month
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
-import net.minecraft.client.resources.language.I18n
-import net.minecraft.network.chat.MutableComponent
 import xaero.map.WorldMapSession
 import xaero.map.gui.GuiMap
 
@@ -84,16 +75,7 @@ class RPauseScreen : RScreen("暂停") {
 
             }
         }
-        gridLayout(this, x = 10, y = 20, colSpacing = -5) {
-            button("calendar", text = calendarText)
-            button("temperature", text = climateText, hoverText = "温度")
-            button("precipitation", text = rainfallText, hoverText = "降水量")
-            button("wheat", comp = nutrition(0), hoverText = "营养-谷物")
-            button("fruit", comp = nutrition(1), hoverText = "营养-水果")
-            button("vegetable", comp = nutrition(2), hoverText = "营养-蔬菜")
-            button("protein", comp = nutrition(3), hoverText = "营养-蛋白质")
-            button("milk", comp = nutrition(4), hoverText = "营养-奶制品")
-        }
+
         lookingBlockState?.let { blockState ->
             val block = blockState.block
             val item = block.asItem()
@@ -171,35 +153,6 @@ class RPauseScreen : RScreen("暂停") {
          }*/
     }
 
-    val calendarText: String
-        get() {
-            val season = I18n.get(
-                Calendars.CLIENT.calendarMonthOfYear.getTranslationKey(Month.Style.SEASON)
-            )
-            val ticks = Calendars.CLIENT.calendarTicks
-            val hh = ICalendar.getHourOfDay(ticks)
-            val mm = String.format("%02d", ICalendar.getMinuteOfHour(ticks))
-            return "$season ${hh}:${mm}"
-        }
-    val climateText: String
-        get() {
-            val averageTemp = ClimateRenderCache.INSTANCE.averageTemperature.toFixed(1)
-            val currentTemp = ClimateRenderCache.INSTANCE.temperature.toFixed(1)
-            return "$currentTemp℃/$averageTemp℃"
-        }
-    val rainfallText
-        get() = ClimateRenderCache.INSTANCE.rainfall.toFixed(1) + "mm"
-    val nutrition: (Int) -> MutableComponent
-        get() = { nutIndex ->
-            val data = mc.player?.foodData
-            if (data is TFCFoodData) {
-                val nutrition: NutritionData = data.nutrition
-                val nut = Nutrient.VALUES[nutIndex]
-                val nutVal = nutrition.getNutrient(nut)
-                mcText("${(nutVal * 100).toInt()}%").withStyle(nut.color)
-            } else
-                mcText()
-        }
 
 
 }

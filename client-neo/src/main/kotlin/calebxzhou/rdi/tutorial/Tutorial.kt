@@ -10,7 +10,6 @@ import calebxzhou.rdi.text.RichText
 import calebxzhou.rdi.uiguide.UiGuide
 import calebxzhou.rdi.uiguide.uiGuide
 import calebxzhou.rdi.util.*
-import net.dries007.tfc.TerraFirmaCraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen
 import net.minecraft.client.tutorial.TutorialSteps
@@ -143,7 +142,7 @@ data class Tutorial(
                     it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT)
                         .value().createWorldDimensions();
                 } else {
-                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(TerraFirmaCraft.PRESET)
+                    it.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.NORMAL)
                         .value().createWorldDimensions();
                 }
             }
