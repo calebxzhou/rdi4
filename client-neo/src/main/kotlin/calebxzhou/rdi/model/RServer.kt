@@ -34,7 +34,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
     companion object {
         val OFFICIAL_KWL = RServer("kwl1.calebxzhou.cn", 28501, 28502)
         val OFFICIAL_DEBUG = RServer("127.0.0.1", 38430, 38411)
-        val OFFICIAL_NNG = RServer("rdi.calebxzhou.cn", 38430, 38411)
+        val OFFICIAL_NNG = RServer("rdi.calebxzhou.cn", 28501, 28502)
 
         var now: RServer? = null
 
@@ -123,6 +123,7 @@ data class RServer(val ip: String, val gamePort: Int, val hqPort: Int) {
         ServerStatusPinger().pingServer(mcData) {  }
     }
     fun connect() {
+        ping()
         hqSend(path = "version") {
             if (it.entity.bodyText == Const.VERSION_STR) {
                 now = this

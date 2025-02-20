@@ -3,7 +3,9 @@ package calebxzhou.rdi.ui.screen
 import calebxzhou.rdi.Const
 import calebxzhou.rdi.model.RServer.Companion.OFFICIAL_DEBUG
 import calebxzhou.rdi.model.RServer.Companion.OFFICIAL_KWL
+import calebxzhou.rdi.model.RServer.Companion.OFFICIAL_NNG
 import calebxzhou.rdi.ui.component.RScreen
+import calebxzhou.rdi.ui.general.optionScreen
 import calebxzhou.rdi.ui.layout.gridLayout
 import calebxzhou.rdi.util.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -108,8 +110,11 @@ class RTitleScreen : RScreen("主页") {
             OFFICIAL_DEBUG.ping()
             OFFICIAL_DEBUG.connect()
         } else {
-            OFFICIAL_KWL.ping()
-            OFFICIAL_KWL.connect()
+            mc go optionScreen(this,"选择服务器") {
+                "电信" to {OFFICIAL_NNG.connect()}
+                "联通" to {OFFICIAL_KWL.connect()}
+            }
+
         }
     }
 

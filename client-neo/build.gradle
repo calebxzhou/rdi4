@@ -392,7 +392,7 @@ tasks.register('出core') {
     }
 }
 tasks.register('出mods') {
-    dependsOn(导别mods, 出core)
+    dependsOn(出core)
     doLast {
         ant.zip(destfile: shippingDir + "rdi4r-mods.zip", basedir: modsDir)
     }
@@ -402,7 +402,7 @@ tasks.register('清端', Exec) {
 }
 
 tasks.register('出端') {
-    dependsOn(出core,清端)
+    dependsOn(出core,出mods,清端)
     doLast {
         def zipFile = new File(shippingDir, "rdi4r密码123!@#.zip")
         def sourceDir = new File(clientDir)
