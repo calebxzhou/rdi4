@@ -40,7 +40,7 @@ val db = MongoClient.create(
         builder.hosts(listOf(ServerAddress(dbHost, dbPort)))
     }
     .uuidRepresentation(UuidRepresentation.STANDARD)
-    .build()).getDatabase("rdi_neo")
+    .build()).getDatabase("rdi4e")
 val accountCol = db.getCollection<Account>("account")
 val teamCol = db.getCollection<Team>("team")
 fun main() {

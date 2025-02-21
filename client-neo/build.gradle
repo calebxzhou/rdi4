@@ -176,6 +176,7 @@ def mods = [
         "kubejs:2001.6.5-build.16+forge",
         "kubejs-create:2001.2.5-build.2+forge",
         "rhino:2001.2.3-build.6+forge",
+        "mafglib:0.1.13-mc1.20.1",
         //************优化类************
         "entityculling:dlg7nMa6",
         "ferrite-core:DG5Fn9Sz",
@@ -186,6 +187,7 @@ def mods = [
         "fps-reducer:1.20-2.5",
         "alternate-current:forge-mc1.20-1.7.0",
         "imblocker-original:4.0.5",
+        "oculus:1.20.1-1.8.0",
         //*************辅助类************
         "jade:11.9.4+forge",
         "inventory-profiles-next:QfcHRM5H",
@@ -193,23 +195,28 @@ def mods = [
         "xaeros-world-map:1.39.0_Forge_1.20",
         "xaeros-minimap:24.5.0_Forge_1.20",
         "screenshot-to-clipboard:1.0.9+forge",
+
         //************图形************
-        "distanthorizons:2.2.1-a-1.20.1",
-        "oculus:1.20.1-1.8.0",
+
         //************真mod*************
+        "valkyrien-skies:1.20.1-forge-2.3.0-beta.5",
+        "eureka:1.20.1-forge-1.5.1-beta.3",
+        "lets-do-farm-charm:1.0.6",
+        "create-central-kitchen:1.3.12",
+        "lets-do-bakery-farmcharm-compat:2.0.4",
+        "interactive:ogrWXsFW",
+        "create-connected:0.9.4-mc1.20.1",
         "functional-storage:1.20.1-1.2.12",
+        "gravestone-mod:forge-1.20.1-1.0.24",
         "aether:1.20.1-1.5.1-neoforge",
-        "ae2:RRBDfS9L",
         "cc-tweaked:1.114.2",
         "create:1.20.1-0.5.1.j",
-        "create-connected:0.9.1-mc1.20.1",
         "createaddition:1.20.1-1.2.4e",
         "slice-and-dice:3.3.0",
         "interiors:0.5.6+forge-mc1.20.1",
         "sophisticated-backpacks:1.20.1-3.22.1.1167",
         "polymorph:f95jImsh",
-        "polymorphic-energistics:forge-0.1.1-1.20.1",
-
+        "villager-transportation:1.3.1+mod",
 ]
 def curseExportOnly = [
         //"tfc-casting-with-channels-820815:5046696"
@@ -217,16 +224,17 @@ def curseExportOnly = [
 //只导出 不在开发环境运行
 def modrinthExportOnly = [
         //能跑
-
-        "farmers-delight:1.20.1-1.2.4",
         "the-aethers-delight:0.1.1",
+        "farmers-delight:1.20.1-1.2.4",
         "cuisine-delight:1.1.15",
         "oceans-delight:1.0.2-1.20",
         "chefs-delight:1.0.3-forge-1.20.1",
         "lets-do-vinery:1.4.28",
         "create-dreams-and-desires:1.20.1-0.1b.Release-Early-Dev",
         "create-central-kitchen:1.3.12",
+        "minecraft-transit-railway:FORGE-4.0.0-beta.14+1.20.1",//载入慢
         //不能跑
+        "forgematica:0.1.12-mc1.20.1", //跟embeddium冲突
         "man-of-many-planes:uZNB5Zrk",
         "immersive-aircraft:BuPtsmaI",
         "create-big-cannons:5.8.2",
@@ -333,13 +341,7 @@ tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
 
-import net.lingala.zip4j.ZipFile
-import net.lingala.zip4j.model.ZipParameters
-import net.lingala.zip4j.model.enums.CompressionLevel
-import net.lingala.zip4j.model.enums.CompressionMethod
-import net.lingala.zip4j.model.enums.EncryptionMethod
-
-def shippingDir = System.getProperty("user.home") + "/Documents/RDI4R/shipping/"
+def shippingDir = System.getProperty("user.home") + "/Documents/RDI4E/shipping/"
 def clientDir = shippingDir + "client/"
 def clientMcDir = clientDir + ".minecraft/"
 def modsDir = clientMcDir + "mods/"
@@ -387,26 +389,28 @@ tasks.register('出core') {
 tasks.register('出mods') {
     dependsOn(出core)
     doLast {
-        ant.zip(destfile: shippingDir + "rdi4r-mods.zip", basedir: modsDir)
+        exec {
+            executable 'cmd'
+            args '/c', 'cd', 'C:\\Program Files\\7-Zip', '&&', '7z', 'a', '-mmt=on', "${shippingDir}rdi4e-mods.zip", modsDir
+        }
     }
 }
+
 tasks.register('清端', Exec) {
     commandLine 'cmd', '/c', "cd ${clientMcDir} && python prepare4shipping.py"
 }
 
 tasks.register('出端') {
-    dependsOn(出core,出mods,清端)
+    dependsOn(出core, 出mods, 清端)
     doLast {
-        def zipFile = new File(shippingDir, "rdi4r密码123!@#.zip")
+        def zipFile = new File(shippingDir, "rdi4e密码123!@#.zip")
         def sourceDir = new File(clientDir)
         def password = "123!@#"
 
-        def zipParameters = new ZipParameters()
-        zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)
-        zipParameters.setCompressionLevel(CompressionLevel.NORMAL)
-        zipParameters.setEncryptFiles(true)
-        zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)
-
-        new ZipFile(zipFile, password.toCharArray()).addFolder(sourceDir, zipParameters)
+        exec {
+            executable 'cmd'
+            args '/c', 'cd', 'C:\\Program Files\\7-Zip', '&&', '7z', 'a', '-p' + password, '-mmt=on', zipFile, sourceDir
+        }
     }
 }
+

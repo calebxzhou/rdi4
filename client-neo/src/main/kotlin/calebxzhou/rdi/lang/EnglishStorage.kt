@@ -1,6 +1,5 @@
 package calebxzhou.rdi.lang
 
-import appeng.libs.micromark.commonmark.ListConstruct.list
 import calebxzhou.rdi.rAsync
 import net.minecraft.client.resources.language.ClientLanguage
 import net.minecraft.client.resources.language.LanguageManager

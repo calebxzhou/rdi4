@@ -8,7 +8,6 @@
   },
   "minVersion": "0.7",
   "mixins": [
-    "ALivingEntity",
     "mAlwaysOfflineMode",
     "mLoadPackDebug",
     "mLoginProtocol1",
@@ -35,6 +34,7 @@
     "mChat",
     "mFastCreateMojangService",
     "mFastCreateMojangService2",
+    "mForgeGui",
     "mGui",
     "mLoadingOverlay",
     "mMcStart",
