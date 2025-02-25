@@ -2,6 +2,7 @@ package calebxzhou.rdi.ihq
 
 import calebxzhou.rdi.ihq.exception.AuthError
 import calebxzhou.rdi.ihq.exception.ParamError
+import calebxzhou.rdi.ihq.exception.RequestError
 import calebxzhou.rdi.ihq.model.Account
 import calebxzhou.rdi.ihq.model.Team
 import calebxzhou.rdi.ihq.service.PlayerService
@@ -70,6 +71,9 @@ fun main() {
         install(StatusPages) {
             //参数不全或者有问题
             exception<ParamError> { call, cause ->
+                call.e400(cause.message)
+            }
+            exception<RequestError> { call, cause ->
                 call.e400(cause.message)
             }
 

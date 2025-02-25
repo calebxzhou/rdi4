@@ -3,16 +3,13 @@ package calebxzhou.rdi.ihq.util
 import calebxzhou.rdi.ihq.exception.AuthError
 import calebxzhou.rdi.ihq.exception.ParamError
 import calebxzhou.rdi.ihq.model.Account
-import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.protocol.CPacket
 import calebxzhou.rdi.ihq.protocol.general.ResponseCPacket
-import calebxzhou.rdi.ihq.service.PlayerService
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
-import io.ktor.server.sessions.sessions
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.DecoderException
@@ -23,7 +20,6 @@ import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.principal
-import io.ktor.server.sessions.*
 
 /**
  * calebxzhou @ 2024-06-07 16:54
@@ -178,7 +174,7 @@ fun ChannelHandlerContext.err(msg: String) {
     this.channel().writeAndFlush(ResponseCPacket(reqId, false, msg))
 }
 
-operator fun <T> ChannelHandlerContext.get(key: String): T? {
+fun <T> ChannelHandlerContext.got(key: String): T? {
     return this.channel().attr<T>(AttributeKey.valueOf<T>(key)).get()
 }
 
@@ -187,15 +183,15 @@ operator fun <T> ChannelHandlerContext.set(key: String, value: T) {
 }
 
 var ChannelHandlerContext.clientIp: InetSocketAddress
-    get() = this["clientIp"]!!
+    get() = this.got("clientIp")!!
     set(value) = this.set("clientIp", value)
 
 var ChannelHandlerContext.reqId: Byte
-    get() = this["reqId"]!!
+    get() = this.got("reqId")!!
     set(value) = this.set("reqId", value)
 
 var ChannelHandlerContext.account: Account?
-    get() = this["account"]
+    get() = this.got("account")
     set(value) = this.set("account", value)
 
 suspend fun ApplicationCall.e400(msg: String? = null) {
@@ -230,7 +226,7 @@ suspend fun ApplicationCall.ok(msg: String? = null) {
     }
 }
 
-infix fun Parameters.get(param: String): String {
+infix fun Parameters.got(param: String): String {
     return this[param] ?: throw ParamError("参数不全")
 }
 

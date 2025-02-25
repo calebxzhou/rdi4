@@ -3,7 +3,6 @@ package calebxzhou.rdi.ihq.service
 import calebxzhou.rdi.ihq.accountCol
 import calebxzhou.rdi.ihq.log
 import calebxzhou.rdi.ihq.model.Account
-import calebxzhou.rdi.ihq.model.AccountSession
 import calebxzhou.rdi.ihq.util.*
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Updates
@@ -11,8 +10,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
-import io.ktor.server.routing.RoutingCall
-import io.netty.channel.ChannelHandlerContext
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -99,9 +96,9 @@ object PlayerService {
 
     suspend fun register(call: ApplicationCall) {
         val params = call.receiveParameters()
-        val name = params get "name"
-        val pwd = params get "pwd"
-        val qq = params get "qq"
+        val name = params got "name"
+        val pwd = params got "pwd"
+        val qq = params got "qq"
         if (getByQQ(qq) != null || getByName(name) != null) {
             call.e400("QQ或昵称被占用")
             return
@@ -117,8 +114,8 @@ object PlayerService {
 
     suspend fun login(call: ApplicationCall) {
         val params = call.receiveParameters()
-        val usr = params get "usr"
-        val pwd = params get "pwd"
+        val usr = params got "usr"
+        val pwd = params got "pwd"
         validate(usr, pwd)?.let { account ->
             log.info { "${usr}登录成功" }
 
