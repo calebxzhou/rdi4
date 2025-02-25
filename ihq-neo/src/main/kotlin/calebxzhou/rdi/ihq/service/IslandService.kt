@@ -43,13 +43,11 @@ object IslandService {
     //建岛
     suspend fun create(call: ApplicationCall){
         if(getJoinedIsland(call.uid)!=null){
-            call.e400("已有岛，必须退出/删除方可创建新岛")
-            return
+            throw RequestError("已有岛，必须退出/删除方可创建新岛")
         }
         val player = PlayerService.getById(call.uid)
         if(player==null){
-            call.e400("玩家未注册")
-            return
+            throw RequestError("玩家未注册")
         }
         val islandName = player.name+"的岛屿"
         val iid = dbcl.insertOne(Island(name=islandName)).insertedId?.asObjectId()?.value?.toString() ?: let {
@@ -61,8 +59,7 @@ object IslandService {
     }
     suspend fun delete(call: ApplicationCall){
         val island = getOwnIsland(call.uid) ?: let {
-            call.e400("没岛")
-            return
+            throw RequestError("没岛")
         }
         dbcl.deleteOne(eq("_id", island.id))
         // todo 向mc服务器发送rcon指令 清存档+删岛
@@ -71,8 +68,7 @@ object IslandService {
     //回到自己拥有/加入的岛屿
     suspend fun home(call: ApplicationCall) {
         val island = getJoinedIsland(call.uid)?: let {
-            call.e400("没岛")
-            return
+            throw RequestError("没岛")
         }
         // todo mc-rcon 传送
 
@@ -82,8 +78,7 @@ object IslandService {
         val params = call.receiveParameters()
         val homePos = params["pos"]?: Island.DEFAULT_HOMEPOS
         val island = getOwnIsland(call.uid)?: let {
-            call.e400("必须岛主来做")
-            return
+            throw RequestError("必须岛主来做")
         }
         //todo 客户端检查脚下实心方块
         dbcl.updateOne(
@@ -95,12 +90,10 @@ object IslandService {
     //退出岛屿
     suspend fun quit(call: ApplicationCall) {
         val island = getJoinedIsland(call.uid) ?: let {
-            call.e400("没岛")
-            return
+            throw RequestError("没岛")
         }
         if (island.owner.id == call.uid) {
-            call.e400("你是岛主，只能删除")
-            return
+            throw RequestError("你是岛主，只能删除")
         }
         dbcl.updateOne(
             eq("_id", island.id),
@@ -138,11 +131,9 @@ object IslandService {
         }
         val island = getOwnIsland(uid1) ?: let {
             throw RequestError("你没岛")
-            return
         }
         if (!island.hasMember(uid2)) {
             throw RequestError("他不是岛员")
-            return
         }
         dbcl.updateOne(
             eq("_id", island.id),
@@ -158,11 +149,9 @@ object IslandService {
         val uid2 = ObjectId(params got "uid2")
         val island = getOwnIsland(uid1) ?: let {
             throw RequestError("你没岛")
-            return
         }
         if (!island.hasMember(uid2)) {
             throw RequestError("他不是岛员")
-            return
         }
         //给对方加上岛主权限
         dbcl.updateOne(
