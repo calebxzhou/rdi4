@@ -19,12 +19,14 @@
     "mNoJoinNotify",
     "mNoQuitNotify",
     "mProtocolVersion",
+    "mRconThread",
     "mSaveBandwidth",
     "mServerLoginPacketListener",
     "mServerProps",
     "mServerProps2",
     "aether.mAetherPortalShape",
-    "aether.mFireStartPortal"
+    "aether.mFireStartPortal",
+    "sky.mNoiseBasedChunkGenerator"
   ],
   "injectors": {
     "defaultRequire": 1

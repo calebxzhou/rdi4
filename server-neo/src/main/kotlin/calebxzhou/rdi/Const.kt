@@ -12,7 +12,8 @@ object Const {
     val DEBUG = System.getProperty("rdi.debug").toBoolean()
 
     @JvmField
-    val SERVER_PORT =  System.getProperty("rdi.port")?.toIntOrNull()?:38430
+    val SERVER_PORT =  System.getProperty("rdi.port")?.toIntOrNull()?:28501
+    const val RCON_PORT = 28508
     @JvmField
     val LEVEL_NAME = "world"
 

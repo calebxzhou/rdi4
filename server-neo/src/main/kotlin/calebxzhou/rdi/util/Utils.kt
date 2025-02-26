@@ -3,8 +3,11 @@ package calebxzhou.rdi.util
 import calebxzhou.rdi.net.protocol.game.CGamePacket
 import io.netty.channel.ChannelHandlerContext
 import io.netty.util.AttributeKey
+import org.bson.types.ObjectId
 import java.math.BigInteger
 import java.net.InetSocketAddress
+import java.nio.ByteBuffer
+import java.util.UUID
 
 /**
  * calebxzhou @ 2024-06-02 11:55
@@ -37,3 +40,23 @@ fun ChannelHandlerContext.sendPacket(packet: CGamePacket){
 var ChannelHandlerContext.clientIp: InetSocketAddress
     get() = channel().attr<InetSocketAddress>(AttributeKey.valueOf("clientIp")).get()
     set(value) = channel().attr<InetSocketAddress>(AttributeKey.valueOf("clientIp")).set(value)
+fun UUID.toBytes(): ByteArray {
+    val bb = ByteBuffer.wrap(ByteArray(16))
+    bb.putLong(this.mostSignificantBits)
+    bb.putLong(this.leastSignificantBits)
+    return bb.array()
+}
+fun UUID.toObjectId() : ObjectId {
+    val uuidBytes = this.toBytes()
+    val objectIdBytes = uuidBytes.sliceArray(0..11)
+    return ObjectId(objectIdBytes)
+}
+fun ObjectId.toUUID() : UUID{
+    val objectIdBytes = this.toByteArray()
+    val bb = ByteBuffer.wrap(ByteArray(16))
+    bb.put(objectIdBytes)
+//    bb.putLong(0)
+    return UUID(bb.getLong(0), bb.getLong(8))
+}
+fun <T> MutableList<T>.pop(): T = this.removeAt(0)
+

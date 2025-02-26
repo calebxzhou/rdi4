@@ -34,6 +34,12 @@ class mServerProps2  {
     @Mutable @Shadow @Final
     public final String levelName = Const.LEVEL_NAME;
     @Mutable @Shadow @Final
+    public final boolean enableRcon = true;
+    @Mutable @Shadow @Final
+    public final int rconPort=Const.RCON_PORT;
+    @Mutable @Shadow @Final
+    public final String rconPassword = "1";
+    @Mutable @Shadow @Final
     public final int serverPort = Const.SERVER_PORT;
     @Redirect(method = "<init>",at= @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/WorldOptions;parseSeed(Ljava/lang/String;)Ljava/util/OptionalLong;"))
     private OptionalLong rdiSeed(String numberformatexception){
